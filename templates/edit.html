@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>แก้ไข OT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-8 bg-gray-100 text-gray-800">
+    <h1 class="text-2xl font-bold mb-4">แก้ไขข้อมูล OT</h1>
+    <form method="post" class="bg-white p-4 rounded shadow max-w-xl">
+        <label class="block mb-2">
+            วันที่ทำงาน (08:00)
+            <input type="date" name="work_date" value="{{ record['work_date'] }}" class="w-full p-2 border rounded" required>
+        </label>
+        <label class="block mb-4">
+            วัน-เวลาสิ้นสุด
+            <input type="datetime-local" name="end_time" value="{{ record['end_time'] }}" class="w-full p-2 border rounded" required>
+        </label>
+        <div class="flex gap-4">
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">บันทึก</button>
+            <a href="/" class="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400">ยกเลิก</a>
+        </div>
+    </form>
+</body>
+</html>

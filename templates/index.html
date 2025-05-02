@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>แอปคำนวณ OT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-8 bg-gray-100 text-gray-800">
+    <h1 class="text-3xl font-bold mb-6">แอปคำนวณ OT</h1>
+
+    <form method="post" class="bg-white p-4 rounded shadow mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <label class="block">
+            วันที่เริ่มทำงาน (08:00)
+            <input type="date" name="work_date" required class="mt-1 w-full border rounded p-2">
+        </label>
+        <label class="block">
+            วัน-เวลาสิ้นสุด
+            <input type="datetime-local" name="end_time" required class="mt-1 w-full border rounded p-2">
+        </label>
+        <div class="md:col-span-2">
+            <button type="submit" class="w-full md:w-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                ➕ บันทึก
+            </button>
+        </div>
+    </form>
+
+    <div class="flex justify-end mb-2">
+        {% if sort_order == 'asc' %}
+        <a href="/?sort=desc" class="text-blue-600 hover:underline">🔽 เรียงจากล่าสุด</a>
+        {% else %}
+        <a href="/?sort=asc" class="text-blue-600 hover:underline">🔼 เรียงจากเก่าสุด</a>
+        {% endif %}
+    </div>
+
+    <table class="w-full bg-white shadow rounded table-auto text-sm mb-6">
+        <thead class="bg-gray-200 text-left">
+            <tr>
+                <th class="px-4 py-2">วันที่</th>
+                <th class="px-4 py-2">เริ่ม</th>
+                <th class="px-4 py-2">สิ้นสุด</th>
+                <th class="px-4 py-2">ชั่วโมง OT</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in records %}
+            <tr class="border-t hover:bg-gray-50">
+                <td class="px-4 py-2">{{ r['work_date'] }}</td>
+                <td class="px-4 py-2">{{ r['start_time'][11:16] }}</td>
+                <td class="px-4 py-2">{{ r['end_time'][11:16] }}</td>
+                <td class="px-4 py-2">{{ r['ot_hours'] }}</td>
+		<td class="px-4 py-2">
+    <a href="{{ url_for('edit', id=r['id']) }}" class="text-blue-600 hover:underline">แก้ไข</a>
+</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2 class="mt-6 text-xl font-semibold">รวม OT รายเดือน</h2>
+    <table class="w-full mt-2 bg-white shadow rounded table-auto text-sm">
+        <thead class="bg-gray-200 text-left">
+            <tr>
+                <th class="px-4 py-2">เดือน</th>
+                <th class="px-4 py-2">รวม OT (ชม.)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in monthly_ot %}
+            <tr class="border-t hover:bg-gray-50">
+                <td class="px-4 py-2">{{ m['month'] }}</td>
+                <td class="px-4 py-2">{{ m['total'] | round(2) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mt-6 text-right text-xl font-bold">
+        รวม OT ทั้งหมด: <span class="text-blue-700">{{ total_ot }}</span> ชั่วโมง
+    </div>
+</body>
+</html>
