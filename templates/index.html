@@ -1,97 +1,151 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <title>แอปคำนวณ OT</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <title>แอปคำนวณ OT</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="p-8 bg-gray-100 text-gray-800">
-    <h1 class="text-3xl font-bold mb-6">แอปคำนวณ OT</h1>
+  <h1 class="text-3xl font-bold mb-6">แอปคำนวณ OT</h1>
 
-    <form method="post" class="bg-white p-4 rounded shadow mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <label class="block">
-            วันที่เริ่มทำงาน (08:00)
-            <input type="date" name="work_date" required class="mt-1 w-full border rounded p-2">
-        </label>
-        <label class="block">
-            วัน-เวลาสิ้นสุด
-            <input type="datetime-local" name="end_time" required class="mt-1 w-full border rounded p-2">
-        </label>
-        <div class="md:col-span-2">
-            <button type="submit" class="w-full md:w-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                ➕ บันทึก
-            </button>
-        </div>
-    </form>
-
-    <table class="w-full bg-white shadow rounded table-auto text-sm mb-6">
-        <thead class="bg-gray-200 text-left">
-            <tr>
-                <th class="px-4 py-2">วันที่</th>
-                <th class="px-4 py-2">เริ่ม</th>
-                <th class="px-4 py-2">สิ้นสุด</th>
-                <th class="px-4 py-2">ชั่วโมง OT</th>
-                <th class="px-4 py-2">จัดการ</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for r in records %}
-            <tr class="border-t hover:bg-gray-50">
-                <td class="px-4 py-2">{{ r['work_date'] }}</td>
-                <td class="px-4 py-2">{{ r['start_time'][11:16] }}</td>
-                <td class="px-4 py-2">{{ r['end_time'][11:16] }}</td>
-                <td class="px-4 py-2">{{ r['ot_hours'] }}</td>
-                <td class="px-4 py-2 flex gap-2">
-    <form action="{{ url_for('edit', id=r['id']) }}" method="get">
-        <button type="submit" class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">
-            แก้ไข
-        </button>
-    </form>
-
-    <form method="post" action="{{ url_for('delete', id=r['id']) }}" 
-      onsubmit="return confirmDelete();">
-    <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">
-        ลบ
-    </button>
-</form>
-</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <h2 class="mt-6 text-xl font-semibold">รวม OT รายเดือน</h2>
-    <table class="w-full mt-2 bg-white shadow rounded table-auto text-sm">
-        <thead class="bg-gray-200 text-left">
-            <tr>
-                <th class="px-4 py-2">เดือน</th>
-                <th class="px-4 py-2">รวม OT (ชม.)</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for m in monthly_ot %}
-            <tr class="border-t hover:bg-gray-50">
-                <td class="px-4 py-2">
-                    <form action="{{ url_for('month_view', year_month=m['month']) }}" method="get">
-    <button type="submit" class="text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded">
-        {{ m['month'] }}
-    </button>
-</form>
-                </td>
-                <td class="px-4 py-2">{{ m['total'] | round(2) }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <div class="mt-6 text-right text-xl font-bold">
-        รวม OT ทั้งหมด: <span class="text-blue-700">{{ total_ot }}</span> ชั่วโมง
+  <!-- ฟอร์มบันทึก -->
+  <form method="post" class="bg-white p-4 rounded shadow mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+    <label class="block">
+      วันที่เริ่มทำงาน (08:00)
+      <input type="date" name="work_date" required class="mt-1 w-full border rounded p-2">
+    </label>
+    <label class="block">
+      วัน-เวลาสิ้นสุด
+      <input type="datetime-local" name="end_time" required class="mt-1 w-full border rounded p-2">
+    </label>
+    <div class="md:col-span-2">
+      <button type="submit" class="w-full md:w-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        ➕ บันทึก
+      </button>
     </div>
-    <script>
-function confirmDelete() {
-    const answer = prompt("พิมพ์ 'yes' เพื่อยืนยันการลบ:");
-    return answer && answer.toLowerCase() === 'yes';
-}
-    </script>
+  </form>
+
+  <!-- ตารางข้อมูล -->
+  <table class="w-full bg-white shadow rounded table-auto text-sm mb-6">
+    <thead class="bg-gray-200 text-left">
+      <tr>
+        <th class="px-4 py-2">วันที่</th>
+        <th class="px-4 py-2">เริ่ม</th>
+        <th class="px-4 py-2">สิ้นสุด</th>
+        <th class="px-4 py-2">ชั่วโมง OT</th>
+        <th class="px-4 py-2">จัดการ</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr class="border-t hover:bg-gray-50">
+        <td class="px-4 py-2">{{ r['work_date'] }}</td>
+        <td class="px-4 py-2">{{ r['start_time'][11:16] }}</td>
+        <td class="px-4 py-2">{{ r['end_time'][11:16] }}</td>
+        <td class="px-4 py-2">{{ r['ot_hours'] }}</td>
+        <td class="px-4 py-2 flex gap-2">
+          <form action="{{ url_for('edit', id=r['id']) }}" method="get">
+            <button type="submit" class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">
+              แก้ไข
+            </button>
+          </form>
+          <button onclick="showModal({{ r['id'] }}, '{{ r['work_date'] }}', '{{ r['start_time'][11:16] }}', '{{ r['end_time'][11:16] }}', {{ r['ot_hours'] }})"
+                  class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">
+            ลบ
+          </button>
+          <form id="delete-form-{{ r['id'] }}" method="post" action="{{ url_for('delete', id=r['id']) }}"></form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- รวมรายเดือน -->
+  <h2 class="mt-6 text-xl font-semibold">รวม OT รายเดือน</h2>
+  <table class="w-full mt-2 bg-white shadow rounded table-auto text-sm">
+    <thead class="bg-gray-200 text-left">
+      <tr>
+        <th class="px-4 py-2">เดือน</th>
+        <th class="px-4 py-2">รวม OT (ชม.)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in monthly_ot %}
+      <tr class="border-t hover:bg-gray-50">
+        <td class="px-4 py-2">
+          <form action="{{ url_for('month_view', year_month=m['month']) }}" method="get">
+            <button type="submit" class="text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded">
+              {{ m['month'] }}
+            </button>
+          </form>
+        </td>
+        <td class="px-4 py-2">{{ m['total'] | round(2) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="mt-6 text-right text-xl font-bold">
+    รวม OT ทั้งหมด: <span class="text-blue-700">{{ total_ot }}</span> ชั่วโมง
+  </div>
+
+  <!-- Modal ลบ -->
+  <div id="delete-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white p-6 rounded shadow max-w-md w-full">
+      <h2 class="text-xl font-bold mb-4">ยืนยันการลบรายการ OT</h2>
+      <table class="w-full text-sm mb-4 border">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-2 py-1">วันที่</th>
+            <th class="px-2 py-1">เริ่ม</th>
+            <th class="px-2 py-1">สิ้นสุด</th>
+            <th class="px-2 py-1">OT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="px-2 py-1" id="del-date"></td>
+            <td class="px-2 py-1" id="del-start"></td>
+            <td class="px-2 py-1" id="del-end"></td>
+            <td class="px-2 py-1" id="del-hours"></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="mb-2">พิมพ์ <strong>yes</strong> เพื่อยืนยันการลบ:</p>
+      <input type="text" id="confirm-input" class="w-full border p-2 rounded mb-4">
+      <div class="flex justify-end gap-2">
+        <button onclick="hideModal()" class="px-4 py-2 bg-gray-300 rounded">ยกเลิก</button>
+        <button onclick="confirmDelete()" class="px-4 py-2 bg-red-600 text-white rounded">ลบจริง</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script>
+    let pendingId = null;
+    function showModal(id, date, start, end, hours) {
+      pendingId = id;
+      document.getElementById('confirm-input').value = '';
+      document.getElementById('del-date').innerText = date;
+      document.getElementById('del-start').innerText = start;
+      document.getElementById('del-end').innerText = end;
+      document.getElementById('del-hours').innerText = hours;
+      document.getElementById('delete-modal').classList.remove('hidden');
+    }
+
+    function hideModal() {
+      document.getElementById('delete-modal').classList.add('hidden');
+      pendingId = null;
+    }
+
+    function confirmDelete() {
+      const input = document.getElementById('confirm-input').value.trim().toLowerCase();
+      if (input === 'yes') {
+        document.getElementById(`delete-form-${pendingId}`).submit();
+      } else {
+        alert("ต้องพิมพ์ 'yes' เท่านั้นถึงจะลบได้");
+      }
+    }
+  </script>
 </body>
 </html>
