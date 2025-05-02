@@ -24,14 +24,6 @@
         </div>
     </form>
 
-    <div class="flex justify-end mb-2">
-        {% if sort_order == 'asc' %}
-        <a href="/?sort=desc" class="text-blue-600 hover:underline">🔽 เรียงจากล่าสุด</a>
-        {% else %}
-        <a href="/?sort=asc" class="text-blue-600 hover:underline">🔼 เรียงจากเก่าสุด</a>
-        {% endif %}
-    </div>
-
     <table class="w-full bg-white shadow rounded table-auto text-sm mb-6">
         <thead class="bg-gray-200 text-left">
             <tr>
@@ -39,6 +31,7 @@
                 <th class="px-4 py-2">เริ่ม</th>
                 <th class="px-4 py-2">สิ้นสุด</th>
                 <th class="px-4 py-2">ชั่วโมง OT</th>
+                <th class="px-4 py-2">จัดการ</th>
             </tr>
         </thead>
         <tbody>
@@ -48,9 +41,13 @@
                 <td class="px-4 py-2">{{ r['start_time'][11:16] }}</td>
                 <td class="px-4 py-2">{{ r['end_time'][11:16] }}</td>
                 <td class="px-4 py-2">{{ r['ot_hours'] }}</td>
-		<td class="px-4 py-2">
-    <button href="{{ url_for('edit', id=r['id']) }}" class="text-blue-600 hover:underline">แก้ไข</button>
-</td>
+                <td class="px-4 py-2">
+                    <a href="{{ url_for('edit', id=r['id']) }}" class="text-blue-600 hover:underline">แก้ไข</a>
+                    <form method="post" action="{{ url_for('delete', id=r['id']) }}" class="inline"
+                          onsubmit="return confirm('คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้?');">
+                        <button type="submit" class="text-red-600 hover:underline ml-2">ลบ</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -68,10 +65,10 @@
             {% for m in monthly_ot %}
             <tr class="border-t hover:bg-gray-50">
                 <td class="px-4 py-2">
-    <a href="{{ url_for('month_view', year_month=m['month']) }}" class="text-blue-600 hover:underline">
-        {{ m['month'] }}
-    </a>
-		</td>
+                    <a href="{{ url_for('month_view', year_month=m['month']) }}" class="text-blue-600 hover:underline">
+                        {{ m['month'] }}
+                    </a>
+                </td>
                 <td class="px-4 py-2">{{ m['total'] | round(2) }}</td>
             </tr>
             {% endfor %}
