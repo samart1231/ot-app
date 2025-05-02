@@ -29,12 +29,35 @@ def init_db():
 def calculate_ot(start_str, end_str):
     start = datetime.strptime(start_str, "%Y-%m-%dT%H:%M")
     end = datetime.strptime(end_str, "%Y-%m-%dT%H:%M")
-    if start.strftime("%Y-%m-%d") in HOLIDAYS:
-        return round((end - start).total_seconds() / 3600, 2)
-    base_time = time(13, 0) if start.weekday() == 5 else time(17, 30)
-    if start.time() < base_time:
-        start = start.replace(hour=base_time.hour, minute=base_time.minute)
-    return round(max((end - start).total_seconds() / 3600, 0), 2)
+    date_str = start.strftime("%Y-%m-%d")
+
+    # เวลาพักทั่วไป
+    breaks = []
+
+    # นักขัตฤกษ์: คิด OT ทั้งวัน (ลบพักเที่ยงถ้ามี)
+    if date_str in HOLIDAYS:
+        breaks = [(12, 0, 13, 0)]  # พักเที่ยง
+    elif start.weekday() == 5:  # เสาร์
+        base_time = time(13, 0)
+        if start.time() < base_time:
+            start = start.replace(hour=13, minute=0)
+        breaks = [(12, 0, 13, 0), (17, 0, 17, 30)]  # พักเที่ยง + พักเย็น
+    else:
+        base_time = time(17, 30)
+        if start.time() < base_time:
+            start = start.replace(hour=17, minute=30)
+        breaks = [(12, 0, 13, 0)]  # พักเที่ยงเฉพาะวันธรรมดา
+
+    total_seconds = (end - start).total_seconds()
+
+    # หักเวลาพักถ้าคร่อม
+    for bh, bm, eh, em in breaks:
+        brk_start = start.replace(hour=bh, minute=bm)
+        brk_end = start.replace(hour=eh, minute=em)
+        if start < brk_end and end > brk_start:
+            total_seconds -= (brk_end - brk_start).total_seconds()
+
+    return round(max(total_seconds / 3600, 0), 2)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
