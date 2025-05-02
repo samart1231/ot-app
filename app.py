@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 from datetime import datetime, time
 
-HOLIDAYS = ["2025-05-01", "2025-05-05", "2025-05-06"]
+HOLIDAYS = ["2025-05-01", "2025-04-07", "2025-05-05"]
 
 app = Flask(__name__)
 DB_FILE = 'ot.db'
