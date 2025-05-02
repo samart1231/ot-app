@@ -67,7 +67,11 @@
         <tbody>
             {% for m in monthly_ot %}
             <tr class="border-t hover:bg-gray-50">
-                <td class="px-4 py-2">{{ m['month'] }}</td>
+                <td class="px-4 py-2">
+    <a href="{{ url_for('month_view', year_month=m['month']) }}" class="text-blue-600 hover:underline">
+        {{ m['month'] }}
+    </a>
+		</td>
                 <td class="px-4 py-2">{{ m['total'] | round(2) }}</td>
             </tr>
             {% endfor %}
