@@ -49,7 +49,7 @@
                 <td class="px-4 py-2">{{ r['end_time'][11:16] }}</td>
                 <td class="px-4 py-2">{{ r['ot_hours'] }}</td>
 		<td class="px-4 py-2">
-    <a href="{{ url_for('edit', id=r['id']) }}" class="text-blue-600 hover:underline">แก้ไข</a>
+    <button href="{{ url_for('edit', id=r['id']) }}" class="text-blue-600 hover:underline">แก้ไข</button>
 </td>
             </tr>
             {% endfor %}
