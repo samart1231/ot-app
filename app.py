@@ -60,7 +60,23 @@ def index():
         GROUP BY month
         ORDER BY month DESC
     ''').fetchall()
+@app.route('/month/<year_month>')
+def month_view(year_month):
+    conn = get_db_connection()
+    records = conn.execute('''
+        SELECT * FROM ot_records
+        WHERE strftime('%Y-%m', work_date) = ?
+        ORDER BY work_date ASC
+    ''', (year_month,)).fetchall()
 
+    total = conn.execute('''
+        SELECT SUM(ot_hours) FROM ot_records
+        WHERE strftime('%Y-%m', work_date) = ?
+    ''', (year_month,)).fetchone()[0] or 0
+
+    conn.close()
+    return render_template('month.html', records=records,
+                           month=year_month, total=round(total, 2))
     conn.close()
     return render_template('index.html', records=records, total_ot=round(total_ot, 2),
                            sort_order=sort_order, monthly_ot=monthly_ot)
