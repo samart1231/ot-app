@@ -41,13 +41,20 @@
                 <td class="px-4 py-2">{{ r['start_time'][11:16] }}</td>
                 <td class="px-4 py-2">{{ r['end_time'][11:16] }}</td>
                 <td class="px-4 py-2">{{ r['ot_hours'] }}</td>
-                <td class="px-4 py-2">
-                    <a href="{{ url_for('edit', id=r['id']) }}" class="text-blue-600 hover:underline">แก้ไข</a>
-                    <form method="post" action="{{ url_for('delete', id=r['id']) }}" class="inline"
-                          onsubmit="return confirm('คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้?');">
-                        <button type="submit" class="text-red-600 hover:underline ml-2">ลบ</button>
-                    </form>
-                </td>
+                <td class="px-4 py-2 flex gap-2">
+    <form action="{{ url_for('edit', id=r['id']) }}" method="get">
+        <button type="submit" class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">
+            แก้ไข
+        </button>
+    </form>
+
+    <form method="post" action="{{ url_for('delete', id=r['id']) }}" 
+      onsubmit="return confirmDelete();">
+    <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">
+        ลบ
+    </button>
+</form>
+</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -80,5 +87,11 @@
     <div class="mt-6 text-right text-xl font-bold">
         รวม OT ทั้งหมด: <span class="text-blue-700">{{ total_ot }}</span> ชั่วโมง
     </div>
+    <script>
+function confirmDelete() {
+    const answer = prompt("พิมพ์ 'yes' เพื่อยืนยันการลบ:");
+    return answer && answer.toLowerCase() === 'yes';
+}
+    </script>
 </body>
 </html>
