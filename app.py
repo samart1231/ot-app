@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 from datetime import datetime, time
 
-HOLIDAYS = ["2025-05-01", "2025-05-06", "2025-05-05"]
+HOLIDAYS = ["2025-05-01", "2025-05-05", "2025-05-06"]
 
 app = Flask(__name__)
 DB_FILE = 'ot.db'
@@ -60,6 +60,11 @@ def index():
         GROUP BY month
         ORDER BY month DESC
     ''').fetchall()
+
+    conn.close()
+    return render_template('index.html', records=records, total_ot=round(total_ot, 2),
+                           sort_order=sort_order, monthly_ot=monthly_ot)
+
 @app.route('/month/<year_month>')
 def month_view(year_month):
     conn = get_db_connection()
@@ -75,11 +80,7 @@ def month_view(year_month):
     ''', (year_month,)).fetchone()[0] or 0
 
     conn.close()
-    return render_template('month.html', records=records,
-                           month=year_month, total=round(total, 2))
-    conn.close()
-    return render_template('index.html', records=records, total_ot=round(total_ot, 2),
-                           sort_order=sort_order, monthly_ot=monthly_ot)
+    return render_template('month.html', records=records, month=year_month, total=round(total, 2))
 
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit(id):
@@ -89,13 +90,11 @@ def edit(id):
         end_time = request.form['end_time']
         start_time = f"{work_date}T08:00"
         ot_hours = calculate_ot(start_time, end_time)
-
         conn.execute('UPDATE ot_records SET work_date=?, start_time=?, end_time=?, ot_hours=? WHERE id=?',
                      (work_date, start_time, end_time, ot_hours, id))
         conn.commit()
         conn.close()
         return redirect('/')
-    
     record = conn.execute('SELECT * FROM ot_records WHERE id=?', (id,)).fetchone()
     conn.close()
     return render_template('edit.html', record=record)
