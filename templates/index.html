@@ -11,23 +11,17 @@
   <!-- ฟอร์มบันทึก -->
   <form method="post" class="bg-white p-4 rounded shadow mb-6 grid grid-cols-1 gap-4">
 
-  <div>
-    <button type="button"
-  class="inline-block px-4 py-2 mb-1 text-white bg-orange-500 rounded hover:bg-orange-600 cursor-default">
-  📅 วันที่เริ่มทำงาน
-</button>
-<input type="date" name="work_date" class="block w-full border rounded p-2">
-    <input type="date" id="work_date" name="work_date" required class="block w-full border rounded p-2">
-  </div>
+  <div class="flex flex-col gap-4">
+  <button type="button"
+    class="w-full px-6 py-3 text-lg font-semibold text-white bg-orange-500 rounded-full shadow hover:bg-orange-600 transition">
+    📅 วันที่เริ่มทำงาน
+  </button>
 
-  <div>
-    <button type="button"
-  class="inline-block px-4 py-2 mt-4 mb-1 text-white bg-orange-500 rounded hover:bg-orange-600 cursor-default">
-  ⏰ วัน-เวลาสิ้นสุด
-</button>
-<input type="datetime-local" name="end_time" class="block w-full border rounded p-2">
-    <input type="datetime-local" id="end_time" name="end_time" required class="block w-full border rounded p-2">
-  </div>
+  <button type="button"
+    class="w-full px-6 py-3 text-lg font-semibold text-white bg-orange-500 rounded-full shadow hover:bg-orange-600 transition">
+    ⏰ วัน-เวลาสิ้นสุด
+  </button>
+</div>
 
   <div class="flex justify-end">
     <button type="submit"
