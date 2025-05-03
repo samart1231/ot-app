@@ -11,18 +11,22 @@
   <!-- ฟอร์มบันทึก -->
   <form method="post" class="bg-white p-4 rounded shadow mb-6 grid grid-cols-1 gap-4">
 
-  <div class="flex flex-col gap-4">
-  <button type="button" onclick="openDatePicker()" type="datetime-local"
+  <!-- Input ซ่อน -->
+<input type="date" id="start-date" name="work_date" class="hidden">
+<input type="datetime-local" id="end-datetime" name="end_time" class="hidden">
+
+<!-- ปุ่มแทน input -->
+<div class="flex flex-col gap-4">
+  <button type="button" onclick="document.getElementById('start-date').showPicker()"
     class="w-full px-6 py-3 text-lg font-semibold text-white bg-orange-500 rounded-full shadow hover:bg-orange-600 transition">
     📅 วันที่เริ่มทำงาน
   </button>
 
-  <button type="button" onclick="openDatePicker()" type="datetime-local"
+  <button type="button" onclick="document.getElementById('end-datetime').showPicker()"
     class="w-full px-6 py-3 text-lg font-semibold text-white bg-orange-500 rounded-full shadow hover:bg-orange-600 transition">
     ⏰ วัน-เวลาสิ้นสุด
   </button>
 </div>
-
   <div class="flex justify-end">
     <button type="submit"
       class="flex items-center gap-2 px-6 py-3 text-lg font-semibold text-white bg-gradient-to-r from-orange-400 to-orange-600 rounded-full shadow-lg hover:from-orange-500 hover:to-orange-700 transition-all">
