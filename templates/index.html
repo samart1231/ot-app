@@ -9,23 +9,29 @@
   <h1 class="text-3xl font-bold mb-6">แอปคำนวณ OT</h1>
 
   <!-- ฟอร์มบันทึก -->
-  <form method="post" class="bg-white p-4 rounded shadow mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-    <label class="block">
-      วันที่เริ่มทำงาน (08:00)
-      <input type="date" name="work_date" required class="mt-1 w-full border rounded p-2">
-    </label>
-    <label class="block">
-      วัน-เวลาสิ้นสุด
-      <input type="datetime-local" name="end_time" required class="mt-1 w-full border rounded p-2">
-    </label>
-    <div class="md:col-span-2 flex justify-end">
-  <button type="submit"
-    class="flex items-center gap-2 px-6 py-3 text-lg font-semibold text-white bg-gradient-to-r from-orange-400 to-orange-600 rounded-full shadow-lg hover:from-orange-500 hover:to-orange-700 transition-all">
-    <span class="text-2xl">➕</span>
-    <span>บันทึก</span>
-  </button>
-</div>
-  </form>
+  <form method="post" class="bg-white p-4 rounded shadow mb-6 grid grid-cols-1 gap-4">
+  <!-- วันที่เริ่มงาน -->
+  <label class="block">
+    วันที่เริ่มทำงาน (08:00)
+    <input type="date" name="work_date" required class="mt-1 w-full border rounded p-2">
+  </label>
+
+  <!-- วันและเวลาสิ้นสุด -->
+  <label class="block">
+    วัน-เวลาสิ้นสุด
+    <input type="datetime-local" name="end_time" required class="mt-1 w-full border rounded p-2">
+  </label>
+
+  <!-- ปุ่มบันทึก -->
+  <div class="flex justify-end">
+    <button type="submit"
+      class="flex items-center gap-2 px-6 py-3 text-lg font-semibold text-white bg-gradient-to-r from-orange-400 to-orange-600 rounded-full shadow-lg hover:from-orange-500 hover:to-orange-700 transition-all">
+      <span class="text-2xl">➕</span>
+      <span>บันทึก</span>
+    </button>
+  </div>
+</form>
+
 
   <!-- ตารางข้อมูล -->
   <table class="w-full bg-white shadow rounded table-auto text-sm mb-6">
