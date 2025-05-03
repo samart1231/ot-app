@@ -10,19 +10,23 @@
 
   <!-- ฟอร์มบันทึก -->
   <form method="post" class="bg-white p-4 rounded shadow mb-6 grid grid-cols-1 gap-4">
-  <!-- วันที่เริ่มงาน -->
-  <label class="block">
-    วันที่เริ่มทำงาน (08:00)
-    <input type="date" name="work_date" required class="mt-1 w-full border rounded p-2">
-  </label>
 
-  <!-- วันและเวลาสิ้นสุด -->
-  <label class="block">
-    วัน-เวลาสิ้นสุด
-    <input type="datetime-local" name="end_time" required class="mt-1 w-full border rounded p-2">
-  </label>
+  <div>
+    <label for="work_date"
+      class="inline-block px-4 py-2 mb-2 text-white bg-orange-500 rounded hover:bg-orange-600 cursor-pointer">
+      📅 วันที่เริ่มทำงาน
+    </label>
+    <input type="date" id="work_date" name="work_date" required class="block w-full border rounded p-2">
+  </div>
 
-  <!-- ปุ่มบันทึก -->
+  <div>
+    <label for="end_time"
+      class="inline-block px-4 py-2 mb-2 text-white bg-orange-500 rounded hover:bg-orange-600 cursor-pointer">
+      ⏰ วัน-เวลาสิ้นสุด
+    </label>
+    <input type="datetime-local" id="end_time" name="end_time" required class="block w-full border rounded p-2">
+  </div>
+
   <div class="flex justify-end">
     <button type="submit"
       class="flex items-center gap-2 px-6 py-3 text-lg font-semibold text-white bg-gradient-to-r from-orange-400 to-orange-600 rounded-full shadow-lg hover:from-orange-500 hover:to-orange-700 transition-all">
@@ -30,7 +34,9 @@
       <span>บันทึก</span>
     </button>
   </div>
+
 </form>
+
 
 
   <!-- ตารางข้อมูล -->
