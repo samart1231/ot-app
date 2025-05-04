@@ -1,3 +1,4 @@
+<!-- income_expense.html -->
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -35,8 +36,8 @@
     <div>
       <label class="block font-semibold mb-1">ประเภท</label>
       <select name="category" required class="w-full border rounded p-2">
-        <option value="income">รายรับ</option>
         <option value="expense">รายจ่าย</option>
+        <option value="income">รายรับ</option>
       </select>
     </div>
     <div class="md:col-span-2 text-right">
@@ -77,15 +78,46 @@
     </table>
   </div>
 
-  <!-- รวม -->
-  <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div class="bg-green-100 p-4 rounded shadow text-green-800 font-bold">
-      รวมรายรับ: {{ '{:,.2f}'.format(total_income) }} บาท
-    </div>
-    <div class="bg-red-100 p-4 rounded shadow text-red-800 font-bold">
-      รวมรายจ่าย: {{ '{:,.2f}'.format(total_expense) }} บาท
-    </div>
-  </div>
+ <!-- ตารางสรุปรายเดือน -->
+  <div class="bg-white p-4 rounded shadow mt-6">
+<table class="w-full table-auto text-sm bg-white shadow rounded">
+  <thead class="bg-gray-200">
+    <tr>
+      <th class="px-4 py-2">เดือน</th>
+      <th class="px-4 py-2">ประเภท</th>
+      <th class="px-4 py-2">รวม (บาท)</th>
+      <th class="px-4 py-2">Export</th> <!-- ✅ เพิ่มหัวตาราง -->
+    </tr>
+  </thead>
+<div class="flex justify-between items-center mb-4">
+  <h1 class="text-2xl font-bold">📆 รายรับ-รายจ่ายเดือน {{ year_month }}</h1>
+</div>
+
+  <tbody>
+    {% for row in monthly_summary %}
+    <tr class="border-t hover:bg-gray-50">
+      <td class="px-4 py-2">
+  <a href="{{ url_for('income_expense_month_view', year_month=row['month']) }}"
+     class="text-blue-600 hover:underline font-semibold">
+    {{ row['month'] }}
+  </a>
+</td>
+
+      <td class="px-4 py-2">
+        {% if row['category'] == 'income' %}
+          <span class="text-green-600 font-semibold">รายรับ</span>
+        {% else %}
+          <span class="text-red-600 font-semibold">รายจ่าย</span>
+        {% endif %}
+      </td>
+      <td class="px-4 py-2">{{ '{:,.2f}'.format(row['total']) }}</td>
+      <td class="px-4 py-2">
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
 
 </body>
 </html>
