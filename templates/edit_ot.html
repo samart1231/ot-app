@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>แก้ไข OT</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-8 bg-gray-100 text-gray-800">
+
+  <!-- ปุ่มกลับ -->
+  <div class="mb-4">
+    <a href="{{ url_for('index') }}"
+       class="inline-block bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-4 py-2 rounded shadow">
+      ⬅️ กลับหน้า OT
+    </a>
+  </div>
+
+  <h1 class="text-3xl font-bold mb-6">✏️ แก้ไขข้อมูล OT</h1>
+
+  <form method="post" class="bg-white p-6 rounded shadow max-w-xl">
+    <!-- วันที่ -->
+    <div class="mb-4">
+      <label class="block font-semibold mb-1">📅 วันที่ทำงาน</label>
+      <input type="date" name="work_date" value="{{ record['work_date'] }}"
+             class="w-full border p-2 rounded" required>
+    </div>
+
+    <!-- เวลาสิ้นสุด -->
+    <div class="mb-6">
+      <label class="block font-semibold mb-1">⏰ วัน-เวลาสิ้นสุด</label>
+      <input type="datetime-local" name="end_time" value="{{ record['end_time'] }}"
+             class="w-full border p-2 rounded" required>
+    </div>
+
+    <!-- ปุ่ม -->
+    <div class="flex gap-4">
+      <button type="submit"
+              class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        💾 บันทึก
+      </button>
+      <a href="{{ url_for('index') }}"
+         class="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400">
+        ยกเลิก
+      </a>
+    </div>
+  </form>
+
+</body>
+</html>
