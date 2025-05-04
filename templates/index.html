@@ -10,7 +10,7 @@
   <!-- เมนูด้านบน -->
   <nav class="flex gap-6 mb-6 text-2xl font-bold">
   <a href="{{ url_for('index') }}" class="text-blue-700 hover:text-blue-900">🏠 หน้า OT</a>
-  <a href="{{ url_for('income_expense') }}" class="text-green-700 hover:text-green-900">💰 รายรับรายจ่าย</a>
+  <a href="{{ url_for('income_expense') }}" class="text-green-700 hover:text-green-900">💰 รายรับรายจ่าย</a><a href="{{ url_for('manage_holidays') }}" class="text-purple-700 hover:text-purple-900">📅 วันหยุด</a>
 </nav>
 
 
@@ -66,9 +66,11 @@
         <td class="px-4 py-2 flex gap-2">
 
 
-            <button type="submit" class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">
-              แก้ไข
-            </button>
+            <form action="{{ url_for('edit_ot', id=r['id']) }}" method="get">
+  <button type="submit" class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">
+    แก้ไข
+  </button>
+</form>
           </form>
           <button onclick="showModal({{ r['id'] }}, '{{ r['work_date'] }}', '{{ r['start_time'][11:16] }}', '{{ r['end_time'][11:16] }}', {{ r['ot_hours'] }})"
                   class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">
