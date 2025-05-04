@@ -6,47 +6,45 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="p-8 bg-gray-100 text-gray-800">
+
+  <!-- เมนูด้านบน -->
+  <nav class="flex gap-6 mb-6 text-2xl font-bold">
+  <a href="{{ url_for('index') }}" class="text-blue-700 hover:text-blue-900">🏠 หน้า OT</a>
+  <a href="{{ url_for('income_expense') }}" class="text-green-700 hover:text-green-900">💰 รายรับรายจ่าย</a>
+</nav>
+
+
   <h1 class="text-3xl font-bold mb-6">แอปคำนวณ OT</h1>
 
   <!-- ฟอร์มบันทึก -->
   <form method="post" class="bg-white p-4 rounded shadow mb-6 grid grid-cols-1 gap-4">
 
-  <!-- Input ซ่อน -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <!-- วันที่เริ่ม -->
+      <div>
+        <label for="work_date" class="block mb-1 font-semibold text-gray-700">📅 วันที่เริ่มทำงาน (08:00)</label>
+        <input type="date" id="work_date" name="work_date"
+          class="w-full border rounded p-2 focus:ring-2 focus:ring-orange-400" required>
+      </div>
 
-<!-- ปุ่มแทน input -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-  <!-- ซ้าย: วันที่เริ่มทำงาน -->
-  <div>
-    <label for="work_date" class="block mb-1 font-semibold text-gray-700">📅 วันที่เริ่มทำงาน (08:00)</label>
-    <input type="date" id="work_date" name="work_date"
-      class="w-full border rounded p-2 focus:ring-2 focus:ring-orange-400" required>
-  </div>
+      <!-- วันเวลาสิ้นสุด -->
+      <div>
+        <label for="end_time" class="block mb-1 font-semibold text-gray-700">⏰ วัน-เวลาสิ้นสุด</label>
+        <input type="datetime-local" id="end_time" name="end_time"
+          class="w-full border rounded p-2 focus:ring-2 focus:ring-orange-400" required>
+      </div>
+    </div>
 
-  <!-- ขวา: วัน-เวลาสิ้นสุด -->
-  <div>
-    <label for="end_time" class="block mb-1 font-semibold text-gray-700">⏰ วัน-เวลาสิ้นสุด</label>
-    <input type="datetime-local" id="end_time" name="end_time"
-      class="w-full border rounded p-2 focus:ring-2 focus:ring-orange-400" required>
-  </div>
-</div>
+    <div class="flex justify-end">
+      <button type="submit"
+        class="flex items-center gap-2 px-6 py-3 text-lg font-semibold text-white bg-gradient-to-r from-orange-400 to-orange-600 rounded-full shadow-lg hover:from-orange-500 hover:to-orange-700 transition-all">
+        <span class="text-2xl">➕</span>
+        <span>บันทึก</span>
+      </button>
+    </div>
+  </form>
 
-  <div class="flex justify-end">
-    <button type="submit"
-      class="flex items-center gap-2 px-6 py-3 text-lg font-semibold text-white bg-gradient-to-r from-orange-400 to-orange-600 rounded-full shadow-lg hover:from-orange-500 hover:to-orange-700 transition-all">
-      <span class="text-2xl">➕</span>
-      <span>บันทึก</span>
-    </button>
-  </div>
-
-</form>
-
-<div class="mb-6">
-  <a href="/income-expense" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-    รายรับรายจ่าย
-  </a>
-</div>
-
-  <!-- ตารางข้อมูล -->
+  <!-- ตารางข้อมูล OT -->
   <table class="w-full bg-white shadow rounded table-auto text-sm mb-6">
     <thead class="bg-gray-200 text-left">
       <tr>
@@ -141,7 +139,7 @@
     </div>
   </div>
 
-  <!-- JS -->
+  <!-- JS Modal -->
   <script>
     let pendingId = null;
     function showModal(id, date, start, end, hours) {
@@ -168,5 +166,6 @@
       }
     }
   </script>
+
 </body>
 </html>

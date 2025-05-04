@@ -7,6 +7,15 @@
 </head>
 <body class="bg-gray-100 text-gray-800 p-6">
 
+  <!-- ปุ่มกลับหน้าหลัก -->
+  <div class="mb-4">
+    <a href="{{ url_for('index') }}"
+       class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded shadow">
+      ⬅️ กลับหน้าหลัก
+    </a>
+  </div>
+
+  <!-- หัวเรื่อง -->
   <h1 class="text-2xl font-bold mb-4">📒 รายรับ - รายจ่าย</h1>
 
   <!-- ฟอร์มเพิ่มข้อมูล -->
@@ -36,10 +45,6 @@
       </button>
     </div>
   </form>
-<a href="{{ url_for('index') }}"
-   class="inline-block mb-4 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded shadow">
-  ⬅️ กลับหน้าหลัก
-</a>
 
   <!-- ตารางแสดงข้อมูล -->
   <div class="bg-white p-4 rounded shadow">
