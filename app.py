@@ -6,7 +6,12 @@ import io
 
 app = Flask(__name__)
 DB_FILE = 'ot.db'
-HOLIDAYS = ["2025-05-01", "2025-04-07", "2025-05-05"]
+
+def is_holiday(date_str):
+    conn = get_db_connection()
+    result = conn.execute('SELECT 1 FROM holidays WHERE date = ?', (date_str,)).fetchone()
+    conn.close()
+    return result is not None
 
 def get_db_connection():
     conn = sqlite3.connect(DB_FILE)
@@ -33,36 +38,52 @@ def init_db():
             category TEXT
         )
     ''')
+    # ✅ แก้ตรงนี้: เพิ่ม note
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS holidays (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            date TEXT UNIQUE,
+            note TEXT
+        )
+    ''')
     conn.commit()
     conn.close()
+
+
 
 def calculate_ot(start_str, end_str):
     start = datetime.strptime(start_str, "%Y-%m-%dT%H:%M")
     end = datetime.strptime(end_str, "%Y-%m-%dT%H:%M")
     date_str = start.strftime("%Y-%m-%d")
 
+    # ❌ ไม่คิด OT วันอาทิตย์
+    if start.weekday() == 6:
+        return 0.0
+
     breaks = []
-    if date_str in HOLIDAYS:
+    if is_holiday(date_str):
         breaks = [(12, 0, 13, 0)]
-    elif start.weekday() == 5:
-        base_time = time(13, 0)
-        if start.time() < base_time:
-            start = start.replace(hour=13, minute=0)
+    elif start.weekday() == 5:  # เสาร์
+        if start.time() < time(13, 0):
+            start = datetime.combine(start.date(), time(13, 0))
         breaks = [(12, 0, 13, 0), (17, 0, 17, 30)]
     else:
-        base_time = time(17, 30)
-        if start.time() < base_time:
-            start = start.replace(hour=17, minute=30)
+        if start.time() < time(17, 30):
+            start = datetime.combine(start.date(), time(17, 30))
         breaks = [(12, 0, 13, 0)]
 
     total_seconds = (end - start).total_seconds()
+
     for bh, bm, eh, em in breaks:
-        brk_start = start.replace(hour=bh, minute=bm)
-        brk_end = start.replace(hour=eh, minute=em)
-        if start < brk_end and end > brk_start:
-            total_seconds -= (brk_end - brk_start).total_seconds()
+        brk_start = datetime.combine(start.date(), time(bh, bm))
+        brk_end = datetime.combine(start.date(), time(eh, em))
+        overlap_start = max(start, brk_start)
+        overlap_end = min(end, brk_end)
+        if overlap_start < overlap_end:
+            total_seconds -= (overlap_end - overlap_start).total_seconds()
 
     return round(max(total_seconds / 3600, 0), 2)
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -270,6 +291,48 @@ def income_expense_month_view(year_month):
     conn.close()
 
     return render_template('income_expense_month.html', records=records, year_month=year_month)
+@app.route('/delete-income-expense/<int:id>', methods=['POST'])
+def delete_income_expense_month(id):
+    conn = get_db_connection()
+    conn.execute('DELETE FROM income_expense WHERE id=?', (id,))
+    conn.commit()
+    conn.close()
+    return redirect(request.referrer or '/income-expense')  # กลับไปหน้าก่อนหน้า
+
+from datetime import datetime
+
+@app.route('/holidays', methods=['GET', 'POST'])
+def manage_holidays():
+    conn = get_db_connection()
+
+    if request.method == 'POST':
+        date = request.form['date']
+        note = request.form['note']
+        conn.execute('INSERT INTO holidays (date, note) VALUES (?, ?)', (date, note))
+        conn.commit()
+        return redirect('/holidays')
+
+    # 🟡 Filter ปีจาก query parameter เช่น ?year=2025
+    year = request.args.get('year', datetime.now().year)
+    holidays = conn.execute('''
+        SELECT * FROM holidays
+        WHERE strftime('%Y', date) = ?
+        ORDER BY date DESC
+    ''', (str(year),)).fetchall()
+    conn.close()
+    return render_template('holidays.html', holidays=holidays, selected_year=year)
+
+@app.route('/delete-holiday/<int:id>', methods=['POST'])
+def delete_holiday(id):
+    print(f"กำลังลบ holiday id={id}")
+    conn = get_db_connection()
+    conn.execute('DELETE FROM holidays WHERE id=?', (id,))
+    conn.commit()
+    conn.close()
+    return redirect('/holidays')
+
+
+
 
 if __name__ == '__main__':
     init_db()

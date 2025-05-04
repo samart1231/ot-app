@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>แก้ไขรายการรายรับ/รายจ่าย</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6 text-gray-800">
+  <div class="mb-4">
+    <a href="{{ url_for('income_expense') }}" class="text-blue-600 hover:underline">⬅️ กลับ</a>
+  </div>
+
+  <h1 class="text-2xl font-bold mb-6">📝 แก้ไขรายการ</h1>
+
+  <form method="POST" class="bg-white p-6 rounded shadow space-y-4 max-w-xl mx-auto">
+    <div>
+      <label class="block font-semibold mb-1">📅 วันที่</label>
+      <input type="date" name="date" required value="{{ record['date'] }}" class="w-full border rounded p-2">
+    </div>
+    <div>
+      <label class="block font-semibold mb-1">📝 รายละเอียด</label>
+      <input type="text" name="description" required value="{{ record['description'] }}" class="w-full border rounded p-2">
+    </div>
+    <div>
+      <label class="block font-semibold mb-1">💰 จำนวนเงิน</label>
+      <input type="number" step="0.01" name="amount" required value="{{ record['amount'] }}" class="w-full border rounded p-2">
+    </div>
+    <div>
+      <label class="block font-semibold mb-1">ประเภท</label>
+      <select name="category" required class="w-full border rounded p-2">
+        <option value="income" {% if record['category'] == 'income' %}selected{% endif %}>รายรับ</option>
+        <option value="expense" {% if record['category'] == 'expense' %}selected{% endif %}>รายจ่าย</option>
+      </select>
+    </div>
+    <div class="text-right">
+      <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-6 py-2 rounded">
+        💾 บันทึกการแก้ไข
+      </button>
+    </div>
+  </form>
+</body>
+</html>
