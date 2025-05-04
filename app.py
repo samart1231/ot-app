@@ -129,6 +129,46 @@ def month_view(year_month):
 
     conn.close()
     return render_template('month.html', records=records, month=year_month, total=round(total, 2))
+@app.route('/income-expense', methods=['GET', 'POST'])
+def income_expense():
+    conn = get_db_connection()
+    if request.method == 'POST':
+        date = request.form['date']
+        description = request.form['description']
+        amount = float(request.form['amount'])
+        category = request.form['category']
+        conn.execute('INSERT INTO income_expense (date, description, amount, category) VALUES (?, ?, ?, ?)',
+                     (date, description, amount, category))
+        conn.commit()
+        return redirect('/income-expense')
+
+    records = conn.execute('SELECT * FROM income_expense ORDER BY date DESC').fetchall()
+    total_income = conn.execute('SELECT SUM(amount) FROM income_expense WHERE category="income"').fetchone()[0] or 0
+    total_expense = conn.execute('SELECT SUM(amount) FROM income_expense WHERE category="expense"').fetchone()[0] or 0
+    conn.close()
+    return render_template('income_expense.html', records=records, total_income=total_income, total_expense=total_expense)
+def init_db():
+    conn = get_db_connection()
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS ot_records (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            work_date TEXT,
+            start_time TEXT,
+            end_time TEXT,
+            ot_hours REAL
+        )
+    ''')
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS income_expense (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            date TEXT,
+            description TEXT,
+            amount REAL,
+            category TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
 
 if __name__ == '__main__':
     init_db()
