@@ -148,10 +148,13 @@ def income_expense():
     if request.method == 'POST':
         date = request.form['date']
         description = request.form['description']
+        vendor = request.form.get('vendor') or None
         amount = float(request.form['amount'])
         category = request.form['category']
-        conn.execute('INSERT INTO income_expense (date, description, amount, category) VALUES (?, ?, ?, ?)',
-                     (date, description, amount, category))
+        conn.execute('''
+                     INSERT INTO income_expense (date, description, amount, category, vendor)
+                     VALUES (?, ?, ?, ?, ?)
+                     ''', (date, description, amount, category, vendor))
         conn.commit()
         return redirect('/income-expense')
 
