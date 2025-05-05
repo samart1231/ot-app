@@ -27,6 +27,7 @@
         <tr>
           <th class="px-4 py-2">วันที่</th>
           <th class="px-4 py-2">รายละเอียด</th>
+          <th class="px-4 py-2">ร้านค้า</th>
           <th class="px-4 py-2">จำนวน</th>
           <th class="px-4 py-2">ประเภท</th>
         </tr>
@@ -36,6 +37,7 @@
         <tr class="border-t hover:bg-gray-50">
           <td class="px-4 py-2">{{ r['date'] }}</td>
           <td class="px-4 py-2">{{ r['description'] }}</td>
+          <td class="px-4 py-2">{{ r['vendor'] }}</td>
           <td class="px-4 py-2">{{ '{:,.2f}'.format(r['amount']) }}</td>
           <td class="px-4 py-2">
             {% if r['category'] == 'income' %}
