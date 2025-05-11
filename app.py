@@ -6,7 +6,26 @@ import io
 
 app = Flask(__name__)
 DB_FILE = 'ot.db'
+app.secret_key = 'your_secret_key'
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        # ตัวอย่างการตรวจสอบผู้ใช้
+        if username == 'admin' and password == 'admin123':
+            flash('Login successful!', 'success')
+            return redirect(url_for('dashboard'))  # เปลี่ยนไปยังหน้า dashboard
+        else:
+            flash('Invalid credentials. Please try again.', 'error')
+            
+    return render_template('login.html')
+
+@app.route('/dashboard')
+def dashboard():
+    
 def is_holiday(date_str):
     conn = get_db_connection()
     result = conn.execute('SELECT 1 FROM holidays WHERE date = ?', (date_str,)).fetchone()
