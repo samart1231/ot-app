@@ -16,7 +16,7 @@ def login():
         password = request.form['password']
 
         # ตัวอย่างการตรวจสอบผู้ใช้
-        if username == 'admin' and password == 'admin123':
+        if username == 'March1123' and password == '9586awdxQW../43':
             flash('Login successful!', 'success')
             return redirect(url_for('index'))  # เปลี่ยนไปยังหน้า index
         else:
