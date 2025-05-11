@@ -8,66 +8,101 @@ app = Flask(__name__)
 DB_FILE = 'ot.db'
 app.secret_key = 'your_secret_key'
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        
+
         # ตัวอย่างการตรวจสอบผู้ใช้
         if username == 'admin' and password == 'admin123':
             flash('Login successful!', 'success')
-            return redirect(url_for('dashboard'))  # เปลี่ยนไปยังหน้า dashboard
+            return redirect(url_for('index'))  # เปลี่ยนไปยังหน้า index
         else:
             flash('Invalid credentials. Please try again.', 'error')
-            
+
     return render_template('login.html')
+
 
 @app.route('/dashboard')
 def dashboard():
-    
+    return "Welcome to the Dashboard!"
+
+@app.route('/')
+def home():
+    return redirect(url_for('login'))
+
+
 def is_holiday(date_str):
     conn = get_db_connection()
     result = conn.execute('SELECT 1 FROM holidays WHERE date = ?', (date_str,)).fetchone()
     conn.close()
     return result is not None
 
+
 def get_db_connection():
     conn = sqlite3.connect(DB_FILE)
     conn.row_factory = sqlite3.Row
     return conn
 
+
 def init_db():
     conn = get_db_connection()
     conn.execute('''
-        CREATE TABLE IF NOT EXISTS ot_records (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            work_date TEXT,
-            start_time TEXT,
-            end_time TEXT,
-            ot_hours REAL
-        )
-    ''')
+                 CREATE TABLE IF NOT EXISTS ot_records
+                 (
+                     id
+                     INTEGER
+                     PRIMARY
+                     KEY
+                     AUTOINCREMENT,
+                     work_date
+                     TEXT,
+                     start_time
+                     TEXT,
+                     end_time
+                     TEXT,
+                     ot_hours
+                     REAL
+                 )
+                 ''')
     conn.execute('''
-        CREATE TABLE IF NOT EXISTS income_expense (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            date TEXT,
-            description TEXT,
-            amount REAL,
-            category TEXT
-        )
-    ''')
+                 CREATE TABLE IF NOT EXISTS income_expense
+                 (
+                     id
+                     INTEGER
+                     PRIMARY
+                     KEY
+                     AUTOINCREMENT,
+                     date
+                     TEXT,
+                     description
+                     TEXT,
+                     amount
+                     REAL,
+                     category
+                     TEXT
+                 )
+                 ''')
     # ✅ แก้ตรงนี้: เพิ่ม note
     conn.execute('''
-        CREATE TABLE IF NOT EXISTS holidays (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            date TEXT UNIQUE,
-            note TEXT
-        )
-    ''')
+                 CREATE TABLE IF NOT EXISTS holidays
+                 (
+                     id
+                     INTEGER
+                     PRIMARY
+                     KEY
+                     AUTOINCREMENT,
+                     date
+                     TEXT
+                     UNIQUE,
+                     note
+                     TEXT
+                 )
+                 ''')
     conn.commit()
     conn.close()
-
 
 
 def calculate_ot(start_str, end_str):
@@ -104,7 +139,7 @@ def calculate_ot(start_str, end_str):
     return round(max(total_seconds / 3600, 0), 2)
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
 def index():
     conn = get_db_connection()
     if request.method == 'POST':
@@ -115,7 +150,7 @@ def index():
         conn.execute('INSERT INTO ot_records (work_date, start_time, end_time, ot_hours) VALUES (?, ?, ?, ?)',
                      (work_date, start_time, end_time, ot_hours))
         conn.commit()
-        return redirect('/')
+        return redirect(url_for('index'))
 
     sort_order = request.args.get('sort', 'desc')
     order_sql = 'ORDER BY work_date DESC' if sort_order == 'desc' else 'ORDER BY work_date ASC'
@@ -123,14 +158,15 @@ def index():
     total_ot = conn.execute('SELECT SUM(ot_hours) FROM ot_records').fetchone()[0] or 0
 
     monthly_ot = conn.execute('''
-        SELECT strftime('%Y-%m', work_date) AS month, SUM(ot_hours) AS total
-        FROM ot_records
-        GROUP BY month
-        ORDER BY month DESC
-    ''').fetchall()
+                              SELECT strftime('%Y-%m', work_date) AS month, SUM(ot_hours) AS total
+                              FROM ot_records
+                              GROUP BY month
+                              ORDER BY month DESC
+                              ''').fetchall()
     conn.close()
     return render_template('index.html', records=records, total_ot=round(total_ot, 2),
                            sort_order=sort_order, monthly_ot=monthly_ot)
+
 
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit_ot(id):
@@ -142,12 +178,15 @@ def edit_ot(id):
         ot_hours = calculate_ot(start_time, end_time)
         conn.execute('''
                      UPDATE ot_records
-                     SET work_date=?, start_time=?, end_time=?, ot_hours=?
+                     SET work_date=?,
+                         start_time=?,
+                         end_time=?,
+                         ot_hours=?
                      WHERE id = ?
                      ''', (work_date, start_time, end_time, ot_hours, id))
         conn.commit()
         conn.close()
-        return redirect('/')
+        return redirect(url_for('index'))
     record = conn.execute('SELECT * FROM ot_records WHERE id=?', (id,)).fetchone()
     conn.close()
     return render_template('edit_ot.html', record=record)
@@ -159,7 +198,8 @@ def delete(id):
     conn.execute('DELETE FROM ot_records WHERE id=?', (id,))
     conn.commit()
     conn.close()
-    return redirect('/')
+    return redirect(url_for('index'))
+
 
 @app.route('/income-expense', methods=['GET', 'POST'])
 def income_expense():
@@ -181,15 +221,16 @@ def income_expense():
     total_income = conn.execute('SELECT SUM(amount) FROM income_expense WHERE category="income"').fetchone()[0] or 0
     total_expense = conn.execute('SELECT SUM(amount) FROM income_expense WHERE category="expense"').fetchone()[0] or 0
     monthly_summary = conn.execute('''
-        SELECT strftime('%Y-%m', date) AS month, category, SUM(amount) AS total
-        FROM income_expense
-        GROUP BY month, category
-        ORDER BY month DESC
-    ''').fetchall()
+                                   SELECT strftime('%Y-%m', date) AS month, category, SUM(amount) AS total
+                                   FROM income_expense
+                                   GROUP BY month, category
+                                   ORDER BY month DESC
+                                   ''').fetchall()
     conn.close()
     return render_template('income_expense.html', records=records,
                            total_income=total_income, total_expense=total_expense,
                            monthly_summary=monthly_summary)
+
 
 @app.route('/edit-income-expense/<int:id>', methods=['GET', 'POST'])
 def edit_income_expense(id):
@@ -200,14 +241,20 @@ def edit_income_expense(id):
         amount = float(request.form['amount'])
         category = request.form['category']
         conn.execute('''
-            UPDATE income_expense SET date=?, description=?, amount=?, category=? WHERE id=?
-        ''', (date, description, amount, category, id))
+                     UPDATE income_expense
+                     SET date=?,
+                         description=?,
+                         amount=?,
+                         category=?
+                     WHERE id = ?
+                     ''', (date, description, amount, category, id))
         conn.commit()
         conn.close()
         return redirect('/income-expense')
     record = conn.execute('SELECT * FROM income_expense WHERE id=?', (id,)).fetchone()
     conn.close()
     return render_template('edit_income_expense.html', record=record)
+
 
 @app.route('/delete-income-expense/<int:id>', methods=['POST'])
 def delete_income_expense(id):
@@ -217,22 +264,26 @@ def delete_income_expense(id):
     conn.close()
     return redirect('/income-expense')
 
+
 @app.route('/export-<category>/<year_month>')
 def export_income_expense_month(category, year_month):
     conn = get_db_connection()
     if category == 'all':
         df = pd.read_sql_query('''
-            SELECT * FROM income_expense
-            WHERE strftime('%Y-%m', date) = ?
-            ORDER BY date ASC
-        ''', conn, params=(year_month,))
+                               SELECT *
+                               FROM income_expense
+                               WHERE strftime('%Y-%m', date) = ?
+                               ORDER BY date ASC
+                               ''', conn, params=(year_month,))
         filename = f"income_expense_{year_month}.csv"
     else:
         df = pd.read_sql_query('''
-            SELECT * FROM income_expense
-            WHERE strftime('%Y-%m', date) = ? AND category = ?
-            ORDER BY date ASC
-        ''', conn, params=(year_month, category))
+                               SELECT *
+                               FROM income_expense
+                               WHERE strftime('%Y-%m', date) = ?
+                                 AND category = ?
+                               ORDER BY date ASC
+                               ''', conn, params=(year_month, category))
         filename = f"{category}_{year_month}.csv"
     conn.close()
 
@@ -252,10 +303,11 @@ def export_income_expense_month(category, year_month):
 def export_year_ot(year):
     conn = get_db_connection()
     df = pd.read_sql_query('''
-        SELECT * FROM ot_records
-        WHERE strftime('%Y', work_date) = ?
-        ORDER BY work_date ASC
-    ''', conn, params=(year,))
+                           SELECT *
+                           FROM ot_records
+                           WHERE strftime('%Y', work_date) = ?
+                           ORDER BY work_date ASC
+                           ''', conn, params=(year,))
     conn.close()
 
     csv_buffer = io.StringIO()
@@ -269,14 +321,16 @@ def export_year_ot(year):
         download_name=f"ot_{year}.csv"
     )
 
+
 @app.route('/export-month/<year_month>')
 def export_month_csv(year_month):
     conn = get_db_connection()
     df = pd.read_sql_query('''
-        SELECT * FROM ot_records
-        WHERE strftime('%Y-%m', work_date) = ?
-        ORDER BY work_date ASC
-    ''', conn, params=(year_month,))
+                           SELECT *
+                           FROM ot_records
+                           WHERE strftime('%Y-%m', work_date) = ?
+                           ORDER BY work_date ASC
+                           ''', conn, params=(year_month,))
     conn.close()
 
     csv_buffer = io.StringIO()
@@ -290,29 +344,36 @@ def export_month_csv(year_month):
         as_attachment=True,
         download_name=filename
     )
+
+
 @app.route('/month/<year_month>')
 def month_view(year_month):
     conn = get_db_connection()
     records = conn.execute('''
-        SELECT * FROM ot_records
-        WHERE strftime('%Y-%m', work_date) = ?
-        ORDER BY work_date ASC
-    ''', (year_month,)).fetchall()
+                           SELECT *
+                           FROM ot_records
+                           WHERE strftime('%Y-%m', work_date) = ?
+                           ORDER BY work_date ASC
+                           ''', (year_month,)).fetchall()
     total = sum(row['ot_hours'] for row in records)
     conn.close()
     return render_template('month.html', records=records, month=year_month, total=round(total, 2))
+
 
 @app.route('/income-expense/month/<year_month>')
 def income_expense_month_view(year_month):
     conn = get_db_connection()
     records = conn.execute('''
-        SELECT * FROM income_expense
-        WHERE strftime('%Y-%m', date) = ?
-        ORDER BY date DESC
-    ''', (year_month,)).fetchall()
+                           SELECT *
+                           FROM income_expense
+                           WHERE strftime('%Y-%m', date) = ?
+                           ORDER BY date DESC
+                           ''', (year_month,)).fetchall()
     conn.close()
 
     return render_template('income_expense_month.html', records=records, year_month=year_month)
+
+
 @app.route('/delete-income-expense/<int:id>', methods=['POST'])
 def delete_income_expense_month(id):
     conn = get_db_connection()
@@ -321,7 +382,9 @@ def delete_income_expense_month(id):
     conn.close()
     return redirect(request.referrer or '/income-expense')  # กลับไปหน้าก่อนหน้า
 
+
 from datetime import datetime
+
 
 @app.route('/holidays', methods=['GET', 'POST'])
 def manage_holidays():
@@ -337,12 +400,14 @@ def manage_holidays():
     # 🟡 Filter ปีจาก query parameter เช่น ?year=2025
     year = request.args.get('year', datetime.now().year)
     holidays = conn.execute('''
-        SELECT * FROM holidays
-        WHERE strftime('%Y', date) = ?
-        ORDER BY date DESC
-    ''', (str(year),)).fetchall()
+                            SELECT *
+                            FROM holidays
+                            WHERE strftime('%Y', date) = ?
+                            ORDER BY date DESC
+                            ''', (str(year),)).fetchall()
     conn.close()
     return render_template('holidays.html', holidays=holidays, selected_year=year)
+
 
 @app.route('/delete-holiday/<int:id>', methods=['POST'])
 def delete_holiday(id):
@@ -352,8 +417,6 @@ def delete_holiday(id):
     conn.commit()
     conn.close()
     return redirect('/holidays')
-
-
 
 
 if __name__ == '__main__':
