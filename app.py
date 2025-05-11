@@ -25,6 +25,7 @@ def login():
 
 @app.route('/dashboard')
 def dashboard():
+    return "Welcome to the Dashboard!"
     
 def is_holiday(date_str):
     conn = get_db_connection()
