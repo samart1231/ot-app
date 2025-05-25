@@ -171,9 +171,9 @@
 
     function confirmDelete() {
       const input = document.getElementById('confirm-input').value.trim().toLowerCase();
-      if (input === 'yes', 'y') {
-        document.getElementById(`delete-form-${pendingId}`).submit();
-      } else {
+      if (input.toLowerCase() === 'yes' || input.toLowerCase() === 'y') {
+  document.getElementById(`delete-form-${pendingId}`).submit();
+} else {
         alert("ต้องพิมพ์ 'yes' เท่านั้นถึงจะลบได้");
       }
     }
