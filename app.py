@@ -240,17 +240,21 @@ def edit_income_expense(id):
         description = request.form['description']
         amount = float(request.form['amount'])
         category = request.form['category']
+        vendor = request.form['vendor']  # ✅ ต้องมีตัวนี้
+
         conn.execute('''
                      UPDATE income_expense
                      SET date=?,
                          description=?,
                          amount=?,
-                         category=?
+                         category=?,
+                         vendor=?
                      WHERE id = ?
-                     ''', (date, description, amount, category, id))
+                     ''', (date, description, amount, category, vendor, id))  # ✅ ครบ 6 ค่า
         conn.commit()
         conn.close()
         return redirect('/income-expense')
+
     record = conn.execute('SELECT * FROM income_expense WHERE id=?', (id,)).fetchone()
     conn.close()
     return render_template('edit_income_expense.html', record=record)

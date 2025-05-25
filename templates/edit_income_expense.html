@@ -26,6 +26,18 @@
       <input type="number" step="0.01" name="amount" required value="{{ record['amount'] }}" class="w-full border rounded p-2">
     </div>
     <div>
+      <label class="block font-semibold mb-1">🏪 ร้านค้า (เลือกได้)</label>
+  <select name="vendor" class="w-full border rounded p-2">
+    <option value="">-- ไม่เลือก --</option>
+    <option value="ร้านยายจ่อย">ร้านยายจ่อย</option>
+    <option value="ร้านผัก">ร้านผัก</option>
+    <option value="เจ้นัน">เจ้นัน</option>
+    <option value="พี่แก่">พี่แก่</option>
+    <option value="พี่อาร์ม">พี่อาร์ม</option>
+
+  </select>
+    </div>
+    <div>
       <label class="block font-semibold mb-1">ประเภท</label>
       <select name="category" required class="w-full border rounded p-2">
         <option value="income" {% if record['category'] == 'income' %}selected{% endif %}>รายรับ</option>
