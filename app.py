@@ -8,6 +8,21 @@ app = Flask(__name__)
 DB_FILE = 'ot.db'
 app.secret_key = 'your_secret_key'
 
+@app.route('/add', methods=['POST'])
+def add_income_expense():
+    # รับค่าจากฟอร์ม
+    category = request.form['category']
+    item = request.form['item']
+    amount = request.form['amount']
+    date = request.form['date']
+
+    # รวม category กับ item เป็นข้อความเดียว
+    detail = f"{category}: {item}"
+
+    # บันทึกค่าลงฐานข้อมูล
+    # db.execute('INSERT INTO income_expense (detail, amount, date) VALUES (?, ?, ?)', (detail, amount, date))
+
+    return redirect(url_for('index'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
