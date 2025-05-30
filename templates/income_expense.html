@@ -122,7 +122,20 @@ function updateItems() {
         {% for r in records %}
         <tr class="border-t hover:bg-gray-50">
           <td class="px-4 py-2">{{ r['date'] }}</td>
-          <td class="px-4 py-2">{{ r['description'] }}</td>
+          <table>
+    <tr>
+        <th>วันที่</th>
+        <th>รายละเอียด</th>
+        <th>จำนวนเงิน</th>
+    </tr>
+    {% for row in records %}
+    <tr>
+        <td>{{ row['date'] }}</td>
+        <td>{{ row['description'] }}</td>
+        <td>{{ row['amount'] }}</td>
+    </tr>
+    {% endfor %}
+</table>
           <td class="px-4 py-2">{{ '{:,.2f}'.format(r['amount']) }}</td>
           <td class="px-4 py-2">{{ r['vendor'] }}</td>
           <td class="px-4 py-2">
