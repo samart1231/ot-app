@@ -25,7 +25,38 @@
       <input type="date" name="date" required class="w-full border rounded p-2">
     </div>
     <div>
-      <label class="block font-semibold mb-1">📝 รายละเอียด</label>
+     <label for="category">ประเภท:</label>
+<select id="category" name="category" onchange="updateItems()">
+  <option value="">--เลือกประเภท--</option>
+  <option value="income">รายรับ</option>
+  <option value="expense">รายจ่าย</option>
+</select>
+
+<label for="item">รายการ:</label>
+<select id="item" name="item">
+  <option value="">--เลือกรายการ--</option>
+</select>
+
+<script>
+const items = {
+  income: ["เงินเดือน", "โบนัส", "รายได้เสริม"],
+  expense: ["อาหาร", "เดินทาง", "ช็อปปิ้ง"]
+};
+
+function updateItems() {
+  const category = document.getElementById("category").value;
+  const itemSelect = document.getElementById("item");
+  itemSelect.innerHTML = '<option value="">--เลือกรายการ--</option>';
+  if (items[category]) {
+    items[category].forEach(i => {
+      const option = document.createElement("option");
+      option.value = i;
+      option.text = i;
+      itemSelect.appendChild(option);
+    });
+  }
+}
+</script> 
       <input type="text" name="description" required class="w-full border rounded p-2">
     </div>
       <div>
