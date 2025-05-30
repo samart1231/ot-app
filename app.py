@@ -221,10 +221,15 @@ def income_expense():
     conn = get_db_connection()
     if request.method == 'POST':
         date = request.form['date']
-        description = request.form['description']
-        vendor = request.form.get('vendor') or None
+        category = request.form['category']      # ประเภท
+        item = request.form['item']              # รายการ
+        detail_input = request.form['detail']    # รายละเอียดเพิ่มเติม
         amount = float(request.form['amount'])
-        category = request.form['category']
+        vendor = request.form.get('vendor') or None
+
+        # รวม 3 ค่านี้ใน description
+        description = f"{category}: {item} - {detail_input}"
+
         conn.execute('''
                      INSERT INTO income_expense (date, description, amount, category, vendor)
                      VALUES (?, ?, ?, ?, ?)
