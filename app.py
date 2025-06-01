@@ -221,20 +221,24 @@ def income_expense():
     conn = get_db_connection()
     if request.method == 'POST':
         date = request.form['date']
-        category = request.form['category']      # ประเภท
-        item = request.form['item']              # รายการ
-        detail_input = request.form['detail']    # รายละเอียดเพิ่มเติม
+        category = request.form['category']
+        items_data = request.form.get('items_data')  # JSON string จาก JavaScript
+        description = request.form.get('description')  # รายการสินค้าที่สร้างอัตโนมัติ
         amount = float(request.form['amount'])
         vendor = request.form.get('vendor') or None
 
-        # รวม 3 ค่านี้ใน description
-        description = f"{category}: {item} - {detail_input}"
+        # ตรวจสอบว่ามีข้อมูลรายการสินค้าหรือไม่
+        if not items_data or not description:
+            flash('กรุณาเลือกรายการสินค้า', 'error')
+            return redirect('/income-expense')
 
+        # บันทึกลงฐานข้อมูล
         conn.execute('''
                      INSERT INTO income_expense (date, description, amount, category, vendor)
                      VALUES (?, ?, ?, ?, ?)
-                     ''', (date, description, amount, category, vendor))
+                     ''', (date, description, amount, 'expense', vendor))  # กำหนดเป็น expense
         conn.commit()
+        flash('บันทึกข้อมูลเรียบร้อยแล้ว', 'success')
         return redirect('/income-expense')
 
     records = conn.execute('SELECT * FROM income_expense ORDER BY date DESC').fetchall()
