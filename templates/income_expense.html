@@ -19,90 +19,135 @@
   <h1 class="text-2xl font-bold mb-4">📒 รายรับ - รายจ่าย</h1>
 
   <!-- ฟอร์มเพิ่มข้อมูล -->
-  <form method="POST" class="bg-white p-4 rounded shadow mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div>
-      <label class="block font-semibold mb-1">📅 วันที่</label>
-      <input type="date" name="date" required class="w-full border rounded p-2">
-    </div>
-    <div>
-     <form method="post" action="/income-expense">
-    <label for="date">วันที่:</label>
-    <input type="date" name="date" required>
+<form method="POST" class="bg-white p-4 rounded shadow mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div>
+    <label class="block font-semibold mb-1">📅 วันที่</label>
+    <input type="date" name="date" required class="w-full border rounded p-2">
+  </div>
 
-    <label for="category">ประเภท:</label>
-    <select id="category" name="category" onchange="updateItems()" required>
-        <option value="">--เลือกประเภท--</option>
-        <option value="รายรับ">รายรับ</option>
-        <option value="รายจ่าย">รายจ่าย</option>
+  <div>
+    <label class="block font-semibold mb-1">ประเภท</label>
+    <select id="category" name="category" onchange="updateItems()" required class="w-full border rounded p-2">
+      <option value="">--เลือกประเภท--</option>
+      <option value="อาหาร">อาหาร</option>
+      <option value="ของใช้">ของใช้</option>
+      <option value="เครื่องดื่ม">เครื่องดื่ม</option>
     </select>
+  </div>
 
-    <label for="item">รายการ:</label>
-    <select id="item" name="item" required>
-        <option value="">--เลือกรายการ--</option>
-    </select>
+  <div class="md:col-span-2">
+    <label class="block font-semibold mb-1">📦 รายการสินค้า</label>
+    <div class="border rounded p-3 bg-white">
+      <!-- แสดงรายการที่เลือกแล้ว -->
+      <div id="selected-items" class="mb-4 space-y-2"></div>
 
-    <label for="detail">รายละเอียดเพิ่มเติม:</label>
-    <input type="text" name="detail" id="detail">
+      <!-- เลือกสินค้าใหม่ -->
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-2 items-end">
+        <div>
+          <label class="block text-sm font-medium mb-1">สินค้า</label>
+          <div class="relative">
+            <select id="item-select" class="w-full border rounded p-2">
+              <option value="">--เลือกสินค้า--</option>
+            </select>
+            <button type="button" onclick="toggleCustomItem()"
+                    class="absolute right-8 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 text-sm"
+                    title="เพิ่มสินค้าใหม่">
+              ➕
+            </button>
+          </div>
+          <!-- ช่องพิมพ์สินค้าใหม่ -->
+          <input type="text" id="custom-item" placeholder="พิมพ์ชื่อสินค้าใหม่..."
+                 class="w-full border rounded p-2 mt-1 hidden">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">ราคาต่อหน่วย</label>
+          <input type="number" id="item-price" step="0.01" placeholder="0.00" class="w-full border rounded p-2">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">จำนวน</label>
+          <input type="number" id="item-quantity" min="1" value="1" class="w-full border rounded p-2">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">หมายเหตุ</label>
+          <input type="text" id="item-note" placeholder="ขนาด/รสชาติ" class="w-full border rounded p-2">
+        </div>
+        <div>
+          <button type="button" onclick="addItem()" class="w-full bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded">
+            เพิ่ม
+          </button>
+        </div>
+      </div>
 
-    <label for="amount">จำนวนเงิน:</label>
-    <input type="number" name="amount" step="0.01" required>
+      <!-- ปุ่มเพิ่มรายการเร็ว -->
+      <div class="mt-3 pt-3 border-t">
+        <div class="flex flex-wrap gap-2">
+          <button type="button" onclick="quickAddItem('ปลาดุก', 25)" class="bg-blue-100 text-blue-800 px-3 py-1 rounded text-sm hover:bg-blue-200">
+            ปลาดุก 25฿
+          </button>
+          <button type="button" onclick="quickAddItem('แกงถุง', 25)" class="bg-blue-100 text-blue-800 px-3 py-1 rounded text-sm hover:bg-blue-200">
+            แกงถุง 25฿
+          </button>
+          <button type="button" onclick="quickAddItem('กาแฟ', 17)" class="bg-blue-100 text-blue-800 px-3 py-1 rounded text-sm hover:bg-blue-200">
+            กาแฟ 17฿
+          </button>
+          <button type="button" onclick="quickAddItem('ข้าวเหนียว', 10)" class="bg-blue-100 text-blue-800 px-3 py-1 rounded text-sm hover:bg-blue-200">
+            ข้าวเหนียว 10฿
+          </button>
+          <button type="button" onclick="quickAddItem('กาแฟซอง', 5)" class="bg-blue-100 text-blue-800 px-3 py-1 rounded text-sm hover:bg-blue-200">
+            กาแฟซอง 5฿
+          </button>
+          <!-- แสดงสินค้าที่เพิ่มล่าสุด -->
+          <div id="recent-items" class="flex flex-wrap gap-2"></div>
+        </div>
+      </div>
 
-    <button type="submit">บันทึก</button>
-</form>
-
-<script>
-const items = {
-    "รายรับ": ["เงินเดือน", "โบนัส", "ขายของ"],
-    "รายจ่าย": ["อาหาร", "เดินทาง", "บิลต่างๆ"]
-};
-
-function updateItems() {
-    const category = document.getElementById("category").value;
-    const itemSelect = document.getElementById("item");
-    itemSelect.innerHTML = '<option value="">--เลือกรายการ--</option>';
-    if (items[category]) {
-        items[category].forEach(function(i) {
-            const option = document.createElement("option");
-            option.value = i;
-            option.text = i;
-            itemSelect.appendChild(option);
-        });
-    }
-}
-</script>
-      <input type="text" name="description" required class="w-full border rounded p-2">
+      <!-- ปุ่มจัดการสินค้า -->
+      <div class="mt-3 pt-3 border-t">
+        <button type="button" onclick="showManageItems()"
+                class="text-blue-600 hover:text-blue-800 text-sm underline">
+          📝 จัดการรายการสินค้า
+        </button>
+      </div>
     </div>
-      <div>
-  <label class="block font-semibold mb-1">🏪 ร้านค้า</label>
-  <select name="vendor" class="w-full border rounded p-2">
-    <option value="">-- ไม่เลือก --</option>
-    <option value="ร้านยายจ่อย">ร้านยายจ่อย</option>
-    <option value="ร้านผัก">ร้านผัก</option>
-    <option value="เจ้นัน">เจ้นัน</option>
-    <option value="พี่แก่">พี่แก่</option>
-    <option value="พี่อาร์ม">พี่อาร์ม</option>
-    <option value="7-seven">7-seven</option>
 
-  </select>
-</div>
-
-    <div>
-      <label class="block font-semibold mb-1">💰 จำนวนเงิน</label>
-      <input type="number" step="0.01" name="amount" required class="w-full border rounded p-2">
-    </div>
-    <div>
-      <label class="block font-semibold mb-1">ประเภท</label>
-      <select name="category" required class="w-full border rounded p-2">
-        <option value="expense">รายจ่าย</option>
-        <option value="income">รายรับ</option>
-      </select>
-    </div>
-    <div class="md:col-span-2 text-right">
-      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded shadow">
-        ➕ บันทึก
+    <!-- ยอดรวมทั้งหมด -->
+    <div class="mt-2 flex justify-between items-center">
+      <button type="button" onclick="clearAllItems()"
+              class="text-red-600 hover:text-red-800 text-sm underline">
+        ล้างรายการทั้งหมด
       </button>
+      <div class="text-right">
+        <span class="font-semibold">จำนวนรายการ: <span id="total-items" class="text-green-600">0</span> รายการ</span>
+        <br>
+        <span class="font-semibold text-lg">ยอดรวม: <span id="total-amount" class="text-blue-600">0.00</span> บาท</span>
+      </div>
     </div>
-  </form>
+
+    <!-- Hidden inputs สำหรับส่งข้อมูล -->
+    <input type="hidden" id="items-data" name="items_data" required>
+    <input type="hidden" id="calculated-total" name="amount" required>
+    <input type="hidden" id="description" name="description">
+  </div>
+
+  <div>
+    <label class="block font-semibold mb-1">🏪 ร้านค้า</label>
+    <select name="vendor" class="w-full border rounded p-2">
+      <option value="">-- ไม่เลือก --</option>
+      <option value="ร้านยายจ่อย">ร้านยายจ่อย</option>
+      <option value="ร้านผัก">ร้านผัก</option>
+      <option value="เจ้นัน">เจ้นัน</option>
+      <option value="พี่แก่">พี่แก่</option>
+      <option value="พี่อาร์ม">พี่อาร์ม</option>
+      <option value="7-seven">7-seven</option>
+    </select>
+  </div>
+
+  <div class="md:col-span-2 text-right">
+    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded shadow">
+      ➕ บันทึก
+    </button>
+  </div>
+</form>
 
   <!-- ตารางแสดงข้อมูล -->
   <div class="bg-white p-4 rounded shadow">
@@ -122,20 +167,7 @@ function updateItems() {
         {% for r in records %}
         <tr class="border-t hover:bg-gray-50">
           <td class="px-4 py-2">{{ r['date'] }}</td>
-          <table>
-    <tr>
-        <th>วันที่</th>
-        <th>รายละเอียด</th>
-        <th>จำนวนเงิน</th>
-    </tr>
-    {% for row in records %}
-    <tr>
-        <td>{{ row['date'] }}</td>
-        <td>{{ row['description'] }}</td>
-        <td>{{ row['amount'] }}</td>
-    </tr>
-    {% endfor %}
-</table>
+          <td class="px-4 py-2">{{ r['description'] }}</td>
           <td class="px-4 py-2">{{ '{:,.2f}'.format(r['amount']) }}</td>
           <td class="px-4 py-2">{{ r['vendor'] }}</td>
           <td class="px-4 py-2">
@@ -184,13 +216,12 @@ function updateItems() {
       {% for row in monthly_summary %}
       <tr class="border-t hover:bg-gray-50">
         <td class="px-4 py-2">
-  <form method="get" action="{{ url_for('income_expense_month_view', year_month=row['month']) }}">
-    <button class="text-white bg-indigo-600 px-3 py-1 rounded hover:bg-indigo-700">
-      {{ row['month'] }}
-    </button>
-  </form>
-</td>
-
+          <form method="get" action="{{ url_for('income_expense_month_view', year_month=row['month']) }}">
+            <button class="text-white bg-indigo-600 px-3 py-1 rounded hover:bg-indigo-700">
+              {{ row['month'] }}
+            </button>
+          </form>
+        </td>
         <td class="px-4 py-2">
           {% if row['category'] == 'income' %}
             <span class="text-green-600 font-semibold">รายรับ</span>
@@ -209,6 +240,923 @@ function updateItems() {
       {% endfor %}
     </tbody>
   </table>
+
+<!-- Modal จัดการสินค้า -->
+<div id="manage-items-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-lg shadow-lg max-w-4xl w-full max-h-[80vh] overflow-hidden">
+      <div class="p-4 border-b flex justify-between items-center">
+        <h3 class="text-lg font-semibold">📝 จัดการรายการสินค้าทั้งหมด</h3>
+        <div class="flex gap-2">
+          <button type="button" onclick="exportItems()"
+                  class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+            📤 Export
+          </button>
+          <button type="button" onclick="importItems()"
+                  class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">
+            📥 Import
+          </button>
+        </div>
+      </div>
+
+      <!-- แท็บ -->
+      <div class="border-b">
+        <div class="flex">
+          <button onclick="switchTab('default')" id="tab-default"
+                  class="px-4 py-2 border-b-2 border-blue-500 bg-blue-50 text-blue-600 font-medium">
+            สินค้าเริ่มต้น
+          </button>
+          <button onclick="switchTab('custom')" id="tab-custom"
+                  class="px-4 py-2 border-b-2 border-transparent hover:bg-gray-50">
+            สินค้าที่เพิ่มเอง
+          </button>
+          <button onclick="switchTab('add')" id="tab-add"
+                  class="px-4 py-2 border-b-2 border-transparent hover:bg-gray-50">
+            เพิ่มสินค้าใหม่
+          </button>
+        </div>
+      </div>
+
+      <div class="p-4 overflow-y-auto max-h-96">
+        <!-- แท็บสินค้าเริ่มต้น -->
+        <div id="content-default" class="tab-content">
+          <div id="default-items-content"></div>
+        </div>
+
+        <!-- แท็บสินค้าที่เพิ่มเอง -->
+        <div id="content-custom" class="tab-content hidden">
+          <div id="custom-items-content"></div>
+        </div>
+
+        <!-- แท็บเพิ่มสินค้าใหม่ -->
+        <div id="content-add" class="tab-content hidden">
+          <div class="max-w-md mx-auto">
+            <div class="space-y-4">
+              <div>
+                <label class="block font-medium mb-1">ประเภท</label>
+                <select id="new-item-category" class="w-full border rounded p-2">
+                  <option value="">--เลือกประเภท--</option>
+                  <option value="อาหาร">อาหาร</option>
+                  <option value="ของใช้">ของใช้</option>
+                  <option value="เครื่องดื่ม">เครื่องดื่ม</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-medium mb-1">ชื่อสินค้า</label>
+                <input type="text" id="new-item-name" placeholder="ชื่อสินค้า" class="w-full border rounded p-2">
+              </div>
+              <div>
+                <label class="block font-medium mb-1">ราคาเริ่มต้น</label>
+                <input type="number" id="new-item-price" step="0.01" placeholder="0.00" class="w-full border rounded p-2">
+              </div>
+              <div class="flex gap-2">
+                <button type="button" onclick="addNewItemFromModal()"
+                        class="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+                  เพิ่มสินค้า
+                </button>
+                <button type="button" onclick="clearNewItemForm()"
+                        class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
+                  ล้าง
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 border-t flex justify-between">
+        <div class="flex gap-2">
+          <button type="button" onclick="resetAllItems()"
+                  class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
+            🔄 รีเซ็ตทั้งหมด
+          </button>
+        </div>
+        <button type="button" onclick="hideManageItems()"
+                class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
+          ปิด
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden file input สำหรับ import -->
+<input type="file" id="import-file" accept=".json" style="display: none;" onchange="handleImportFile(event)">
+
+<script>
+// เพิ่มตัวแปรเก็บสินค้าที่เพิ่มเอง
+let customItems = JSON.parse(localStorage.getItem('customItems')) || {};
+let recentItems = JSON.parse(localStorage.getItem('recentItems')) || [];
+
+// สินค้าเริ่มต้น (สามารถแก้ไขได้)
+let items = JSON.parse(localStorage.getItem('defaultItems')) || {
+    "อาหาร": [
+        {name: "ปลาทู", defaultPrice: 25},
+        {name: "แกงถุง", defaultPrice: 25},
+        {name: "น่องไก่", defaultPrice: 20},
+        {name: "ข้าวเหนียว", defaultPrice: 10},
+        {name: "ขนมกล่อง", defaultPrice: 10},
+        {name: "ปลาดุก", defaultPrice: 55}
+    ],
+    "ของใช้": [
+        {name: "สบู่", defaultPrice: 25},
+        {name: "ยาสีฟัน", defaultPrice: 45},
+        {name: "แชมพู", defaultPrice: 120},
+        {name: "ผงซักฟอก", defaultPrice: 85},
+        {name: "ถุงขยะ", defaultPrice: 30},
+        {name: "ทิชชู่", defaultPrice: 35}
+    ],
+    "เครื่องดื่ม": [
+        {name: "น้ำเปล่า", defaultPrice: 8},
+        {name: "น้ำอัดลม", defaultPrice: 15},
+        {name: "กาแฟ", defaultPrice: 17},
+        {name: "กาแฟซอง", defaultPrice: 5},
+        {name: "ชา", defaultPrice: 20},
+        {name: "น้ำผลไม้", defaultPrice: 30},
+        {name: "น้ำแข็ง", defaultPrice: 10}
+    ]
+};
+
+let selectedItems = [];
+let itemCounter = 0;
+let currentTab = 'default';
+
+function updateItems() {
+    const category = document.getElementById("category").value;
+    const itemSelect = document.getElementById("item-select");
+    const priceInput = document.getElementById("item-price");
+
+    itemSelect.innerHTML = '<option value="">--เลือกสินค้า--</option>';
+    priceInput.value = '';
+
+    // เพิ่มสินค้าเริ่มต้น
+    if (items[category]) {
+        items[category].forEach(function(item) {
+            const option = document.createElement("option");
+            option.value = JSON.stringify({...item, type: 'default'});
+            option.text = `${item.name} (${item.defaultPrice} บาท)`;
+            itemSelect.appendChild(option);
+        });
+    }
+
+    // เพิ่มสินค้าที่เพิ่มเอง
+    if (customItems[category]) {
+        customItems[category].forEach(function(item) {
+            const option = document.createElement("option");
+            option.value = JSON.stringify({...item, type: 'custom'});
+            option.text = `${item.name} (${item.defaultPrice} บาท) 🔸`;
+            itemSelect.appendChild(option);
+        });
+    }
+
+    updateRecentItems();
+}
+
+// เปลี่ยนแท็บ
+function switchTab(tabName) {
+    try {
+        // อัปเดตปุ่มแท็บ
+        document.querySelectorAll('[id^="tab-"]').forEach(tab => {
+            tab.className = 'px-4 py-2 border-b-2 border-transparent hover:bg-gray-50';
+        });
+        document.getElementById(`tab-${tabName}`).className = 'px-4 py-2 border-b-2 border-blue-500 bg-blue-50 text-blue-600 font-medium';
+
+        // แสดง/ซ่อน content
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.add('hidden');
+        });
+        document.getElementById(`content-${tabName}`).classList.remove('hidden');
+
+        currentTab = tabName;
+
+        // โหลดข้อมูลตามแท็บ
+        if (tabName === 'default') {
+            loadDefaultItems();
+        } else if (tabName === 'custom') {
+            loadCustomItems();
+        }
+    } catch (error) {
+        console.error('Error switching tab:', error);
+    }
+}
+
+// แสดง/ซ่อนช่องพิมพ์สินค้าใหม่
+function toggleCustomItem() {
+    const customItemInput = document.getElementById("custom-item");
+    const itemSelect = document.getElementById("item-select");
+
+    if (customItemInput.classList.contains('hidden')) {
+        customItemInput.classList.remove('hidden');
+        customItemInput.focus();
+        itemSelect.value = '';
+    } else {
+        customItemInput.classList.add('hidden');
+        customItemInput.value = '';
+    }
+}
+
+// เมื่อกด Enter ในช่องสินค้าใหม่
+document.addEventListener('DOMContentLoaded', function() {
+    const customItemInput = document.getElementById("custom-item");
+    if (customItemInput) {
+        customItemInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById("item-price").focus();
+            }
+        });
+    }
+
+    // เมื่อเลือกสินค้า ให้แสดงราคาเริ่มต้น
+    const itemSelect = document.getElementById("item-select");
+    if (itemSelect) {
+        itemSelect.onchange = function() {
+            const priceInput = document.getElementById("item-price");
+            const customItemInput = document.getElementById("custom-item");
+
+            if (this.value) {
+                try {
+                    const item = JSON.parse(this.value);
+                    priceInput.value = item.defaultPrice;
+                    customItemInput.value = '';
+                    customItemInput.classList.add('hidden');
+                } catch (error) {
+                    console.error('Error parsing item:', error);
+                }
+            } else {
+                priceInput.value = '';
+            }
+        };
+    }
+
+    // เริ่มต้น
+    updateSelectedItemsDisplay();
+    updateRecentItems();
+});
+
+function addItem() {
+    try {
+        const itemSelect = document.getElementById("item-select");
+        const customItemInput = document.getElementById("custom-item");
+        const priceInput = document.getElementById("item-price");
+        const quantityInput = document.getElementById("item-quantity");
+        const noteInput = document.getElementById("item-note");
+        const categorySelect = document.getElementById("category");
+
+        let itemName = '';
+        let isCustomItem = false;
+
+        // ตรวจสอบว่าเลือกสินค้าจาก dropdown หรือพิมพ์เอง
+        if (itemSelect.value) {
+            const item = JSON.parse(itemSelect.value);
+            itemName = item.name;
+        } else if (customItemInput.value.trim()) {
+            itemName = customItemInput.value.trim();
+            isCustomItem = true;
+        }
+
+        if (!itemName || !priceInput.value || !quantityInput.value) {
+            alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+            return;
+        }
+
+        const price = parseFloat(priceInput.value);
+        const quantity = parseInt(quantityInput.value);
+        const note = noteInput.value.trim();
+        const total = price * quantity;
+        const category = categorySelect.value;
+
+        // ถ้าเป็นสินค้าใหม่ ให้เก็บไว้
+        if (isCustomItem && category) {
+            saveCustomItem(category, itemName, price);
+            addToRecentItems(itemName, price);
+        }
+
+        const newItem = {
+            id: ++itemCounter,
+            name: itemName,
+            price: price,
+            quantity: quantity,
+            note: note,
+            total: total
+        };
+
+        selectedItems.push(newItem);
+        updateSelectedItemsDisplay();
+
+        // Reset form
+        itemSelect.value = '';
+        customItemInput.value = '';
+        customItemInput.classList.add('hidden');
+        priceInput.value = '';
+        quantityInput.value = 1;
+        noteInput.value = '';
+    } catch (error) {
+        console.error('Error adding item:', error);
+        alert('เกิดข้อผิดพลาดในการเพิ่มสินค้า');
+    }
+}
+
+// บันทึกสินค้าใหม่
+function saveCustomItem(category, name, price) {
+    if (!customItems[category]) {
+        customItems[category] = [];
+    }
+
+    // ตรวจสอบว่ามีสินค้านี้แล้วหรือไม่
+    const existingItem = customItems[category].find(item => item.name.toLowerCase() === name.toLowerCase());
+    if (!existingItem) {
+        customItems[category].push({
+            name: name,
+            defaultPrice: price
+        });
+        localStorage.setItem('customItems', JSON.stringify(customItems));
+        updateItems(); // อัปเดต dropdown
+    }
+}
+
+// เพิ่มสินค้าล่าสุด
+function addToRecentItems(name, price) {
+    const newItem = {name: name, price: price};
+
+    // ลบรายการเดิมออก (ถ้ามี)
+    recentItems = recentItems.filter(item => item.name !== name);
+
+    // เพิ่มรายการใหม่ที่ด้านหน้า
+    recentItems.unshift(newItem);
+
+    // เก็บแค่ 5 รายการล่าสุด
+    recentItems = recentItems.slice(0, 5);
+
+    localStorage.setItem('recentItems', JSON.stringify(recentItems));
+    updateRecentItems();
+}
+
+// อัปเดตปุ่มสินค้าล่าสุด
+function updateRecentItems() {
+    const container = document.getElementById("recent-items");
+    if (container) {
+        container.innerHTML = '';
+
+        recentItems.forEach(item => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "bg-purple-100 text-purple-800 px-3 py-1 rounded text-sm hover:bg-purple-200";
+            button.textContent = `${item.name} ${item.price}฿ 🔸`;
+            button.onclick = () => quickAddItem(item.name, item.price);
+            container.appendChild(button);
+        });
+    }
+}
+
+// ฟังก์ชันเพิ่มรายการแบบเร็ว
+function quickAddItem(itemName, price) {
+    const newItem = {
+        id: ++itemCounter,
+        name: itemName,
+        price: price,
+        quantity: 1,
+        note: '',
+        total: price
+    };
+
+    selectedItems.push(newItem);
+    updateSelectedItemsDisplay();
+}
+
+function removeItem(itemId) {
+    selectedItems = selectedItems.filter(item => item.id !== itemId);
+    updateSelectedItemsDisplay();
+}
+
+function updateQuantity(itemId, newQuantity) {
+    const item = selectedItems.find(item => item.id === itemId);
+    if (item && newQuantity > 0) {
+        item.quantity = parseInt(newQuantity);
+        item.total = item.price * item.quantity;
+        updateSelectedItemsDisplay();
+    }
+}
+
+function updatePrice(itemId, newPrice) {
+    const item = selectedItems.find(item => item.id === itemId);
+    if (item && newPrice >= 0) {
+        item.price = parseFloat(newPrice);
+        item.total = item.price * item.quantity;
+        updateSelectedItemsDisplay();
+    }
+}
+
+function updateNote(itemId, newNote) {
+    const item = selectedItems.find(item => item.id === itemId);
+    if (item) {
+        item.note = newNote;
+        updateSelectedItemsDisplay();
+    }
+}
+
+function duplicateItem(itemId) {
+    const item = selectedItems.find(item => item.id === itemId);
+    if (item) {
+        const newItem = {
+            id: ++itemCounter,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            note: item.note,
+            total: item.total
+        };
+        selectedItems.push(newItem);
+        updateSelectedItemsDisplay();
+    }
+}
+
+function updateSelectedItemsDisplay() {
+    const container = document.getElementById("selected-items");
+    const itemsDataInput = document.getElementById("items-data");
+    const calculatedTotalInput = document.getElementById("calculated-total");
+    const descriptionInput = document.getElementById("description");
+    const totalAmountSpan = document.getElementById("total-amount");
+    const totalItemsSpan = document.getElementById("total-items");
+
+    if (!container) return;
+
+    container.innerHTML = '';
+    let grandTotal = 0;
+    let descriptionItems = [];
+
+    if (selectedItems.length === 0) {
+        container.innerHTML = '<div class="text-gray-500 text-center py-4">ยังไม่มีรายการสินค้า</div>';
+    } else {
+        selectedItems.forEach((item, index) => {
+            grandTotal += item.total;
+
+            // สร้าง description สำหรับแต่ละรายการ
+            let itemDesc = `${item.name} x${item.quantity}`;
+            if (item.note) {
+                itemDesc += ` (${item.note})`;
+            }
+            descriptionItems.push(itemDesc);
+
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "flex items-center justify-between bg-gray-50 p-3 rounded border";
+            itemDiv.innerHTML = `
+                <div class="flex-1">
+                    <div class="flex items-center gap-2">
+                        <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded">${index + 1}</span>
+                        <span class="font-medium">${item.name}</span>
+                        ${item.note ? `<span class="text-sm text-gray-500">(${item.note})</span>` : ''}
+                    </div>
+                    <div class="mt-1 flex items-center gap-4 text-sm">
+                        <div>
+                            ราคา: <input type="number" value="${item.price}" step="0.01" min="0"
+                                   onchange="updatePrice(${item.id}, this.value)"
+                                   class="w-16 border rounded px-1 text-center"> บาท
+                        </div>
+                        <div>
+                            จำนวน: <input type="number" value="${item.quantity}" min="1"
+                                   onchange="updateQuantity(${item.id}, this.value)"
+                                   class="w-16 border rounded px-1 text-center">
+                        </div>
+                        <div class="font-medium text-blue-600">
+                            = ${item.total.toFixed(2)} บาท
+                        </div>
+                    </div>
+                    <div class="mt-1">
+                        <input type="text" value="${item.note}" placeholder="หมายเหตุ..."
+                               onchange="updateNote(${item.id}, this.value)"
+                               class="w-full text-sm border rounded px-2 py-1">
+                    </div>
+                </div>
+                <div class="ml-2 flex flex-col gap-1">
+                    <button type="button" onclick="duplicateItem(${item.id})"
+                            class="text-green-600 hover:text-green-800 text-sm" title="คัดลอก">
+                        📋
+                    </button>
+                    <button type="button" onclick="removeItem(${item.id})"
+                            class="text-red-600 hover:text-red-800" title="ลบ">
+                        ✕
+                    </button>
+                </div>
+            `;
+            container.appendChild(itemDiv);
+        });
+    }
+
+    // อัพเดทยอดรวม
+    if (totalItemsSpan) totalItemsSpan.textContent = selectedItems.length;
+    if (totalAmountSpan) totalAmountSpan.textContent = grandTotal.toFixed(2);
+
+    // เตรียมข้อมูลสำหรับส่งไปยัง backend
+    if (itemsDataInput) itemsDataInput.value = JSON.stringify(selectedItems);
+    if (calculatedTotalInput) calculatedTotalInput.value = grandTotal.toFixed(2);
+    if (descriptionInput) descriptionInput.value = descriptionItems.join(', ');
+
+    // ตรวจสอบว่ามีรายการหรือไม่
+    if (itemsDataInput) itemsDataInput.required = selectedItems.length === 0;
+}
+
+// ฟังก์ชันล้างรายการทั้งหมด
+function clearAllItems() {
+    if (selectedItems.length > 0 && confirm('ต้องการล้างรายการทั้งหมดหรือไม่?')) {
+        selectedItems = [];
+        updateSelectedItemsDisplay();
+    }
+}
+
+// ฟังก์ชันจัดการ Modal
+function showManageItems() {
+    const modal = document.getElementById("manage-items-modal");
+    if (modal) {
+        modal.classList.remove('hidden');
+        switchTab('default');
+    }
+}
+
+function hideManageItems() {
+    const modal = document.getElementById("manage-items-modal");
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+// โหลดสินค้าเริ่มต้น
+function loadDefaultItems() {
+    const container = document.getElementById("default-items-content");
+    if (!container) return;
+
+    let html = '';
+
+    Object.keys(items).forEach(category => {
+        html += `<div class="mb-6">
+            <div class="flex justify-between items-center mb-3">
+                <h4 class="font-semibold text-lg">${category}</h4>
+                <button onclick="addDefaultItem('${category}')"
+                        class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">
+                    ➕ เพิ่มสินค้า
+                </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">`;
+
+        items[category].forEach((item, index) => {
+            html += `<div class="flex items-center justify-between bg-gray-50 p-3 rounded border">
+                <div class="flex-1">
+                    <input type="text" value="${item.name}"
+                           onchange="updateDefaultItemName('${category}', ${index}, this.value)"
+                           class="font-medium bg-transparent border-none outline-none w-full">
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-sm text-gray-600">ราคา:</span>
+                        <input type="number" value="${item.defaultPrice}" step="0.01" min="0"
+                               onchange="updateDefaultItemPrice('${category}', ${index}, this.value)"
+                               class="w-20 border rounded px-2 py-1 text-sm">
+                        <span class="text-sm text-gray-600">บาท</span>
+                    </div>
+                </div>
+                <button onclick="deleteDefaultItem('${category}', ${index})"
+                        class="text-red-600 hover:text-red-800 ml-2" title="ลบ">
+                    ✕
+                </button>
+            </div>`;
+        });
+
+        html += `</div></div>`;
+    });
+
+    container.innerHTML = html;
+}
+
+// โหลดสินค้าที่เพิ่มเอง
+function loadCustomItems() {
+    const container = document.getElementById("custom-items-content");
+    if (!container) return;
+
+    let html = '';
+
+    Object.keys(customItems).forEach(category => {
+        if (customItems[category].length > 0) {
+            html += `<div class="mb-6">
+                <h4 class="font-semibold text-lg mb-3">${category}</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">`;
+
+            customItems[category].forEach((item, index) => {
+                html += `<div class="flex items-center justify-between bg-gray-50 p-3 rounded border">
+                    <div class="flex-1">
+                        <input type="text" value="${item.name}"
+                               onchange="updateCustomItemName('${category}', ${index}, this.value)"
+                               class="font-medium bg-transparent border-none outline-none w-full">
+                        <div class="flex items-center gap-2 mt-1">
+                            <span class="text-sm text-gray-600">ราคา:</span>
+                            <input type="number" value="${item.defaultPrice}" step="0.01" min="0"
+                                   onchange="updateCustomItemPrice('${category}', ${index}, this.value)"
+                                   class="w-20 border rounded px-2 py-1 text-sm">
+                            <span class="text-sm text-gray-600">บาท</span>
+                        </div>
+                    </div>
+                    <button onclick="deleteCustomItem('${category}', ${index})"
+                            class="text-red-600 hover:text-red-800 ml-2" title="ลบ">
+                        ✕
+                    </button>
+                </div>`;
+            });
+
+            html += `</div></div>`;
+        }
+    });
+
+    if (html === '') {
+        html = '<div class="text-gray-500 text-center py-8">ยังไม่มีสินค้าที่เพิ่มเอง</div>';
+    }
+
+    container.innerHTML = html;
+}
+
+// เพิ่มสินค้าเริ่มต้น
+function addDefaultItem(category) {
+    const name = prompt('ชื่อสินค้า:');
+    if (!name || name.trim() === '') return;
+
+    const priceStr = prompt('ราคาเริ่มต้น:');
+    const price = parseFloat(priceStr);
+    if (isNaN(price) || price < 0) {
+        alert('กรุณาใส่ราคาที่ถูกต้อง');
+        return;
+    }
+
+    if (!items[category]) {
+        items[category] = [];
+    }
+
+    items[category].push({
+        name: name.trim(),
+        defaultPrice: price
+    });
+
+    saveDefaultItems();
+    loadDefaultItems();
+    updateItems();
+}
+
+// อัปเดตชื่อสินค้าเริ่มต้น
+function updateDefaultItemName(category, index, newName) {
+    if (newName.trim()) {
+        items[category][index].name = newName.trim();
+        saveDefaultItems();
+        updateItems();
+    }
+}
+
+// อัปเดตราคาสินค้าเริ่มต้น
+function updateDefaultItemPrice(category, index, newPrice) {
+    const price = parseFloat(newPrice);
+    if (price >= 0) {
+        items[category][index].defaultPrice = price;
+        saveDefaultItems();
+        updateItems();
+    }
+}
+
+// ลบสินค้าเริ่มต้น
+function deleteDefaultItem(category, index) {
+    if (confirm('ต้องการลบสินค้านี้หรือไม่?')) {
+        items[category].splice(index, 1);
+        saveDefaultItems();
+        loadDefaultItems();
+        updateItems();
+    }
+}
+
+// อัปเดตชื่อสินค้าที่เพิ่มเอง
+function updateCustomItemName(category, index, newName) {
+    if (newName.trim()) {
+        customItems[category][index].name = newName.trim();
+        saveCustomItems();
+        updateItems();
+    }
+}
+
+// อัปเดตราคาสินค้าที่เพิ่มเอง
+function updateCustomItemPrice(category, index, newPrice) {
+    const price = parseFloat(newPrice);
+    if (price >= 0) {
+        customItems[category][index].defaultPrice = price;
+        saveCustomItems();
+        updateItems();
+    }
+}
+
+// ลบสินค้าที่เพิ่มเอง
+function deleteCustomItem(category, index) {
+    if (confirm('ต้องการลบสินค้านี้หรือไม่?')) {
+        customItems[category].splice(index, 1);
+        if (customItems[category].length === 0) {
+            delete customItems[category];
+        }
+        saveCustomItems();
+        updateItems();
+        loadCustomItems();
+    }
+}
+
+// เพิ่มสินค้าใหม่จาก Modal
+function addNewItemFromModal() {
+    const category = document.getElementById('new-item-category').value;
+    const name = document.getElementById('new-item-name').value.trim();
+    const price = parseFloat(document.getElementById('new-item-price').value);
+
+    if (!category || !name || isNaN(price) || price < 0) {
+        alert('กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง');
+        return;
+    }
+
+    // ตรวจสอบว่ามีสินค้าชื่อนี้แล้วหรือไม่
+    const existsInDefault = items[category] && items[category].some(item =>
+        item.name.toLowerCase() === name.toLowerCase()
+    );
+    const existsInCustom = customItems[category] && customItems[category].some(item =>
+        item.name.toLowerCase() === name.toLowerCase()
+    );
+
+    if (existsInDefault || existsInCustom) {
+        alert('มีสินค้าชื่อนี้อยู่แล้ว');
+        return;
+    }
+
+    saveCustomItem(category, name, price);
+    clearNewItemForm();
+
+    // รีเฟรชแท็บที่เกี่ยวข้อง
+    if (currentTab === 'custom') {
+        loadCustomItems();
+    }
+    updateItems();
+
+    alert('เพิ่มสินค้าเรียบร้อยแล้ว');
+}
+
+// ล้างฟอร์มเพิ่มสินค้า
+function clearNewItemForm() {
+    const categorySelect = document.getElementById('new-item-category');
+    const nameInput = document.getElementById('new-item-name');
+    const priceInput = document.getElementById('new-item-price');
+
+    if (categorySelect) categorySelect.value = '';
+    if (nameInput) nameInput.value = '';
+    if (priceInput) priceInput.value = '';
+}
+
+// Export ข้อมูลสินค้า
+function exportItems() {
+    const data = {
+        defaultItems: items,
+        customItems: customItems,
+        recentItems: recentItems,
+        exportDate: new Date().toISOString(),
+        version: "1.0"
+    };
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `สินค้า_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    alert('ส่งออกข้อมูลเรียบร้อยแล้ว');
+}
+
+// Import ข้อมูลสินค้า
+function importItems() {
+    document.getElementById('import-file').click();
+}
+
+function handleImportFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+
+            if (!data.defaultItems && !data.customItems) {
+                alert('ไฟล์ไม่มีข้อมูลสินค้า');
+                return;
+            }
+
+            if (confirm('การ Import จะเขียนทับข้อมูลเดิม\nต้องการดำเนินการต่อหรือไม่?')) {
+                if (data.defaultItems) {
+                    items = data.defaultItems;
+                    saveDefaultItems();
+                }
+
+                if (data.customItems) {
+                    customItems = data.customItems;
+                    saveCustomItems();
+                }
+
+                if (data.recentItems) {
+                    recentItems = data.recentItems;
+                    localStorage.setItem('recentItems', JSON.stringify(recentItems));
+                }
+
+                // รีเฟรชทุกอย่าง
+                updateItems();
+                loadDefaultItems();
+                loadCustomItems();
+                updateRecentItems();
+
+                alert('นำเข้าข้อมูลเรียบร้อยแล้ว');
+            }
+        } catch (error) {
+            console.error('Import error:', error);
+            alert('ไฟล์ไม่ถูกต้อง กรุณาตรวจสอบและลองใหม่');
+        }
+    };
+    reader.readAsText(file);
+
+    // ล้างค่า input
+    event.target.value = '';
+}
+
+// รีเซ็ตข้อมูลทั้งหมด
+function resetAllItems() {
+    if (confirm('ต้องการรีเซ็ตข้อมูลสินค้าทั้งหมดกลับเป็นค่าเริ่มต้นหรือไม่?\n\n⚠️ ข้อมูลที่แก้ไขและเพิ่มเองจะหายไปทั้งหมด')) {
+        // รีเซ็ตสินค้าเริ่มต้น
+        items = {
+            "อาหาร": [
+                {name: "ปลาทู", defaultPrice: 25},
+                {name: "แกงถุง", defaultPrice: 25},
+                {name: "น่องไก่", defaultPrice: 20},
+                {name: "ข้าวเหนียว", defaultPrice: 10},
+                {name: "ขนมกล่อง", defaultPrice: 10},
+                {name: "ปลาดุก", defaultPrice: 55}
+            ],
+            "ของใช้": [
+                {name: "สบู่", defaultPrice: 25},
+                {name: "ยาสีฟัน", defaultPrice: 45},
+                {name: "แชมพู", defaultPrice: 120},
+                {name: "ผงซักฟอก", defaultPrice: 85},
+                {name: "ถุงขยะ", defaultPrice: 30},
+                {name: "ทิชชู่", defaultPrice: 35}
+            ],
+            "เครื่องดื่ม": [
+                {name: "น้ำเปล่า", defaultPrice: 8},
+                {name: "น้ำอัดลม", defaultPrice: 15},
+                {name: "กาแฟ", defaultPrice: 17},
+                {name: "กาแฟซอง", defaultPrice: 5},
+                {name: "ชา", defaultPrice: 20},
+                {name: "น้ำผลไม้", defaultPrice: 30},
+                {name: "น้ำแข็ง", defaultPrice: 10}
+            ]
+        };
+
+        // ลบสินค้าที่เพิ่มเอง
+        customItems = {};
+        recentItems = [];
+
+        // บันทึกและรีเฟรช
+        saveDefaultItems();
+        saveCustomItems();
+        localStorage.removeItem('recentItems');
+
+        updateItems();
+        loadDefaultItems();
+        loadCustomItems();
+        updateRecentItems();
+
+        alert('รีเซ็ตข้อมูลเรียบร้อยแล้ว');
+    }
+}
+
+// บันทึกข้อมูล
+function saveDefaultItems() {
+    localStorage.setItem('defaultItems', JSON.stringify(items));
+}
+
+function saveCustomItems() {
+    localStorage.setItem('customItems', JSON.stringify(customItems));
+}
+
+// เพิ่มฟังก์ชันสำรองข้อมูลอัตโนมัติ
+function autoBackup() {
+    const backupData = {
+        defaultItems: items,
+        customItems: customItems,
+        recentItems: recentItems,
+        backupDate: new Date().toISOString()
+    };
+
+    localStorage.setItem('itemsBackup', JSON.stringify(backupData));
+}
+
+// เรียกใช้ backup ทุก 5 นาที
+setInterval(autoBackup, 5 * 60 * 1000);
+
+// Backup เมื่อออกจากหน้า
+window.addEventListener('beforeunload', autoBackup);
+</script>
 
 </body>
 </html>
