@@ -1141,6 +1141,10 @@ function saveCustomItems() {
     localStorage.setItem('customItems', JSON.stringify(customItems));
 }
 
+function confirmDelete(description) {
+  return confirm('ยืนยันการลบรายการ: ' + description + ' ?');
+}
+
 // เพิ่มฟังก์ชันสำรองข้อมูลอัตโนมัติ
 function autoBackup() {
     const backupData = {
