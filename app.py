@@ -167,20 +167,90 @@ def index():
         conn.commit()
         return redirect(url_for('index'))
 
+    # รับเดือนที่เลือก หรือใช้เดือนปัจจุบันเป็นค่าเริ่มต้น
+    from datetime import datetime
+    selected_month = request.args.get('month', datetime.now().strftime('%Y-%m'))
+    
     sort_order = request.args.get('sort', 'desc')
     order_sql = 'ORDER BY work_date DESC' if sort_order == 'desc' else 'ORDER BY work_date ASC'
-    records = conn.execute(f'SELECT * FROM ot_records {order_sql}').fetchall()
-    total_ot = conn.execute('SELECT SUM(ot_hours) FROM ot_records').fetchone()[0] or 0
-
+    
+    # กรองข้อมูลตามเดือนที่เลือก
+    month_filter = f"WHERE strftime('%Y-%m', work_date) = ?"
+    
+    # นับจำนวนรายการในเดือนที่เลือก
+    total_records = conn.execute(f'SELECT COUNT(*) FROM ot_records {month_filter}', (selected_month,)).fetchone()[0]
+    
+    # ดึงข้อมูลทั้งหมดสำหรับเดือนที่เลือก (ไม่มี pagination)
+    records = conn.execute(f'SELECT * FROM ot_records {month_filter} {order_sql}', 
+                          (selected_month,)).fetchall()
+    
+    # คำนวณ OT รวมสำหรับเดือนที่เลือก
+    monthly_total_ot = conn.execute(f'SELECT SUM(ot_hours) FROM ot_records {month_filter}', (selected_month,)).fetchone()[0] or 0
+    
+    # ดึงรายการเดือนทั้งหมดที่มีข้อมูล
+    available_months = conn.execute('''
+                                   SELECT DISTINCT strftime('%Y-%m', work_date) AS month
+                                   FROM ot_records
+                                   ORDER BY month DESC
+                                   ''').fetchall()
+    
+    # สร้างรายการเดือนสำหรับเลือก (ย้อนหลัง 12 เดือน และล่วงหน้า 6 เดือน)
+    from datetime import datetime, timedelta
+    import calendar
+    
+    selectable_months = []
+    current_date = datetime.now()
+    
+    # สร้างรายการเดือน (ย้อนหลัง 12 เดือน)
+    for i in range(12, -1, -1):  # 12 เดือนย้อนหลัง + เดือนปัจจุบัน
+        date = datetime(current_date.year, current_date.month, 1) - timedelta(days=i*30)
+        date = date.replace(day=1)  # ให้เป็นวันที่ 1 ของเดือน
+        month_str = date.strftime('%Y-%m')
+        
+        # ตรวจสอบว่าเดือนนี้มีข้อมูลหรือไม่
+        has_data = any(month['month'] == month_str for month in available_months)
+        
+        selectable_months.append({
+            'month': month_str,
+            'display': f"{date.strftime('%Y-%m')} ({calendar.month_name[date.month]} {date.year})",
+            'has_data': has_data
+        })
+    
+    # เพิ่มเดือนล่วงหน้า 6 เดือน
+    for i in range(1, 7):
+        date = datetime(current_date.year, current_date.month, 1) + timedelta(days=i*32)
+        date = date.replace(day=1)  # ให้เป็นวันที่ 1 ของเดือน
+        month_str = date.strftime('%Y-%m')
+        
+        selectable_months.append({
+            'month': month_str,
+            'display': f"{date.strftime('%Y-%m')} ({calendar.month_name[date.month]} {date.year})",
+            'has_data': False  # เดือนล่วงหน้าจะไม่มีข้อมูล
+        })
+    
+    # ดึงข้อมูลสำหรับตารางรวมรายเดือน (แสดงทุกเดือน)
     monthly_ot = conn.execute('''
                               SELECT strftime('%Y-%m', work_date) AS month, SUM(ot_hours) AS total
                               FROM ot_records
                               GROUP BY month
                               ORDER BY month DESC
                               ''').fetchall()
+    
+    # คำนวณ OT รวมทั้งหมด
+    total_ot = conn.execute('SELECT SUM(ot_hours) FROM ot_records').fetchone()[0] or 0
+    
     conn.close()
-    return render_template('index.html', records=records, total_ot=round(total_ot, 2),
-                           sort_order=sort_order, monthly_ot=monthly_ot)
+    return render_template('index.html', 
+                         records=records, 
+                         monthly_total_ot=round(monthly_total_ot, 2),
+                         total_ot=round(total_ot, 2),
+                         sort_order=sort_order, 
+                         monthly_ot=monthly_ot,
+                         page=1, 
+                         total_pages=1, 
+                         total_records=total_records,
+                         selected_month=selected_month,
+                         available_months=selectable_months)
 
 
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
@@ -241,19 +311,92 @@ def income_expense():
         flash('บันทึกข้อมูลเรียบร้อยแล้ว', 'success')
         return redirect('/income-expense')
 
-    records = conn.execute('SELECT * FROM income_expense ORDER BY date DESC').fetchall()
+    # รับเดือนที่เลือก หรือใช้เดือนปัจจุบันเป็นค่าเริ่มต้น
+    from datetime import datetime
+    selected_month = request.args.get('month', datetime.now().strftime('%Y-%m'))
+    
+    sort_order = request.args.get('sort', 'desc')
+    order_sql = 'ORDER BY date DESC' if sort_order == 'desc' else 'ORDER BY date ASC'
+    
+    # กรองข้อมูลตามเดือนที่เลือก
+    month_filter = f"WHERE strftime('%Y-%m', date) = ?"
+    
+    # นับจำนวนรายการในเดือนที่เลือก
+    total_records = conn.execute(f'SELECT COUNT(*) FROM income_expense {month_filter}', (selected_month,)).fetchone()[0]
+    
+    # ดึงข้อมูลทั้งหมดสำหรับเดือนที่เลือก (ไม่มี pagination)
+    records = conn.execute(f'SELECT * FROM income_expense {month_filter} {order_sql}', 
+                          (selected_month,)).fetchall()
+    
+    # คำนวณยอดรวมสำหรับเดือนที่เลือก
+    monthly_total_income = conn.execute(f'SELECT SUM(amount) FROM income_expense {month_filter} AND category="income"', (selected_month,)).fetchone()[0] or 0
+    monthly_total_expense = conn.execute(f'SELECT SUM(amount) FROM income_expense {month_filter} AND category="expense"', (selected_month,)).fetchone()[0] or 0
+    
+    # ดึงรายการเดือนทั้งหมดที่มีข้อมูล
+    available_months = conn.execute('''
+                                   SELECT DISTINCT strftime('%Y-%m', date) AS month
+                                   FROM income_expense
+                                   ORDER BY month DESC
+                                   ''').fetchall()
+    
+    # สร้างรายการเดือนสำหรับเลือก (ย้อนหลัง 12 เดือน และล่วงหน้า 6 เดือน)
+    from datetime import datetime, timedelta
+    import calendar
+    
+    selectable_months = []
+    current_date = datetime.now()
+    
+    # สร้างรายการเดือน (ย้อนหลัง 12 เดือน)
+    for i in range(12, -1, -1):  # 12 เดือนย้อนหลัง + เดือนปัจจุบัน
+        date = datetime(current_date.year, current_date.month, 1) - timedelta(days=i*30)
+        date = date.replace(day=1)  # ให้เป็นวันที่ 1 ของเดือน
+        month_str = date.strftime('%Y-%m')
+        
+        # ตรวจสอบว่าเดือนนี้มีข้อมูลหรือไม่
+        has_data = any(month['month'] == month_str for month in available_months)
+        
+        selectable_months.append({
+            'month': month_str,
+            'display': f"{date.strftime('%Y-%m')} ({calendar.month_name[date.month]} {date.year})",
+            'has_data': has_data
+        })
+    
+    # เพิ่มเดือนล่วงหน้า 6 เดือน
+    for i in range(1, 7):
+        date = datetime(current_date.year, current_date.month, 1) + timedelta(days=i*32)
+        date = date.replace(day=1)  # ให้เป็นวันที่ 1 ของเดือน
+        month_str = date.strftime('%Y-%m')
+        
+        selectable_months.append({
+            'month': month_str,
+            'display': f"{date.strftime('%Y-%m')} ({calendar.month_name[date.month]} {date.year})",
+            'has_data': False  # เดือนล่วงหน้าจะไม่มีข้อมูล
+        })
+    
+    # คำนวณยอดรวมทั้งหมด
     total_income = conn.execute('SELECT SUM(amount) FROM income_expense WHERE category="income"').fetchone()[0] or 0
     total_expense = conn.execute('SELECT SUM(amount) FROM income_expense WHERE category="expense"').fetchone()[0] or 0
+    
+    # ดึงข้อมูลสำหรับตารางสรุปรายเดือน (แสดงทุกเดือน)
     monthly_summary = conn.execute('''
                                    SELECT strftime('%Y-%m', date) AS month, category, SUM(amount) AS total
                                    FROM income_expense
                                    GROUP BY month, category
                                    ORDER BY month DESC
                                    ''').fetchall()
+    
     conn.close()
-    return render_template('income_expense.html', records=records,
-                           total_income=total_income, total_expense=total_expense,
-                           monthly_summary=monthly_summary)
+    return render_template('income_expense.html', 
+                         records=records,
+                         monthly_total_income=monthly_total_income,
+                         monthly_total_expense=monthly_total_expense,
+                         total_income=total_income, 
+                         total_expense=total_expense,
+                         monthly_summary=monthly_summary,
+                         selected_month=selected_month,
+                         available_months=selectable_months,
+                         total_records=total_records,
+                         sort_order=sort_order)
 
 
 @app.route('/edit-income-expense/<int:id>', methods=['GET', 'POST'])

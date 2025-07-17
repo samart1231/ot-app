@@ -2,54 +2,131 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>แก้ไขรายการรายรับ/รายจ่าย</title>
   <script src="{{ url_for('static', filename='js/tailwind.min.js') }}"></script>
 </head>
-<body class="bg-gray-100 p-6 text-gray-800">
-  <div class="mb-4">
-    <a href="{{ url_for('income_expense') }}" class="text-blue-600 hover:underline">⬅️ กลับ</a>
-  </div>
-
-  <h1 class="text-2xl font-bold mb-6">📝 แก้ไขรายการ</h1>
-
-  <form method="POST" class="bg-white p-6 rounded shadow space-y-4 max-w-xl mx-auto">
-    <div>
-      <label class="block font-semibold mb-1">📅 วันที่</label>
-      <input type="date" name="date" required value="{{ record['date'] }}" class="w-full border rounded p-2">
-    </div>
-    <div>
-      <label class="block font-semibold mb-1">📝 รายละเอียด</label>
-      <input type="text" name="description" required value="{{ record['description'] }}" class="w-full border rounded p-2">
-    </div>
-    <div>
-      <label class="block font-semibold mb-1">💰 จำนวนเงิน</label>
-      <input type="number" step="0.01" name="amount" required value="{{ record['amount'] }}" class="w-full border rounded p-2">
-    </div>
-    <div>
-      <label class="block font-semibold mb-1">🏪 ร้านค้า</label>
-  <select name="vendor" class="w-full border rounded p-2">
-    <option value="">-- ไม่เลือก --</option>
-    <option value="ร้านยายจ่อย">ร้านยายจ่อย</option>
-    <option value="ร้านผัก">ร้านผัก</option>
-    <option value="เจ้นัน">เจ้นัน</option>
-    <option value="พี่แก่">พี่แก่</option>
-    <option value="พี่อาร์ม">พี่อาร์ม</option>
-    <option value="7-seven">7-seven</option>
-
-  </select>
-    </div>
-    <div>
-      <label class="block font-semibold mb-1">ประเภท</label>
-      <select name="category" required class="w-full border rounded p-2">
-        <option value="income" {% if record['category'] == 'income' %}selected{% endif %}>รายรับ</option>
-        <option value="expense" {% if record['category'] == 'expense' %}selected{% endif %}>รายจ่าย</option>
-      </select>
-    </div>
-    <div class="text-right">
-      <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-6 py-2 rounded">
-        💾 บันทึกการแก้ไข
+<body class="bg-gray-100 p-4 sm:p-6 text-gray-800 min-h-screen">
+  <!-- เมนูด้านบน -->
+  <nav class="mb-4 sm:mb-6">
+    <div class="relative inline-block">
+      <!-- ปุ่มเมนู -->
+      <button id="menu-button" class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg shadow-lg text-lg font-semibold transition-all">
+        <span>💰 รายรับรายจ่าย</span>
+        <svg id="menu-arrow" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
       </button>
+      
+      <!-- เมนู dropdown -->
+      <div id="dropdown-menu" class="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50 hidden">
+        <div class="py-2">
+          <a href="{{ url_for('index') }}" 
+             class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+            <span class="text-xl">🏠</span>
+            <span class="font-medium">หน้า OT</span>
+          </a>
+          <a href="{{ url_for('income_expense') }}" 
+             class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors bg-green-50 text-green-700">
+            <span class="text-xl">💰</span>
+            <span class="font-medium">รายรับรายจ่าย</span>
+          </a>
+          <a href="{{ url_for('manage_holidays') }}" 
+             class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
+            <span class="text-xl">📅</span>
+            <span class="font-medium">วันหยุด</span>
+          </a>
+        </div>
+      </div>
     </div>
-  </form>
+  </nav>
+
+  <h1 class="text-2xl sm:text-3xl font-bold mb-6 text-center sm:text-left">📝 แก้ไขรายการ</h1>
+
+  <div class="max-w-2xl mx-auto">
+    <form method="POST" class="bg-white p-4 sm:p-6 rounded shadow space-y-4 sm:space-y-6">
+      <div>
+        <label class="block font-semibold mb-2 text-sm sm:text-base">📅 วันที่</label>
+        <input type="date" name="date" required value="{{ record['date'] }}" 
+               class="w-full border rounded p-3 sm:p-2 text-base focus:ring-2 focus:ring-blue-400">
+      </div>
+      
+      <div>
+        <label class="block font-semibold mb-2 text-sm sm:text-base">📝 รายละเอียด</label>
+        <input type="text" name="description" required value="{{ record['description'] }}" 
+               class="w-full border rounded p-3 sm:p-2 text-base focus:ring-2 focus:ring-blue-400">
+      </div>
+      
+      <div>
+        <label class="block font-semibold mb-2 text-sm sm:text-base">💰 จำนวนเงิน</label>
+        <input type="number" step="0.01" name="amount" required value="{{ record['amount'] }}" 
+               class="w-full border rounded p-3 sm:p-2 text-base focus:ring-2 focus:ring-blue-400">
+      </div>
+      
+      <div>
+        <label class="block font-semibold mb-2 text-sm sm:text-base">🏪 ร้านค้า</label>
+        <select name="vendor" class="w-full border rounded p-3 sm:p-2 text-base focus:ring-2 focus:ring-blue-400">
+          <option value="">-- ไม่เลือก --</option>
+          <option value="ร้านยายจ่อย" {% if record['vendor'] == 'ร้านยายจ่อย' %}selected{% endif %}>ร้านยายจ่อย</option>
+          <option value="ร้านผัก" {% if record['vendor'] == 'ร้านผัก' %}selected{% endif %}>ร้านผัก</option>
+          <option value="เจ้นัน" {% if record['vendor'] == 'เจ้นัน' %}selected{% endif %}>เจ้นัน</option>
+          <option value="พี่แก่" {% if record['vendor'] == 'พี่แก่' %}selected{% endif %}>พี่แก่</option>
+          <option value="พี่อาร์ม" {% if record['vendor'] == 'พี่อาร์ม' %}selected{% endif %}>พี่อาร์ม</option>
+          <option value="7-seven" {% if record['vendor'] == '7-seven' %}selected{% endif %}>7-seven</option>
+        </select>
+      </div>
+      
+      <div>
+        <label class="block font-semibold mb-2 text-sm sm:text-base">📊 ประเภท</label>
+        <select name="category" required class="w-full border rounded p-3 sm:p-2 text-base focus:ring-2 focus:ring-blue-400">
+          <option value="income" {% if record['category'] == 'income' %}selected{% endif %}>💰 รายรับ</option>
+          <option value="expense" {% if record['category'] == 'expense' %}selected{% endif %}>💸 รายจ่าย</option>
+        </select>
+      </div>
+      
+      <div class="flex justify-center sm:justify-end">
+        <button type="submit" 
+                class="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-6 py-3 sm:py-2 rounded text-base">
+          💾 บันทึกการแก้ไข
+        </button>
+      </div>
+    </form>
+  </div>
+  <script>
+    // Dropdown menu functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const menuButton = document.getElementById('menu-button');
+      const dropdownMenu = document.getElementById('dropdown-menu');
+      const menuArrow = document.getElementById('menu-arrow');
+      
+      if (menuButton && dropdownMenu && menuArrow) {
+        // เปิด/ปิด dropdown เมื่อคลิกปุ่ม
+        menuButton.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const isHidden = dropdownMenu.classList.contains('hidden');
+          
+          if (isHidden) {
+            dropdownMenu.classList.remove('hidden');
+            menuArrow.style.transform = 'rotate(180deg)';
+          } else {
+            dropdownMenu.classList.add('hidden');
+            menuArrow.style.transform = 'rotate(0deg)';
+          }
+        });
+        
+        // ปิด dropdown เมื่อคลิกนอกเมนู
+        document.addEventListener('click', function() {
+          dropdownMenu.classList.add('hidden');
+          menuArrow.style.transform = 'rotate(0deg)';
+        });
+        
+        // ป้องกันการปิด dropdown เมื่อคลิกภายในเมนู
+        dropdownMenu.addEventListener('click', function(e) {
+          e.stopPropagation();
+        });
+      }
+    });
+  </script>
+
 </body>
 </html>
