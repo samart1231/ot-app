@@ -2,37 +2,68 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>รายรับรายจ่าย</title>
   <script src="{{ url_for('static', filename='js/tailwind.min.js') }}"></script>
 </head>
-<body class="bg-gray-100 text-gray-800 p-6">
+<body class="bg-gray-100 text-gray-800 p-4 sm:p-6 min-h-screen">
 
-  <!-- ปุ่มกลับหน้าหลัก -->
-  <div class="mb-4">
-    <a href="{{ url_for('index') }}"
-       class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded shadow">
-     ⬅️ กลับหน้าหลัก
-    </a>
-  </div>
+  <!-- เมนูด้านบน -->
+  <nav class="mb-4 sm:mb-6">
+    <div class="relative inline-block">
+      <!-- ปุ่มเมนู -->
+      <button id="menu-button" class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg shadow-lg text-lg font-semibold transition-all">
+        <span>💰 รายรับรายจ่าย</span>
+        <svg id="menu-arrow" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+      
+      <!-- เมนู dropdown -->
+      <div id="dropdown-menu" class="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50 hidden">
+        <div class="py-2">
+          <a href="{{ url_for('index') }}" 
+             class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+            <span class="text-xl">🏠</span>
+            <span class="font-medium">หน้า OT</span>
+          </a>
+          <a href="{{ url_for('income_expense') }}" 
+             class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors bg-green-50 text-green-700">
+            <span class="text-xl">💰</span>
+            <span class="font-medium">รายรับรายจ่าย</span>
+          </a>
+          <a href="{{ url_for('manage_holidays') }}" 
+             class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
+            <span class="text-xl">📅</span>
+            <span class="font-medium">วันหยุด</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
 
   <!-- หัวเรื่อง -->
-  <h1 class="text-2xl font-bold mb-4">📒 รายรับ - รายจ่าย</h1>
+  <h1 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-center sm:text-left">📒 รายรับ - รายจ่าย</h1>
+
+  
 
   <!-- ฟอร์มเพิ่มข้อมูล -->
-<form method="POST" class="bg-white p-4 rounded shadow mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-  <div>
-    <label class="block font-semibold mb-1">📅 วันที่</label>
-    <input type="date" name="date" required class="w-full border rounded p-2">
-  </div>
+<form method="POST" class="bg-white p-4 sm:p-6 rounded shadow mb-6">
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+    <div>
+      <label class="block font-semibold mb-2 text-sm sm:text-base">📅 วันที่</label>
+      <input type="date" name="date" required class="w-full border rounded p-3 sm:p-2 text-base focus:ring-2 focus:ring-blue-400">
+    </div>
 
-  <div>
-    <label class="block font-semibold mb-1">ประเภท</label>
-    <select id="category" name="category" onchange="updateItems()" required class="w-full border rounded p-2">
-      <option value="">--เลือกประเภท--</option>
-      <option value="อาหาร">อาหาร</option>
-      <option value="ของใช้">ของใช้</option>
-      <option value="เครื่องดื่ม">เครื่องดื่ม</option>
-    </select>
+    <div>
+      <label class="block font-semibold mb-2 text-sm sm:text-base">📊 ประเภท</label>
+      <select id="category" name="category" onchange="updateItems()" required class="w-full border rounded p-3 sm:p-2 text-base focus:ring-2 focus:ring-blue-400">
+        <option value="">--เลือกประเภท--</option>
+        <option value="อาหาร">🍽️ อาหาร</option>
+        <option value="ของใช้">🛍️ ของใช้</option>
+        <option value="เครื่องดื่ม">🥤 เครื่องดื่ม</option>
+      </select>
+    </div>
   </div>
 
   <div class="md:col-span-2">
@@ -151,9 +182,52 @@
   </div>
 </form>
 
+<!-- เลือกเดือน -->
+<div class="bg-white p-4 sm:p-6 rounded shadow mb-6">
+  <h2 class="text-lg sm:text-xl font-semibold mb-4">📅 เลือกเดือนที่ต้องการดู</h2>
+  <form method="get" class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+    <label for="month" class="font-semibold text-sm sm:text-base">เดือน:</label>
+    <select name="month" id="month" onchange="this.form.submit()" 
+            class="p-3 sm:p-2 border rounded text-base focus:ring-2 focus:ring-blue-400">
+      {% for month_data in available_months %}
+        <option value="{{ month_data['month'] }}" 
+                {% if selected_month == month_data['month'] %}selected{% endif %}>
+          {{ month_data['display'] }}{% if month_data['has_data'] %} ✅{% else %} ⭕{% endif %}
+        </option>
+      {% endfor %}
+    </select>
+    
+    <!-- ซ่อน parameters อื่นๆ -->
+    <input type="hidden" name="sort" value="{{ sort_order }}">
+    
+    <div class="text-sm text-gray-600">
+      แสดงข้อมูล รายรับ-รายจ่าย เดือน {{ selected_month }}
+    </div>
+    
+    <div class="text-xs text-gray-500 mt-2">
+      <span class="mr-4">✅ = มีข้อมูล</span>
+      <span>⭕ = ไม่มีข้อมูล</span>
+    </div>
+  </form>
+</div>
+
   <!-- ตารางแสดงข้อมูล -->
-  <div class="bg-white p-4 rounded shadow">
-    <h2 class="text-xl font-semibold mb-4">📊 ข้อมูลทั้งหมด</h2>
+  <div class="bg-white rounded shadow">
+    <div class="p-4 sm:p-6 border-b">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h2 class="text-lg sm:text-xl font-semibold">📊 รายรับ-รายจ่าย เดือน {{ selected_month }}</h2>
+        <div class="flex gap-2 text-xs">
+          <div class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold">
+            รายรับ: {{ '{:,.2f}'.format(monthly_total_income) }} บาท
+          </div>
+          <div class="bg-red-100 text-red-700 px-3 py-1 rounded-full font-semibold">
+            รายจ่าย: {{ '{:,.2f}'.format(monthly_total_expense) }} บาท
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="p-4">
     <table class="w-full table-auto text-sm">
       <thead class="bg-gray-200 text-left">
         <tr>
@@ -179,29 +253,83 @@
               <span class="text-red-600 font-semibold">รายจ่าย</span>
             {% endif %}
           </td>
-          <td class="px-4 py-2 flex gap-2">
-            <form method="get" action="{{ url_for('edit_income_expense', id=r['id']) }}">
-              <button class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">แก้ไข</button>
-            </form>
-           <form method="post" action="{{ url_for('delete_income_expense', id=r['id']) }}" onsubmit="return confirm('ยืนยันการลบรายการนี้?');">
-<form method="post" action="{{ url_for('delete_income_expense', id=r['id']) }}" onsubmit="return confirmDelete('{{ r['description'] }}');">
-  <button class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">ลบ</button>
-</form>
-
+          <td class="px-3 py-3">
+            <div class="flex flex-col sm:flex-row gap-1 sm:gap-2">
+              <form method="get" action="{{ url_for('edit_income_expense', id=r['id']) }}">
+                <button class="w-full sm:w-auto px-2 py-1 text-xs sm:text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600">แก้ไข</button>
+              </form>
+              <form method="post" action="{{ url_for('delete_income_expense', id=r['id']) }}" onsubmit="return confirm('ยืนยันการลบรายการนี้?');">
+                <button class="w-full sm:w-auto px-2 py-1 text-xs sm:text-sm bg-red-600 text-white rounded hover:bg-red-700">ลบ</button>
+              </form>
+            </div>
           </td>
         </tr>
         {% endfor %}
+        {% if not records %}
+        <tr>
+          <td colspan="6" class="px-3 py-6 text-center text-gray-500">
+            <div class="py-8">
+              <div class="text-4xl mb-4">📭</div>
+              <div class="text-lg font-medium mb-2">ไม่มีข้อมูลรายรับ-รายจ่าย ในเดือน {{ selected_month }}</div>
+              <div class="text-sm text-gray-400">
+                เลือกเดือนอื่นที่มีสัญลักษณ์ ✅ หรือเพิ่มข้อมูลใหม่
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endif %}
       </tbody>
     </table>
+    </div>
   </div>
 
-  <!-- รวม -->
-  <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div class="bg-green-100 p-4 rounded shadow text-green-800 font-bold">
-      รวมรายรับ: {{ '{:,.2f}'.format(total_income) }} บาท
+  <!-- แสดงจำนวนรายการทั้งหมด -->
+  {% if records %}
+  <div class="text-center text-sm text-gray-600 my-4">
+    แสดงข้อมูลรายรับ-รายจ่าย ทั้งหมด {{ total_records }} รายการ ในเดือน {{ selected_month }}
+  </div>
+  {% endif %}
+
+  <!-- สรุปยอดรวม -->
+  <div class="mt-6 bg-white p-4 sm:p-6 rounded shadow">
+    <h3 class="text-lg font-semibold mb-4 text-center">💰 สรุปยอดรวม</h3>
+    
+    <!-- สรุปเดือนที่เลือก -->
+    <div class="mb-6">
+      <h4 class="text-md font-medium mb-3 text-gray-700">📊 เดือน {{ selected_month }}</h4>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-green-100 p-4 rounded text-center">
+          <div class="text-green-800 font-bold text-lg">{{ '{:,.2f}'.format(monthly_total_income) }}</div>
+          <div class="text-green-600 text-sm">รายรับ (บาท)</div>
+        </div>
+        <div class="bg-red-100 p-4 rounded text-center">
+          <div class="text-red-800 font-bold text-lg">{{ '{:,.2f}'.format(monthly_total_expense) }}</div>
+          <div class="text-red-600 text-sm">รายจ่าย (บาท)</div>
+        </div>
+        <div class="bg-blue-100 p-4 rounded text-center">
+          <div class="text-blue-800 font-bold text-lg">{{ '{:,.2f}'.format(monthly_total_income - monthly_total_expense) }}</div>
+          <div class="text-blue-600 text-sm">คงเหลือ (บาท)</div>
+        </div>
+      </div>
     </div>
-    <div class="bg-red-100 p-4 rounded shadow text-red-800 font-bold">
-      รวมรายจ่าย: {{ '{:,.2f}'.format(total_expense) }} บาท
+    
+    <!-- สรุปทั้งหมด -->
+    <div class="border-t pt-4">
+      <h4 class="text-md font-medium mb-3 text-gray-700">🎯 รวมทั้งหมด</h4>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-green-50 p-4 rounded text-center border border-green-200">
+          <div class="text-green-700 font-bold text-lg">{{ '{:,.2f}'.format(total_income) }}</div>
+          <div class="text-green-600 text-sm">รายรับทั้งหมด (บาท)</div>
+        </div>
+        <div class="bg-red-50 p-4 rounded text-center border border-red-200">
+          <div class="text-red-700 font-bold text-lg">{{ '{:,.2f}'.format(total_expense) }}</div>
+          <div class="text-red-600 text-sm">รายจ่ายทั้งหมด (บาท)</div>
+        </div>
+        <div class="bg-blue-50 p-4 rounded text-center border border-blue-200">
+          <div class="text-blue-700 font-bold text-lg">{{ '{:,.2f}'.format(total_income - total_expense) }}</div>
+          <div class="text-blue-600 text-sm">คงเหลือทั้งหมด (บาท)</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1164,6 +1292,40 @@ setInterval(autoBackup, 5 * 60 * 1000);
 
 // Backup เมื่อออกจากหน้า
 window.addEventListener('beforeunload', autoBackup);
+
+// Dropdown menu functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const menuButton = document.getElementById('menu-button');
+    const dropdownMenu = document.getElementById('dropdown-menu');
+    const menuArrow = document.getElementById('menu-arrow');
+    
+    if (menuButton && dropdownMenu && menuArrow) {
+        // เปิด/ปิด dropdown เมื่อคลิกปุ่ม
+        menuButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isHidden = dropdownMenu.classList.contains('hidden');
+            
+            if (isHidden) {
+                dropdownMenu.classList.remove('hidden');
+                menuArrow.style.transform = 'rotate(180deg)';
+            } else {
+                dropdownMenu.classList.add('hidden');
+                menuArrow.style.transform = 'rotate(0deg)';
+            }
+        });
+        
+        // ปิด dropdown เมื่อคลิกนอกเมนู
+        document.addEventListener('click', function() {
+            dropdownMenu.classList.add('hidden');
+            menuArrow.style.transform = 'rotate(0deg)';
+        });
+        
+        // ป้องกันการปิด dropdown เมื่อคลิกภายในเมนู
+        dropdownMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    }
+});
 </script>
 
 </body>

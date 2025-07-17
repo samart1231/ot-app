@@ -2,48 +2,113 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>แก้ไข OT</title>
   <script src="{{ url_for('static', filename='js/tailwind.min.js') }}"></script>
 </head>
-<body class="p-8 bg-gray-100 text-gray-800">
+<body class="p-4 sm:p-8 bg-gray-100 text-gray-800 min-h-screen">
 
-  <!-- ปุ่มกลับ -->
-  <div class="mb-4">
-    <a href="{{ url_for('index') }}"
-       class="inline-block bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-4 py-2 rounded shadow">
-      ⬅️ กลับหน้า OT
-    </a>
+  <!-- เมนูด้านบน -->
+  <nav class="mb-4 sm:mb-6">
+    <div class="relative inline-block">
+      <!-- ปุ่มเมนู -->
+      <button id="menu-button" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg shadow-lg text-lg font-semibold transition-all">
+        <span>🏠 หน้า OT</span>
+        <svg id="menu-arrow" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+      
+      <!-- เมนู dropdown -->
+      <div id="dropdown-menu" class="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50 hidden">
+        <div class="py-2">
+          <a href="{{ url_for('index') }}" 
+             class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors bg-blue-50 text-blue-700">
+            <span class="text-xl">🏠</span>
+            <span class="font-medium">หน้า OT</span>
+          </a>
+          <a href="{{ url_for('income_expense') }}" 
+             class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors">
+            <span class="text-xl">💰</span>
+            <span class="font-medium">รายรับรายจ่าย</span>
+          </a>
+          <a href="{{ url_for('manage_holidays') }}" 
+             class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
+            <span class="text-xl">📅</span>
+            <span class="font-medium">วันหยุด</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <h1 class="text-2xl sm:text-3xl font-bold mb-6 text-center sm:text-left">✏️ แก้ไขข้อมูล OT</h1>
+
+  <div class="max-w-2xl mx-auto">
+    <form method="post" class="bg-white p-4 sm:p-6 rounded shadow">
+      <!-- วันที่ -->
+      <div class="mb-4 sm:mb-6">
+        <label class="block font-semibold mb-2 text-sm sm:text-base">📅 วันที่ทำงาน</label>
+        <input type="date" name="work_date" value="{{ record['work_date'] }}"
+               class="w-full border p-3 sm:p-2 rounded text-base focus:ring-2 focus:ring-blue-400" required>
+      </div>
+
+      <!-- เวลาสิ้นสุด -->
+      <div class="mb-6">
+        <label class="block font-semibold mb-2 text-sm sm:text-base">⏰ วัน-เวลาสิ้นสุด</label>
+        <input type="datetime-local" name="end_time" value="{{ record['end_time'] }}"
+               class="w-full border p-3 sm:p-2 rounded text-base focus:ring-2 focus:ring-blue-400" required>
+      </div>
+
+      <!-- ปุ่ม -->
+      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+        <button type="submit"
+                class="w-full sm:w-auto px-6 py-3 sm:py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-base font-semibold">
+          💾 บันทึก
+        </button>
+        <a href="{{ url_for('index') }}"
+           class="w-full sm:w-auto text-center px-6 py-3 sm:py-2 bg-gray-300 text-black rounded hover:bg-gray-400 text-base font-semibold">
+          ยกเลิก
+        </a>
+      </div>
+    </form>
   </div>
 
-  <h1 class="text-3xl font-bold mb-6">✏️ แก้ไขข้อมูล OT</h1>
-
-  <form method="post" class="bg-white p-6 rounded shadow max-w-xl">
-    <!-- วันที่ -->
-    <div class="mb-4">
-      <label class="block font-semibold mb-1">📅 วันที่ทำงาน</label>
-      <input type="date" name="work_date" value="{{ record['work_date'] }}"
-             class="w-full border p-2 rounded" required>
-    </div>
-
-    <!-- เวลาสิ้นสุด -->
-    <div class="mb-6">
-      <label class="block font-semibold mb-1">⏰ วัน-เวลาสิ้นสุด</label>
-      <input type="datetime-local" name="end_time" value="{{ record['end_time'] }}"
-             class="w-full border p-2 rounded" required>
-    </div>
-
-    <!-- ปุ่ม -->
-    <div class="flex gap-4">
-      <button type="submit"
-              class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-        💾 บันทึก
-      </button>
-      <a href="{{ url_for('index') }}"
-         class="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400">
-        ยกเลิก
-      </a>
-    </div>
-  </form>
+  <script>
+    // Dropdown menu functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const menuButton = document.getElementById('menu-button');
+      const dropdownMenu = document.getElementById('dropdown-menu');
+      const menuArrow = document.getElementById('menu-arrow');
+      
+      if (menuButton && dropdownMenu && menuArrow) {
+        // เปิด/ปิด dropdown เมื่อคลิกปุ่ม
+        menuButton.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const isHidden = dropdownMenu.classList.contains('hidden');
+          
+          if (isHidden) {
+            dropdownMenu.classList.remove('hidden');
+            menuArrow.style.transform = 'rotate(180deg)';
+          } else {
+            dropdownMenu.classList.add('hidden');
+            menuArrow.style.transform = 'rotate(0deg)';
+          }
+        });
+        
+        // ปิด dropdown เมื่อคลิกนอกเมนู
+        document.addEventListener('click', function() {
+          dropdownMenu.classList.add('hidden');
+          menuArrow.style.transform = 'rotate(0deg)';
+        });
+        
+        // ป้องกันการปิด dropdown เมื่อคลิกภายในเมนู
+        dropdownMenu.addEventListener('click', function(e) {
+          e.stopPropagation();
+        });
+      }
+    });
+  </script>
 
 </body>
 </html>
