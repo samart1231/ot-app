@@ -8,41 +8,53 @@
 </head>
 <body class="p-4 sm:p-8 bg-gray-100 text-gray-800 min-h-screen">
 
-  <!-- เมนูด้านบน -->
-  <nav class="mb-6">
-    <div class="relative inline-block">
-      <!-- ปุ่มเมนู -->
-      <button id="menu-button" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg shadow-lg text-lg font-semibold transition-all">
-        <span>🏠 หน้า OT</span>
-        <svg id="menu-arrow" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-        </svg>
-      </button>
-      
-      <!-- เมนู dropdown -->
-      <div id="dropdown-menu" class="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50 hidden">
-        <div class="py-2">
-          <a href="{{ url_for('index') }}" 
-             class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
-            <span class="text-xl">🏠</span>
-            <span class="font-medium">หน้า OT</span>
-          </a>
-          <a href="{{ url_for('income_expense') }}" 
-             class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors">
-            <span class="text-xl">💰</span>
-            <span class="font-medium">รายรับรายจ่าย</span>
-          </a>
-          <a href="{{ url_for('manage_holidays') }}" 
-             class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
-            <span class="text-xl">📅</span>
-            <span class="font-medium">วันหยุด</span>
-          </a>
+    <!-- Mobile Menu -->
+    <div class="lg:hidden fixed top-0 left-0 w-full bg-white shadow-lg z-50">
+        <div class="flex items-center justify-between p-4">
+            <h1 class="text-xl font-bold text-gray-800">📅 OT Records</h1>
+            <button onclick="toggleMobileMenu()" class="text-gray-600 hover:text-gray-800">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
         </div>
-      </div>
+        <div id="mobile-menu" class="hidden bg-white border-t">
+            <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📅 OT Records</a>
+            <a href="/income-expense" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">💰 Income/Expense</a>
+            <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">🎉 Holidays</a>
+            <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📊 Import CSV</a>
+            <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⏰ Import OT CSV</a>
+            <div class="px-4 py-3 border-b">
+                <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
+            </div>
+            <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50">🚪 Logout</a>
+        </div>
     </div>
-  </nav>
 
-  <h1 class="text-2xl sm:text-3xl font-bold mb-6 text-center sm:text-left">🧮 แอปคำนวณ OT 🕒</h1>
+    <!-- Desktop Menu -->
+    <div class="hidden lg:block fixed top-0 left-0 w-64 h-full bg-white shadow-lg">
+        <div class="p-6">
+            <h1 class="text-2xl font-bold text-gray-800 mb-8">📊 ระบบจัดการ</h1>
+            <nav class="space-y-2">
+                <a href="/index" class="block px-4 py-3 bg-blue-100 text-blue-700 font-medium rounded-lg">📅 OT Records</a>
+                <a href="/income-expense" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">💰 Income/Expense</a>
+                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">🎉 Holidays</a>
+                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">📊 Import CSV</a>
+                <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">⏰ Import OT CSV</a>
+            </nav>
+            <div class="mt-8 pt-6 border-t">
+                <div class="px-4 py-2">
+                    <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
+                </div>
+                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors">🚪 Logout</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="lg:ml-64 pt-16 lg:pt-0">
+        <div class="p-6">
+            <h1 class="text-2xl sm:text-3xl font-bold mb-6 text-center sm:text-left">🧮 แอปคำนวณ OT 🕒</h1>
 
 
   <!-- ฟอร์มบันทึก -->
@@ -99,7 +111,7 @@
         </div>
       </form>
     </div>
-  
+
 
   <!-- ตารางข้อมูล OT สำหรับเดือน {{ selected_month }} -->
   <div class="bg-white rounded shadow mb-6">
@@ -114,42 +126,42 @@
     
     <div class="overflow-x-auto">
       <table class="w-full table-auto text-sm">
-        <thead class="bg-gray-200 text-left">
-          <tr>
+    <thead class="bg-gray-200 text-left">
+      <tr>
             <th class="px-3 py-3 text-xs sm:text-sm">วันที่</th>
             <th class="px-3 py-3 text-xs sm:text-sm">เริ่ม</th>
             <th class="px-3 py-3 text-xs sm:text-sm">สิ้นสุด</th>
             <th class="px-3 py-3 text-xs sm:text-sm">ชั่วโมง OT</th>
             <th class="px-3 py-3 text-xs sm:text-sm">จัดการ</th>
-          </tr>
-        </thead>
-      <tbody>
-        {% for r in records %}
-        <tr class="border-t hover:bg-gray-50">
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr class="border-t hover:bg-gray-50">
           <td class="px-3 py-3 text-xs sm:text-sm">{{ r['work_date'] }}</td>
           <td class="px-3 py-3 text-xs sm:text-sm">{{ r['start_time'][11:16] }}</td>
           <td class="px-3 py-3 text-xs sm:text-sm">{{ r['end_time'][11:16] }}</td>
           <td class="px-3 py-3 text-xs sm:text-sm">{{ r['ot_hours'] }}</td>
           <td class="px-3 py-3">
             <div class="flex flex-col sm:flex-row gap-1 sm:gap-2">
-              <form action="{{ url_for('edit_ot', id=r['id']) }}" method="get">
+            <form action="{{ url_for('edit_ot', id=r['id']) }}" method="get">
                 <button type="submit" class="w-full sm:w-auto px-2 py-1 text-xs sm:text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600">
-                  แก้ไข
-                </button>
-              </form>
+    แก้ไข
+  </button>
+</form>
               <button class="delete-btn w-full sm:w-auto px-2 py-1 text-xs sm:text-sm bg-red-600 text-white rounded hover:bg-red-700"
                       data-id="{{ r['id'] }}" 
                       data-date="{{ r['work_date'] }}" 
                       data-start="{{ r['start_time'][11:16] }}" 
                       data-end="{{ r['end_time'][11:16] }}" 
                       data-hours="{{ r['ot_hours'] }}">
-                ลบ
-              </button>
-              <form id="delete-form-{{ r['id'] }}" method="post" action="{{ url_for('delete', id=r['id']) }}"></form>
+            ลบ
+          </button>
+          <form id="delete-form-{{ r['id'] }}" method="post" action="{{ url_for('delete', id=r['id']) }}"></form>
             </div>
-          </td>
-        </tr>
-        {% endfor %}
+        </td>
+      </tr>
+      {% endfor %}
         {% if not records %}
         <tr>
           <td colspan="5" class="px-3 py-6 text-center text-gray-500">
@@ -163,8 +175,8 @@
           </td>
         </tr>
         {% endif %}
-      </tbody>
-    </table>
+    </tbody>
+  </table>
     </div>
   </div>
 
@@ -179,34 +191,34 @@
   <h2 class="mt-6 text-lg sm:text-xl font-semibold text-center sm:text-left">รวม OT รายเดือน</h2>
   <div class="overflow-x-auto mt-2 bg-white shadow rounded">
     <table class="w-full table-auto text-sm">
-      <thead class="bg-gray-200 text-left">
-        <tr>
+  <thead class="bg-gray-200 text-left">
+    <tr>
           <th class="px-3 py-3 text-xs sm:text-sm">เดือน</th>
           <th class="px-3 py-3 text-xs sm:text-sm">รวม OT (ชม.)</th>
           <th class="px-3 py-3 text-xs sm:text-sm">Export</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for m in monthly_ot %}
-        <tr class="border-t hover:bg-gray-50">
+    </tr>
+  </thead>
+  <tbody>
+    {% for m in monthly_ot %}
+    <tr class="border-t hover:bg-gray-50">
           <td class="px-3 py-3">
-            <form action="{{ url_for('month_view', year_month=m['month']) }}" method="get">
+        <form action="{{ url_for('month_view', year_month=m['month']) }}" method="get">
               <button type="submit" class="w-full sm:w-auto text-white bg-blue-600 hover:bg-blue-700 px-2 py-1 text-xs sm:text-sm rounded">
-                {{ m['month'] }}
-              </button>
-            </form>
-          </td>
+            {{ m['month'] }}
+          </button>
+        </form>
+      </td>
           <td class="px-3 py-3 text-xs sm:text-sm">{{ m['total'] | round(2) }}</td>
           <td class="px-3 py-3">
-            <a href="{{ url_for('export_month_csv', year_month=m['month']) }}"
+        <a href="{{ url_for('export_month_csv', year_month=m['month']) }}"
                class="inline-block w-full sm:w-auto text-center text-xs sm:text-sm px-2 py-1 rounded bg-green-600 text-white hover:bg-green-700">
-              📥 Export
-            </a>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+          📥 Export
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
   </div>
 
   <!-- สรุป OT -->
@@ -229,23 +241,23 @@
       <h2 class="text-lg sm:text-xl font-bold mb-4 text-center">ยืนยันการลบรายการ OT</h2>
       <div class="overflow-x-auto mb-4">
         <table class="w-full text-xs sm:text-sm border">
-          <thead class="bg-gray-100">
-            <tr>
+        <thead class="bg-gray-100">
+          <tr>
               <th class="px-2 py-2 text-xs">วันที่</th>
               <th class="px-2 py-2 text-xs">เริ่ม</th>
               <th class="px-2 py-2 text-xs">สิ้นสุด</th>
               <th class="px-2 py-2 text-xs">OT</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
               <td class="px-2 py-2 text-xs" id="del-date"></td>
               <td class="px-2 py-2 text-xs" id="del-start"></td>
               <td class="px-2 py-2 text-xs" id="del-end"></td>
               <td class="px-2 py-2 text-xs" id="del-hours"></td>
-            </tr>
-          </tbody>
-        </table>
+          </tr>
+        </tbody>
+      </table>
       </div>
       <p class="mb-3 text-sm text-center">พิมพ์ <strong>yes</strong> เพื่อยืนยันการลบ:</p>
       <input type="text" id="confirm-input" class="w-full border p-3 rounded mb-4 text-base">
@@ -323,12 +335,21 @@
     function confirmDelete() {
       const input = document.getElementById('confirm-input').value.trim().toLowerCase();
       if (input.toLowerCase() === 'yes' || input.toLowerCase() === 'y') {
-        document.getElementById(`delete-form-${pendingId}`).submit();
-      } else {
+  document.getElementById(`delete-form-${pendingId}`).submit();
+} else {
         alert("ต้องพิมพ์ 'yes' เท่านั้นถึงจะลบได้");
       }
     }
   </script>
+        </div>
+    </div>
 
+    <script>
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+    </script>
 </body>
 </html>
