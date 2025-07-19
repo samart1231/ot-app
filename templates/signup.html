@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สมัครสมาชิก</title>
+    <script src="{{ url_for('static', filename='js/tailwind.min.js') }}"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-green-400 to-blue-600 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-xl p-6 sm:p-8 w-full max-w-md">
+        <div class="text-center mb-6">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">📝 สมัครสมาชิก</h1>
+            <p class="text-gray-600 text-sm sm:text-base">แอปคำนวณ OT</p>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 p-3 rounded-lg text-sm
+                        {% if category == 'error' %}bg-red-100 border border-red-400 text-red-700
+                        {% else %}bg-green-100 border border-green-400 text-green-700{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form action="{{ url_for('signup') }}" method="post" class="space-y-4">
+            <div>
+                <label for="email" class="block text-sm sm:text-base font-semibold text-gray-700 mb-2">📧 Email</label>
+                <input type="email" id="email" name="email" required 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-base"
+                       placeholder="example@email.com">
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm sm:text-base font-semibold text-gray-700 mb-2">🔒 รหัสผ่าน</label>
+                <input type="password" id="password" name="password" required 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-base"
+                       placeholder="อย่างน้อย 6 ตัวอักษร">
+            </div>
+
+            <div>
+                <label for="confirm_password" class="block text-sm sm:text-base font-semibold text-gray-700 mb-2">🔒 ยืนยันรหัสผ่าน</label>
+                <input type="password" id="confirm_password" name="confirm_password" required 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-base"
+                       placeholder="กรอกรหัสผ่านอีกครั้ง">
+            </div>
+
+            <button type="submit" 
+                    class="w-full bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 text-base sm:text-lg shadow-lg">
+                ✨ สมัครสมาชิก
+            </button>
+        </form>
+
+        <div class="mt-6 text-center">
+            <p class="text-gray-600 text-sm">มีบัญชีอยู่แล้ว?</p>
+            <a href="{{ url_for('login') }}" 
+               class="text-green-600 hover:text-green-800 font-semibold text-sm sm:text-base">
+                🔐 เข้าสู่ระบบ
+            </a>
+        </div>
+    </div>
+</body>
+</html> 

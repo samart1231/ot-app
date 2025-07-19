@@ -1,1334 +1,1889 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>รายรับรายจ่าย</title>
-  <script src="{{ url_for('static', filename='js/tailwind.min.js') }}"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายรับรายจ่าย</title>
+    <script src="{{ url_for('static', filename='js/tailwind.min.js') }}"></script>
+    <style>
+        /* Custom styles for mobile responsiveness */
+        @media (max-width: 768px) {
+            .mobile-responsive {
+                font-size: 14px;
+            }
+        }
+        
+        /* Animation for buttons */
+        .btn-animate {
+            transition: all 0.2s ease;
+        }
+        .btn-animate:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .btn-animate:active {
+            transform: translateY(0);
+        }
+        
+        /* Smooth transitions */
+        .smooth-transition {
+            transition: all 0.3s ease;
+        }
+        
+        /* Table styles */
+        .items-table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        
+        .items-table th {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 8px 12px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .items-table td {
+            border: 1px solid #e5e7eb;
+            padding: 8px 12px;
+            vertical-align: middle;
+        }
+        
+        .items-table tr:hover {
+            background-color: #f9fafb;
+        }
+        
+        .items-table .total-row {
+            background-color: #f3f4f6;
+            font-weight: 600;
+        }
+        
+        .items-table .total-row td {
+            border-top: 2px solid #d1d5db;
+        }
+        
+        /* Mobile table styles */
+        .mobile-table {
+            font-size: 10px;
+        }
+        
+        .mobile-table th {
+            padding: 4px 6px;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+        
+        .mobile-table td {
+            padding: 4px 6px;
+            font-size: 10px;
+        }
+        
+        .mobile-table input,
+        .mobile-table select {
+            font-size: 10px;
+            padding: 2px 4px;
+            min-width: 40px;
+        }
+        
+        .mobile-table button {
+            font-size: 9px;
+            padding: 1px 2px;
+        }
+        
+        .mobile-table .w-5 {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+        
+        /* Ensure table fits on mobile without horizontal scroll */
+        @media (max-width: 768px) {
+            .mobile-table {
+                table-layout: fixed;
+                width: 100%;
+            }
+            
+            .mobile-table th:nth-child(1) { width: 8%; }  /* # */
+            .mobile-table th:nth-child(2) { width: 20%; } /* ชื่อ */
+            .mobile-table th:nth-child(3) { width: 15%; } /* แท็ก */
+            .mobile-table th:nth-child(4) { width: 18%; } /* ราคา */
+            .mobile-table th:nth-child(5) { width: 15%; } /* จำนวน */
+            .mobile-table th:nth-child(6) { width: 12%; } /* รวม */
+            .mobile-table th:nth-child(7) { width: 12%; } /* จัดการ */
+        }
+        
+        /* Mobile responsive styles */
+        @media (max-width: 768px) {
+            .mobile-card {
+                background: white;
+                border-radius: 8px;
+                padding: 12px;
+                margin-bottom: 12px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            
+            .mobile-item-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 8px;
+            }
+            
+            .mobile-item-number {
+                background: #3b82f6;
+                color: white;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                font-weight: bold;
+            }
+            
+            .mobile-item-actions {
+                display: flex;
+                gap: 4px;
+            }
+            
+            .mobile-item-field {
+                margin-bottom: 8px;
+            }
+            
+            .mobile-item-label {
+                font-size: 11px;
+                font-weight: 600;
+                color: #6b7280;
+                margin-bottom: 4px;
+            }
+            
+            .mobile-item-input {
+                width: 100%;
+                border: 1px solid #d1d5db;
+                border-radius: 4px;
+                padding: 6px 8px;
+                font-size: 14px;
+            }
+            
+            .mobile-item-select {
+                width: 100%;
+                border: 1px solid #d1d5db;
+                border-radius: 4px;
+                padding: 6px 8px;
+                font-size: 14px;
+            }
+            
+            .mobile-controls {
+                display: flex;
+                gap: 4px;
+                align-items: center;
+            }
+            
+            .mobile-control-btn {
+                background: #f3f4f6;
+                border: 1px solid #d1d5db;
+                border-radius: 4px;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                color: #6b7280;
+            }
+            
+            .mobile-control-btn:hover {
+                background: #e5e7eb;
+            }
+            
+            .mobile-total {
+                font-weight: 600;
+                color: #059669;
+                text-align: right;
+            }
+            
+            .mobile-form-grid {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .mobile-form-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            
+            .mobile-form-full {
+                grid-column: 1 / -1;
+            }
+            
+            .mobile-button {
+                width: 100%;
+                padding: 12px;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 14px;
+                border: none;
+                cursor: pointer;
+            }
+            
+            .mobile-button-primary {
+                background: #3b82f6;
+                color: white;
+            }
+            
+            .mobile-button-secondary {
+                background: #6b7280;
+                color: white;
+            }
+            
+            .mobile-button-success {
+                background: #059669;
+                color: white;
+            }
+            
+            .mobile-button-danger {
+                background: #dc2626;
+                color: white;
+            }
+            
+            .mobile-summary-cards {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 8px;
+                margin-bottom: 16px;
+            }
+            
+            .mobile-summary-card {
+                padding: 12px;
+                border-radius: 8px;
+                text-align: center;
+            }
+            
+            .mobile-summary-value {
+                font-size: 18px;
+                font-weight: bold;
+                margin-bottom: 4px;
+            }
+            
+            .mobile-summary-label {
+                font-size: 12px;
+                opacity: 0.8;
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-100 text-gray-800 p-4 sm:p-6 min-h-screen">
-
-  <!-- เมนูด้านบน -->
-  <nav class="mb-4 sm:mb-6">
-    <div class="relative inline-block">
-      <!-- ปุ่มเมนู -->
-      <button id="menu-button" class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg shadow-lg text-lg font-semibold transition-all">
-        <span>💰 รายรับรายจ่าย</span>
-        <svg id="menu-arrow" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-        </svg>
-      </button>
-      
-      <!-- เมนู dropdown -->
-      <div id="dropdown-menu" class="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50 hidden">
-        <div class="py-2">
-          <a href="{{ url_for('index') }}" 
-             class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
-            <span class="text-xl">🏠</span>
-            <span class="font-medium">หน้า OT</span>
-          </a>
-          <a href="{{ url_for('income_expense') }}" 
-             class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors bg-green-50 text-green-700">
-            <span class="text-xl">💰</span>
-            <span class="font-medium">รายรับรายจ่าย</span>
-          </a>
-          <a href="{{ url_for('manage_holidays') }}" 
-             class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
-            <span class="text-xl">📅</span>
-            <span class="font-medium">วันหยุด</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </nav>
-
-  <!-- หัวเรื่อง -->
-  <h1 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-center sm:text-left">📒 รายรับ - รายจ่าย</h1>
-
-  
-
-  <!-- ฟอร์มเพิ่มข้อมูล -->
-<form method="POST" class="bg-white p-4 sm:p-6 rounded shadow mb-6">
-  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-    <div>
-      <label class="block font-semibold mb-2 text-sm sm:text-base">📅 วันที่</label>
-      <input type="date" name="date" required class="w-full border rounded p-3 sm:p-2 text-base focus:ring-2 focus:ring-blue-400">
-    </div>
-
-    <div>
-      <label class="block font-semibold mb-2 text-sm sm:text-base">📊 ประเภท</label>
-      <select id="category" name="category" onchange="updateItems()" required class="w-full border rounded p-3 sm:p-2 text-base focus:ring-2 focus:ring-blue-400">
-        <option value="">--เลือกประเภท--</option>
-        <option value="อาหาร">🍽️ อาหาร</option>
-        <option value="ของใช้">🛍️ ของใช้</option>
-        <option value="เครื่องดื่ม">🥤 เครื่องดื่ม</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="md:col-span-2">
-    <label class="block font-semibold mb-1">📦 รายการสินค้า</label>
-    <div class="border rounded p-3 bg-white">
-      <!-- แสดงรายการที่เลือกแล้ว -->
-      <div id="selected-items" class="mb-4 space-y-2"></div>
-
-      <!-- เลือกสินค้าใหม่ -->
-      <div class="grid grid-cols-1 md:grid-cols-5 gap-2 items-end">
-        <div>
-          <label class="block text-sm font-medium mb-1">สินค้า</label>
-          <div class="flex gap-2 items-center">
-            <select id="item-select" class="w-full border rounded p-2">
-              <option value="">--เลือกสินค้า--</option>
-            </select>
-            <button type="button" onclick="toggleCustomItem()"
-                    class="text-blue-600 hover:text-blue-800 text-sm border border-blue-200 rounded px-2 py-1 bg-blue-50"
-                    title="เพิ่มสินค้าใหม่">
-              ➕ เพิ่มสินค้าใหม่
+<body class="bg-gray-100 text-gray-800 min-h-screen">
+    <!-- Mobile Header -->
+    <div class="lg:hidden fixed top-0 left-0 w-full bg-white shadow-lg z-50">
+        <div class="flex items-center justify-between p-4">
+            <h1 class="text-xl font-bold text-gray-800">💰 รายรับ-รายจ่าย</h1>
+            <button id="mobile-menu-btn" class="text-gray-600 hover:text-gray-800 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
             </button>
-          </div>
-          <!-- ช่องพิมพ์สินค้าใหม่ -->
-          <input type="text" id="custom-item" placeholder="พิมพ์ชื่อสินค้าใหม่..."
-                 class="w-full border rounded p-2 mt-1 hidden">
         </div>
-        <div>
-          <label class="block text-sm font-medium mb-1">ราคาต่อหน่วย</label>
-          <input type="number" id="item-price" step="0.01" placeholder="0.00" class="w-full border rounded p-2">
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden bg-white border-t">
+            <nav class="py-2">
+                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📅 OT Records</a>
+                <a href="/income-expense" class="block px-4 py-3 bg-green-100 text-green-700 font-medium border-b">💰 Income/Expense</a>
+                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">🎉 Holidays</a>
+                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📊 Import CSV</a>
+                <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⏰ Import OT CSV</a>
+                <div class="px-4 py-3 border-b">
+                    <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
+                </div>
+                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50">🚪 Logout</a>
+            </nav>
         </div>
-        <div>
-          <label class="block text-sm font-medium mb-1">จำนวน</label>
-          <input type="number" id="item-quantity" min="1" value="1" class="w-full border rounded p-2">
-        </div>
-        <div>
-          <label class="block text-sm font-medium mb-1">หมายเหตุ</label>
-          <input type="text" id="item-note" placeholder="ขนาด/รสชาติ" class="w-full border rounded p-2">
-        </div>
-        <div>
-          <button type="button" onclick="addItem()" class="w-full bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded">
-            เพิ่ม
-          </button>
-        </div>
-      </div>
-
-      <!-- ปุ่มเพิ่มรายการเร็ว -->
-      <div class="mt-3 pt-3 border-t">
-        <div class="flex flex-wrap gap-2">
-          <button type="button" onclick="quickAddItem('ปลาดุก', 25)" class="bg-blue-100 text-blue-800 px-3 py-1 rounded text-sm hover:bg-blue-200">
-            ปลาดุก 25฿
-          </button>
-          <button type="button" onclick="quickAddItem('แกงถุง', 25)" class="bg-blue-100 text-blue-800 px-3 py-1 rounded text-sm hover:bg-blue-200">
-            แกงถุง 25฿
-          </button>
-          <button type="button" onclick="quickAddItem('กาแฟ', 17)" class="bg-blue-100 text-blue-800 px-3 py-1 rounded text-sm hover:bg-blue-200">
-            กาแฟ 17฿
-          </button>
-          <button type="button" onclick="quickAddItem('ข้าวเหนียว', 10)" class="bg-blue-100 text-blue-800 px-3 py-1 rounded text-sm hover:bg-blue-200">
-            ข้าวเหนียว 10฿
-          </button>
-          <button type="button" onclick="quickAddItem('กาแฟซอง', 5)" class="bg-blue-100 text-blue-800 px-3 py-1 rounded text-sm hover:bg-blue-200">
-            กาแฟซอง 5฿
-          </button>
-          <!-- แสดงสินค้าที่เพิ่มล่าสุด -->
-          <div id="recent-items" class="flex flex-wrap gap-2"></div>
-        </div>
-      </div>
-
-      <!-- ปุ่มจัดการสินค้า -->
-      <div class="mt-3 pt-3 border-t">
-        <button type="button" onclick="showManageItems()"
-                class="text-blue-600 hover:text-blue-800 text-sm underline">
-          📝 จัดการรายการสินค้า
-        </button>
-      </div>
     </div>
 
-    <!-- ยอดรวมทั้งหมด -->
-    <div class="mt-2 flex justify-between items-center">
-      <button type="button" onclick="clearAllItems()"
-              class="text-red-600 hover:text-red-800 text-sm underline">
-        ล้างรายการทั้งหมด
-      </button>
-      <div class="text-right">
-        <span class="font-semibold">จำนวนรายการ: <span id="total-items" class="text-green-600">0</span> รายการ</span>
-        <br>
-        <span class="font-semibold text-lg">ยอดรวม: <span id="total-amount" class="text-blue-600">0.00</span> บาท</span>
-      </div>
-    </div>
-
-    <!-- Hidden inputs สำหรับส่งข้อมูล -->
-    <input type="hidden" id="items-data" name="items_data" required>
-    <input type="hidden" id="calculated-total" name="amount" required>
-    <input type="hidden" id="description" name="description">
-  </div>
-
-  <div>
-    <label class="block font-semibold mb-1">🏪 ร้านค้า</label>
-    <select name="vendor" class="w-full border rounded p-2">
-      <option value="">-- ไม่เลือก --</option>
-      <option value="ร้านยายจ่อย">ร้านยายจ่อย</option>
-      <option value="ร้านผัก">ร้านผัก</option>
-      <option value="เจ้นัน">เจ้นัน</option>
-      <option value="พี่แก่">พี่แก่</option>
-      <option value="พี่อาร์ม">พี่อาร์ม</option>
-      <option value="7-seven">7-seven</option>
-      <option value="เงินสด">เงินสด</option>
-      <option value="ร้านทั่วไปเงินสด">ร้านทั่วไปเงินสด</option>
-    </select>
-  </div>
-
-  <div class="md:col-span-2 text-right">
-    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded shadow">
-      ➕ บันทึก
-    </button>
-  </div>
-</form>
-
-<!-- เลือกเดือน -->
-<div class="bg-white p-4 sm:p-6 rounded shadow mb-6">
-  <h2 class="text-lg sm:text-xl font-semibold mb-4">📅 เลือกเดือนที่ต้องการดู</h2>
-  <form method="get" class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-    <label for="month" class="font-semibold text-sm sm:text-base">เดือน:</label>
-    <select name="month" id="month" onchange="this.form.submit()" 
-            class="p-3 sm:p-2 border rounded text-base focus:ring-2 focus:ring-blue-400">
-      {% for month_data in available_months %}
-        <option value="{{ month_data['month'] }}" 
-                {% if selected_month == month_data['month'] %}selected{% endif %}>
-          {{ month_data['display'] }}{% if month_data['has_data'] %} ✅{% else %} ⭕{% endif %}
-        </option>
-      {% endfor %}
-    </select>
-    
-    <!-- ซ่อน parameters อื่นๆ -->
-    <input type="hidden" name="sort" value="{{ sort_order }}">
-    
-    <div class="text-sm text-gray-600">
-      แสดงข้อมูล รายรับ-รายจ่าย เดือน {{ selected_month }}
-    </div>
-    
-    <div class="text-xs text-gray-500 mt-2">
-      <span class="mr-4">✅ = มีข้อมูล</span>
-      <span>⭕ = ไม่มีข้อมูล</span>
-    </div>
-  </form>
-</div>
-
-  <!-- ตารางแสดงข้อมูล -->
-  <div class="bg-white rounded shadow">
-    <div class="p-4 sm:p-6 border-b">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <h2 class="text-lg sm:text-xl font-semibold">📊 รายรับ-รายจ่าย เดือน {{ selected_month }}</h2>
-        <div class="flex gap-2 text-xs">
-          <div class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold">
-            รายรับ: {{ '{:,.2f}'.format(monthly_total_income) }} บาท
-          </div>
-          <div class="bg-red-100 text-red-700 px-3 py-1 rounded-full font-semibold">
-            รายจ่าย: {{ '{:,.2f}'.format(monthly_total_expense) }} บาท
-          </div>
+    <!-- Desktop Sidebar -->
+    <div class="hidden lg:block fixed top-0 left-0 w-64 h-full bg-white shadow-lg z-40">
+        <div class="p-6">
+            <h1 class="text-2xl font-bold text-gray-800 mb-8">📊 ระบบจัดการ</h1>
+            <nav class="space-y-2">
+                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">📅 OT Records</a>
+                <a href="/income-expense" class="block px-4 py-3 bg-green-100 text-green-700 font-medium rounded-lg">💰 Income/Expense</a>
+                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">🎉 Holidays</a>
+                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">📊 Import CSV</a>
+                <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">⏰ Import OT CSV</a>
+            </nav>
+            <div class="mt-8 pt-6 border-t">
+                <div class="px-4 py-2">
+                    <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
+                </div>
+                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg smooth-transition">🚪 Logout</a>
+            </div>
         </div>
-      </div>
     </div>
-    
-    <div class="p-4 overflow-x-auto">
-    <table class="w-full table-auto text-sm min-w-full">
-      <thead class="bg-gray-200 text-left">
-        <tr>
-          <th class="px-4 py-2 whitespace-nowrap">วันที่</th>
-          <th class="px-4 py-2 whitespace-nowrap">รายละเอียด</th>
-          <th class="px-4 py-2 whitespace-nowrap">จำนวน</th>
-          <th class="px-4 py-2 whitespace-nowrap">ร้านค้า</th>
-          <th class="px-4 py-2 whitespace-nowrap">ประเภท</th>
-          <th class="px-4 py-2 whitespace-nowrap">จัดการ</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for r in records %}
-        <tr class="border-t hover:bg-gray-50">
-          <td class="px-4 py-2 whitespace-nowrap">{{ r['date'] }}</td>
-          <td class="px-4 py-2">{{ r['description'] }}</td>
-          <td class="px-4 py-2 whitespace-nowrap text-right">{{ '{:,.2f}'.format(r['amount']) }}</td>
-          <td class="px-4 py-2 whitespace-nowrap">{{ r['vendor'] }}</td>
-          <td class="px-4 py-2 whitespace-nowrap">
-            {% if r['category'] == 'income' %}
-              <span class="text-green-600 font-semibold">รายรับ</span>
-            {% else %}
-              <span class="text-red-600 font-semibold">รายจ่าย</span>
+
+    <!-- Main Content -->
+    <div class="lg:ml-64 pt-20 lg:pt-6 p-4 lg:p-6">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 p-4 rounded-lg {% if category == 'success' %}bg-green-100 text-green-700 border border-green-200{% elif category == 'error' %}bg-red-100 text-red-700 border border-red-200{% else %}bg-blue-100 text-blue-700 border border-blue-200{% endif %}">
+                        <div class="flex items-center">
+                            <span class="mr-2">
+                                {% if category == 'success' %}✅{% elif category == 'error' %}❌{% else %}ℹ️{% endif %}
+                            </span>
+                            {{ message }}
+                        </div>
+                    </div>
+                {% endfor %}
             {% endif %}
-          </td>
-          <td class="px-3 py-3">
-            <div class="flex flex-col sm:flex-row gap-1 sm:gap-2">
-              <form method="get" action="{{ url_for('edit_income_expense', id=r['id']) }}">
-                <button class="w-full sm:w-auto px-2 py-1 text-xs sm:text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600">แก้ไข</button>
-              </form>
-              <form method="post" action="{{ url_for('delete_income_expense', id=r['id']) }}" onsubmit="return confirm('ยืนยันการลบรายการนี้?');">
-                <button class="w-full sm:w-auto px-2 py-1 text-xs sm:text-sm bg-red-600 text-white rounded hover:bg-red-700">ลบ</button>
-              </form>
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-        {% if not records %}
-        <tr>
-          <td colspan="6" class="px-3 py-6 text-center text-gray-500">
-            <div class="py-8">
-              <div class="text-4xl mb-4">📭</div>
-              <div class="text-lg font-medium mb-2">ไม่มีข้อมูลรายรับ-รายจ่าย ในเดือน {{ selected_month }}</div>
-              <div class="text-sm text-gray-400">
-                เลือกเดือนอื่นที่มีสัญลักษณ์ ✅ หรือเพิ่มข้อมูลใหม่
-              </div>
-            </div>
-          </td>
-        </tr>
-        {% endif %}
-      </tbody>
-    </table>
-    </div>
-  </div>
+        {% endwith %}
 
-  <!-- แสดงจำนวนรายการทั้งหมด -->
-  {% if records %}
-  <div class="text-center text-sm text-gray-600 my-4">
-    แสดงข้อมูลรายรับ-รายจ่าย ทั้งหมด {{ total_records }} รายการ ในเดือน {{ selected_month }}
-  </div>
-  {% endif %}
-
-  <!-- สรุปยอดรวม -->
-  <div class="mt-6 bg-white p-4 sm:p-6 rounded shadow">
-    <h3 class="text-lg font-semibold mb-4 text-center">💰 สรุปยอดรวม</h3>
-    
-    <!-- สรุปเดือนที่เลือก -->
-    <div class="mb-6">
-      <h4 class="text-md font-medium mb-3 text-gray-700">📊 เดือน {{ selected_month }}</h4>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="bg-green-100 p-4 rounded text-center">
-          <div class="text-green-800 font-bold text-lg">{{ '{:,.2f}'.format(monthly_total_income) }}</div>
-          <div class="text-green-600 text-sm">รายรับ (บาท)</div>
-        </div>
-        <div class="bg-red-100 p-4 rounded text-center">
-          <div class="text-red-800 font-bold text-lg">{{ '{:,.2f}'.format(monthly_total_expense) }}</div>
-          <div class="text-red-600 text-sm">รายจ่าย (บาท)</div>
-        </div>
-        <div class="bg-blue-100 p-4 rounded text-center">
-          <div class="text-blue-800 font-bold text-lg">{{ '{:,.2f}'.format(monthly_total_income - monthly_total_expense) }}</div>
-          <div class="text-blue-600 text-sm">คงเหลือ (บาท)</div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- สรุปทั้งหมด -->
-    <div class="border-t pt-4">
-      <h4 class="text-md font-medium mb-3 text-gray-700">🎯 รวมทั้งหมด</h4>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="bg-green-50 p-4 rounded text-center border border-green-200">
-          <div class="text-green-700 font-bold text-lg">{{ '{:,.2f}'.format(total_income) }}</div>
-          <div class="text-green-600 text-sm">รายรับทั้งหมด (บาท)</div>
-        </div>
-        <div class="bg-red-50 p-4 rounded text-center border border-red-200">
-          <div class="text-red-700 font-bold text-lg">{{ '{:,.2f}'.format(total_expense) }}</div>
-          <div class="text-red-600 text-sm">รายจ่ายทั้งหมด (บาท)</div>
-        </div>
-        <div class="bg-blue-50 p-4 rounded text-center border border-blue-200">
-          <div class="text-blue-700 font-bold text-lg">{{ '{:,.2f}'.format(total_income - total_expense) }}</div>
-          <div class="text-blue-600 text-sm">คงเหลือทั้งหมด (บาท)</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ตารางสรุปรายเดือน -->
-  <h2 class="text-xl font-bold mt-10 mb-4">📅 สรุปรายเดือน</h2>
-  <div class="overflow-x-auto">
-  <table class="w-full table-auto text-sm bg-white shadow rounded min-w-full">
-    <thead class="bg-gray-200">
-      <tr>
-        <th class="px-4 py-2 whitespace-nowrap">เดือน</th>
-        <th class="px-4 py-2 whitespace-nowrap">ประเภท</th>
-        <th class="px-4 py-2 whitespace-nowrap">รวม (บาท)</th>
-        <th class="px-4 py-2 whitespace-nowrap">Export</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for row in monthly_summary %}
-      <tr class="border-t hover:bg-gray-50">
-        <td class="px-4 py-2">
-          <form method="get" action="{{ url_for('income_expense_month_view', year_month=row['month']) }}">
-            <button class="text-white bg-indigo-600 px-3 py-1 rounded hover:bg-indigo-700">
-              {{ row['month'] }}
-            </button>
-          </form>
-        </td>
-        <td class="px-4 py-2">
-          {% if row['category'] == 'income' %}
-            <span class="text-green-600 font-semibold">รายรับ</span>
-          {% else %}
-            <span class="text-red-600 font-semibold">รายจ่าย</span>
-          {% endif %}
-        </td>
-        <td class="px-4 py-2">{{ '{:,.2f}'.format(row['total']) }}</td>
-        <td class="px-4 py-2">
-          <a href="{{ url_for('export_income_expense_month', category=row['category'], year_month=row['month']) }}"
-             class="text-sm px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700">
-            📤 Export
-          </a>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  </div>
-
-<!-- Modal จัดการสินค้า -->
-<div id="manage-items-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
-  <div class="flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white rounded-lg shadow-lg max-w-4xl w-full max-h-[80vh] overflow-hidden">
-      <div class="p-4 border-b flex justify-between items-center">
-        <h3 class="text-lg font-semibold">📝 จัดการรายการสินค้าทั้งหมด</h3>
-        <div class="flex gap-2">
-          <button type="button" onclick="exportItems()"
-                  class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
-            📤 Export
-          </button>
-          <button type="button" onclick="importItems()"
-                  class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">
-            📥 Import
-          </button>
-        </div>
-      </div>
-
-      <!-- แท็บ -->
-      <div class="border-b">
-        <div class="flex">
-          <button onclick="switchTab('default')" id="tab-default"
-                  class="px-4 py-2 border-b-2 border-blue-500 bg-blue-50 text-blue-600 font-medium">
-            สินค้าเริ่มต้น
-          </button>
-          <button onclick="switchTab('custom')" id="tab-custom"
-                  class="px-4 py-2 border-b-2 border-transparent hover:bg-gray-50">
-            สินค้าที่เพิ่มเอง
-          </button>
-          <button onclick="switchTab('add')" id="tab-add"
-                  class="px-4 py-2 border-b-2 border-transparent hover:bg-gray-50">
-            เพิ่มสินค้าใหม่
-          </button>
-        </div>
-      </div>
-
-      <div class="p-4 overflow-y-auto max-h-96">
-        <!-- แท็บสินค้าเริ่มต้น -->
-        <div id="content-default" class="tab-content">
-          <div id="default-items-content"></div>
+        <!-- Page Title -->
+        <div class="mb-6">
+            <h1 class="text-2xl lg:text-3xl font-bold text-center lg:text-left">📒 รายรับ - รายจ่าย</h1>
         </div>
 
-        <!-- แท็บสินค้าที่เพิ่มเอง -->
-        <div id="content-custom" class="tab-content hidden">
-          <div id="custom-items-content"></div>
-        </div>
+        <!-- Add Transaction Form -->
+        <div class="bg-white p-4 lg:p-6 rounded-lg shadow-md mb-6">
+            <form id="transaction-form" method="POST" class="space-y-4">
+                <!-- Date and Transaction Type -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-semibold mb-2">📅 วันที่</label>
+                        <input type="date" name="date" required 
+                               class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">📊 ประเภทรายการ</label>
+                        <select id="transaction-type" name="transaction_type" required 
+                                class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+                            <option value="">--เลือกรายรับ/รายจ่าย--</option>
+                            <option value="expense">💸 รายจ่าย</option>
+                            <option value="income">💰 รายรับ</option>
+                        </select>
+                    </div>
+                </div>
 
-        <!-- แท็บเพิ่มสินค้าใหม่ -->
-        <div id="content-add" class="tab-content hidden">
-          <div class="max-w-md mx-auto">
-            <div class="space-y-4">
-              <div>
-                <label class="block font-medium mb-1">ประเภท</label>
-                <select id="new-item-category" class="w-full border rounded p-2">
-                  <option value="">--เลือกประเภท--</option>
-                  <option value="อาหาร">อาหาร</option>
-                  <option value="ของใช้">ของใช้</option>
-                  <option value="เครื่องดื่ม">เครื่องดื่ม</option>
-                </select>
-              </div>
-              <div>
-                <label class="block font-medium mb-1">ชื่อสินค้า</label>
-                <input type="text" id="new-item-name" placeholder="ชื่อสินค้า" class="w-full border rounded p-2">
-              </div>
-              <div>
-                <label class="block font-medium mb-1">ราคาเริ่มต้น</label>
-                <input type="number" id="new-item-price" step="0.01" placeholder="0.00" class="w-full border rounded p-2">
-              </div>
-              <div class="flex gap-2">
-                <button type="button" onclick="addNewItemFromModal()"
-                        class="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
-                  เพิ่มสินค้า
-                </button>
-                <button type="button" onclick="clearNewItemForm()"
-                        class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
-                  ล้าง
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+                <!-- Category Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-semibold mb-2">📋 ประเภทหลัก</label>
+                        <div class="flex gap-2">
+                            <select id="main-category" name="main_category" required 
+                                    class="flex-1 border rounded-lg p-3 focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+                                <option value="">--เลือกประเภทหลัก--</option>
+                            </select>
+                            <button type="button" id="add-main-category-btn"
+                                    class="btn-animate bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-lg text-sm">
+                                ➕ เพิ่ม
+                            </button>
+                        </div>
+                        <!-- Custom main category input -->
+                        <div id="custom-main-category-input" class="mt-2 hidden">
+                            <input type="text" id="new-main-category" placeholder="พิมพ์ประเภทหลักใหม่..."
+                                   class="w-full border border-purple-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-400">
+                            <div class="text-xs text-purple-600 mt-1">💡 กด Enter เพื่อเพิ่มประเภทหลักใหม่</div>
+                        </div>
+                    </div>
 
-      <div class="p-4 border-t flex justify-between">
-        <div class="flex gap-2">
-          <button type="button" onclick="resetAllItems()"
-                  class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
-            🔄 รีเซ็ตทั้งหมด
-          </button>
-        </div>
-        <button type="button" onclick="hideManageItems()"
-                class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
-          ปิด
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
+                    <div>
+                        <label class="block font-semibold mb-2">📋 ประเภทย่อย</label>
+                        <div class="flex gap-2">
+                            <select id="sub-category" name="sub_category" required 
+                                    class="flex-1 border rounded-lg p-3 focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+                                <option value="">--เลือกประเภทย่อย--</option>
+                            </select>
+                            <button type="button" id="add-sub-category-btn"
+                                    class="btn-animate bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm">
+                                ➕ เพิ่ม
+                            </button>
+                        </div>
+                        <!-- Custom sub category input -->
+                        <div id="custom-sub-category-input" class="mt-2 hidden">
+                            <input type="text" id="new-sub-category" placeholder="พิมพ์ประเภทย่อยใหม่..."
+                                   class="w-full border border-blue-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-400">
+                            <div class="text-xs text-blue-600 mt-1">💡 กด Enter เพื่อเพิ่มประเภทย่อยใหม่</div>
+                        </div>
+                    </div>
+                </div>
 
-<!-- Hidden file input สำหรับ import -->
-<input type="file" id="import-file" accept=".json" style="display: none;" onchange="handleImportFile(event)">
-
-<script>
-// เพิ่มตัวแปรเก็บสินค้าที่เพิ่มเอง
-let customItems = JSON.parse(localStorage.getItem('customItems')) || {};
-let recentItems = JSON.parse(localStorage.getItem('recentItems')) || [];
-
-// สินค้าเริ่มต้น (สามารถแก้ไขได้)
-let items = JSON.parse(localStorage.getItem('defaultItems')) || {
-    "อาหาร": [
-        {name: "ปลาทู", defaultPrice: 25},
-        {name: "แกงถุง", defaultPrice: 25},
-        {name: "น่องไก่", defaultPrice: 20},
-        {name: "ข้าวเหนียว", defaultPrice: 10},
-        {name: "ขนมกล่อง", defaultPrice: 10},
-        {name: "ปลาดุก", defaultPrice: 55}
-    ],
-    "ของใช้": [
-        {name: "สบู่", defaultPrice: 25},
-        {name: "ยาสีฟัน", defaultPrice: 45},
-        {name: "แชมพู", defaultPrice: 120},
-        {name: "ผงซักฟอก", defaultPrice: 85},
-        {name: "ถุงขยะ", defaultPrice: 30},
-        {name: "ทิชชู่", defaultPrice: 35}
-    ],
-    "เครื่องดื่ม": [
-        {name: "น้ำเปล่า", defaultPrice: 8},
-        {name: "น้ำอัดลม", defaultPrice: 15},
-        {name: "กาแฟ", defaultPrice: 17},
-        {name: "กาแฟซอง", defaultPrice: 5},
-        {name: "ชา", defaultPrice: 20},
-        {name: "น้ำผลไม้", defaultPrice: 30},
-        {name: "น้ำแข็ง", defaultPrice: 10}
-    ]
-};
-
-let selectedItems = [];
-let itemCounter = 0;
-let currentTab = 'default';
-
-function updateItems() {
-    const category = document.getElementById("category").value;
-    const itemSelect = document.getElementById("item-select");
-    const priceInput = document.getElementById("item-price");
-
-    itemSelect.innerHTML = '<option value="">--เลือกสินค้า--</option>';
-    priceInput.value = '';
-
-    // เพิ่มสินค้าเริ่มต้น
-    if (items[category]) {
-        items[category].forEach(function(item) {
-            const option = document.createElement("option");
-            option.value = JSON.stringify({...item, type: 'default'});
-            option.text = `${item.name} (${item.defaultPrice} บาท)`;
-            itemSelect.appendChild(option);
-        });
-    }
-
-    // เพิ่มสินค้าที่เพิ่มเอง
-    if (customItems[category]) {
-        customItems[category].forEach(function(item) {
-            const option = document.createElement("option");
-            option.value = JSON.stringify({...item, type: 'custom'});
-            option.text = `${item.name} (${item.defaultPrice} บาท) 🔸`;
-            itemSelect.appendChild(option);
-        });
-    }
-
-    updateRecentItems();
-}
-
-// เปลี่ยนแท็บ
-function switchTab(tabName) {
-    try {
-        // อัปเดตปุ่มแท็บ
-        document.querySelectorAll('[id^="tab-"]').forEach(tab => {
-            tab.className = 'px-4 py-2 border-b-2 border-transparent hover:bg-gray-50';
-        });
-        document.getElementById(`tab-${tabName}`).className = 'px-4 py-2 border-b-2 border-blue-500 bg-blue-50 text-blue-600 font-medium';
-
-        // แสดง/ซ่อน content
-        document.querySelectorAll('.tab-content').forEach(content => {
-            content.classList.add('hidden');
-        });
-        document.getElementById(`content-${tabName}`).classList.remove('hidden');
-
-        currentTab = tabName;
-
-        // โหลดข้อมูลตามแท็บ
-        if (tabName === 'default') {
-            loadDefaultItems();
-        } else if (tabName === 'custom') {
-            loadCustomItems();
-        }
-    } catch (error) {
-        console.error('Error switching tab:', error);
-    }
-}
-
-// แสดง/ซ่อนช่องพิมพ์สินค้าใหม่
-function toggleCustomItem() {
-    const customItemInput = document.getElementById("custom-item");
-    const itemSelect = document.getElementById("item-select");
-
-    if (customItemInput.classList.contains('hidden')) {
-        customItemInput.classList.remove('hidden');
-        customItemInput.focus();
-        itemSelect.value = '';
-    } else {
-        customItemInput.classList.add('hidden');
-        customItemInput.value = '';
-    }
-}
-
-// เมื่อกด Enter ในช่องสินค้าใหม่
-document.addEventListener('DOMContentLoaded', function() {
-    const customItemInput = document.getElementById("custom-item");
-    if (customItemInput) {
-        customItemInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                document.getElementById("item-price").focus();
-            }
-        });
-    }
-
-    // เมื่อเลือกสินค้า ให้แสดงราคาเริ่มต้น
-    const itemSelect = document.getElementById("item-select");
-    if (itemSelect) {
-        itemSelect.onchange = function() {
-            const priceInput = document.getElementById("item-price");
-            const customItemInput = document.getElementById("custom-item");
-
-            if (this.value) {
-                try {
-                    const item = JSON.parse(this.value);
-                    priceInput.value = item.defaultPrice;
-                    customItemInput.value = '';
-                    customItemInput.classList.add('hidden');
-                } catch (error) {
-                    console.error('Error parsing item:', error);
-                }
-            } else {
-                priceInput.value = '';
-            }
-        };
-    }
-
-    // เริ่มต้น
-    updateSelectedItemsDisplay();
-    updateRecentItems();
-});
-
-function addItem() {
-    try {
-        const itemSelect = document.getElementById("item-select");
-        const customItemInput = document.getElementById("custom-item");
-        const priceInput = document.getElementById("item-price");
-        const quantityInput = document.getElementById("item-quantity");
-        const noteInput = document.getElementById("item-note");
-        const categorySelect = document.getElementById("category");
-
-        let itemName = '';
-        let isCustomItem = false;
-
-        // ตรวจสอบว่าเลือกสินค้าจาก dropdown หรือพิมพ์เอง
-        if (itemSelect.value) {
-            const item = JSON.parse(itemSelect.value);
-            itemName = item.name;
-        } else if (customItemInput.value.trim()) {
-            itemName = customItemInput.value.trim();
-            isCustomItem = true;
-        }
-
-        if (!itemName || !priceInput.value || !quantityInput.value) {
-            alert("กรุณากรอกข้อมูลให้ครบถ้วน");
-            return;
-        }
-
-        const price = parseFloat(priceInput.value);
-        const quantity = parseInt(quantityInput.value);
-        const note = noteInput.value.trim();
-        const total = price * quantity;
-        const category = categorySelect.value;
-
-        // ถ้าเป็นสินค้าใหม่ ให้เก็บไว้
-        if (isCustomItem && category) {
-            saveCustomItem(category, itemName, price);
-            addToRecentItems(itemName, price);
-        }
-
-        const newItem = {
-            id: ++itemCounter,
-            name: itemName,
-            price: price,
-            quantity: quantity,
-            note: note,
-            total: total
-        };
-
-        selectedItems.push(newItem);
-        updateSelectedItemsDisplay();
-
-        // Reset form
-        itemSelect.value = '';
-        customItemInput.value = '';
-        customItemInput.classList.add('hidden');
-        priceInput.value = '';
-        quantityInput.value = 1;
-        noteInput.value = '';
-    } catch (error) {
-        console.error('Error adding item:', error);
-        alert('เกิดข้อผิดพลาดในการเพิ่มสินค้า');
-    }
-}
-
-// บันทึกสินค้าใหม่
-function saveCustomItem(category, name, price) {
-    if (!customItems[category]) {
-        customItems[category] = [];
-    }
-
-    // ตรวจสอบว่ามีสินค้านี้แล้วหรือไม่
-    const existingItem = customItems[category].find(item => item.name.toLowerCase() === name.toLowerCase());
-    if (!existingItem) {
-        customItems[category].push({
-            name: name,
-            defaultPrice: price
-        });
-        localStorage.setItem('customItems', JSON.stringify(customItems));
-        updateItems(); // อัปเดต dropdown
-    }
-}
-
-// เพิ่มสินค้าล่าสุด
-function addToRecentItems(name, price) {
-    const newItem = {name: name, price: price};
-
-    // ลบรายการเดิมออก (ถ้ามี)
-    recentItems = recentItems.filter(item => item.name !== name);
-
-    // เพิ่มรายการใหม่ที่ด้านหน้า
-    recentItems.unshift(newItem);
-
-    // เก็บแค่ 5 รายการล่าสุด
-    recentItems = recentItems.slice(0, 5);
-
-    localStorage.setItem('recentItems', JSON.stringify(recentItems));
-    updateRecentItems();
-}
-
-// อัปเดตปุ่มสินค้าล่าสุด
-function updateRecentItems() {
-    const container = document.getElementById("recent-items");
-    if (container) {
-        container.innerHTML = '';
-
-        recentItems.forEach(item => {
-            const button = document.createElement("button");
-            button.type = "button";
-            button.className = "bg-purple-100 text-purple-800 px-3 py-1 rounded text-sm hover:bg-purple-200";
-            button.textContent = `${item.name} ${item.price}฿ 🔸`;
-            button.onclick = () => quickAddItem(item.name, item.price);
-            container.appendChild(button);
-        });
-    }
-}
-
-// ฟังก์ชันเพิ่มรายการแบบเร็ว
-function quickAddItem(itemName, price) {
-    const newItem = {
-        id: ++itemCounter,
-        name: itemName,
-        price: price,
-        quantity: 1,
-        note: '',
-        total: price
-    };
-
-    selectedItems.push(newItem);
-    updateSelectedItemsDisplay();
-}
-
-function removeItem(itemId) {
-    selectedItems = selectedItems.filter(item => item.id !== itemId);
-    updateSelectedItemsDisplay();
-}
-
-function updateQuantity(itemId, newQuantity) {
-    const item = selectedItems.find(item => item.id === itemId);
-    if (item && newQuantity > 0) {
-        item.quantity = parseInt(newQuantity);
-        item.total = item.price * item.quantity;
-        updateSelectedItemsDisplay();
-    }
-}
-
-function updatePrice(itemId, newPrice) {
-    const item = selectedItems.find(item => item.id === itemId);
-    if (item && newPrice >= 0) {
-        item.price = parseFloat(newPrice);
-        item.total = item.price * item.quantity;
-        updateSelectedItemsDisplay();
-    }
-}
-
-function updateNote(itemId, newNote) {
-    const item = selectedItems.find(item => item.id === itemId);
-    if (item) {
-        item.note = newNote;
-        updateSelectedItemsDisplay();
-    }
-}
-
-function duplicateItem(itemId) {
-    const item = selectedItems.find(item => item.id === itemId);
-    if (item) {
-        const newItem = {
-            id: ++itemCounter,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-            note: item.note,
-            total: item.total
-        };
-        selectedItems.push(newItem);
-        updateSelectedItemsDisplay();
-    }
-}
-
-function updateSelectedItemsDisplay() {
-    const container = document.getElementById("selected-items");
-    const itemsDataInput = document.getElementById("items-data");
-    const calculatedTotalInput = document.getElementById("calculated-total");
-    const descriptionInput = document.getElementById("description");
-    const totalAmountSpan = document.getElementById("total-amount");
-    const totalItemsSpan = document.getElementById("total-items");
-
-    if (!container) return;
-
-    container.innerHTML = '';
-    let grandTotal = 0;
-    let descriptionItems = [];
-
-    if (selectedItems.length === 0) {
-        container.innerHTML = '<div class="text-gray-500 text-center py-4">ยังไม่มีรายการสินค้า</div>';
-    } else {
-        selectedItems.forEach((item, index) => {
-            grandTotal += item.total;
-
-            // สร้าง description สำหรับแต่ละรายการ
-            let itemDesc = `${item.name} x${item.quantity}`;
-            if (item.note) {
-                itemDesc += ` (${item.note})`;
-            }
-            descriptionItems.push(itemDesc);
-
-            const itemDiv = document.createElement("div");
-            itemDiv.className = "flex items-center justify-between bg-gray-50 p-3 rounded border";
-            itemDiv.innerHTML = `
-                <div class="flex-1">
+                <!-- Combined Category Display -->
+                <div class="bg-gray-50 p-3 rounded-lg border">
+                    <label class="block font-semibold mb-2">📋 ประเภทที่เลือก</label>
                     <div class="flex items-center gap-2">
-                        <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded">${index + 1}</span>
-                        <span class="font-medium">${item.name}</span>
-                        ${item.note ? `<span class="text-sm text-gray-500">(${item.note})</span>` : ''}
+                        <span class="text-sm text-gray-600">ประเภทหลัก:</span>
+                        <span id="selected-main-category" class="font-medium text-purple-600">-</span>
+                        <span class="text-sm text-gray-600">|</span>
+                        <span class="text-sm text-gray-600">ประเภทย่อย:</span>
+                        <span id="selected-sub-category" class="font-medium text-blue-600">-</span>
                     </div>
-                    <div class="mt-1 flex items-center gap-4 text-sm">
-                        <div>
-                            ราคา: <input type="number" value="${item.price}" step="0.01" min="0"
-                                   onchange="updatePrice(${item.id}, this.value)"
-                                   class="w-16 border rounded px-1 text-center"> บาท
-                        </div>
-                        <div>
-                            จำนวน: <input type="number" value="${item.quantity}" min="1"
-                                   onchange="updateQuantity(${item.id}, this.value)"
-                                   class="w-16 border rounded px-1 text-center">
-                        </div>
-                        <div class="font-medium text-blue-600">
-                            = ${item.total.toFixed(2)} บาท
-                        </div>
-                    </div>
-                    <div class="mt-1">
-                        <input type="text" value="${item.note}" placeholder="หมายเหตุ..."
-                               onchange="updateNote(${item.id}, this.value)"
-                               class="w-full text-sm border rounded px-2 py-1">
+                    <input type="hidden" id="combined-category" name="category" value="">
+                </div>
+
+                    <!-- Income Amount (for income transactions) -->
+                    <div id="income-amount-section" class="hidden">
+                        <label class="block font-semibold mb-2">💰 จำนวนเงิน</label>
+                        <input type="number" id="income-amount" name="income_amount" step="0.01" placeholder="0.00"
+                               class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-400 focus:border-transparent">
                     </div>
                 </div>
-                <div class="ml-2 flex flex-col gap-1">
-                    <button type="button" onclick="duplicateItem(${item.id})"
-                            class="text-green-600 hover:text-green-800 text-sm" title="คัดลอก">
-                        📋
-                    </button>
-                    <button type="button" onclick="removeItem(${item.id})"
-                            class="text-red-600 hover:text-red-800" title="ลบ">
-                        ✕
+
+                <!-- Items Section (for expense transactions) -->
+                <div id="items-section" class="hidden">
+                    <label class="block font-semibold mb-2">📦 รายการสินค้า</label>
+                    <div class="border rounded-lg p-4 bg-gray-50">
+                        <!-- Selected Items Display -->
+                        <div id="selected-items" class="mb-4">
+                            <div class="text-gray-500 text-center py-4">ยังไม่มีรายการสินค้า</div>
+                        </div>
+
+                        <!-- Add New Item -->
+                        <div class="border-t pt-4">
+                            <div class="mobile-form-grid">
+                                <div class="mobile-item-field">
+                                    <div class="mobile-item-label">สินค้า</div>
+                                    <input type="text" id="item-name" placeholder="ชื่อสินค้า"
+                                           class="mobile-item-input">
+                                </div>
+                                
+                                <div class="mobile-form-row">
+                                    <div class="mobile-item-field">
+                                        <div class="mobile-item-label">ราคา</div>
+                                        <input type="number" id="item-price" step="0.01" placeholder="0.00"
+                                               class="mobile-item-input">
+                                    </div>
+                                    <div class="mobile-item-field">
+                                        <div class="mobile-item-label">จำนวน</div>
+                                        <input type="number" id="item-quantity" min="1" value="1"
+                                               class="mobile-item-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="mobile-item-field">
+                                    <div class="mobile-item-label">แท็ก</div>
+                                    <div class="flex gap-1">
+                                        <select id="item-tag" class="flex-1 mobile-item-select" onchange="updateTagEmoji()">
+                                            <option value="">--เลือกแท็ก--</option>
+                                            <option value="อาหาร">🍽️ อาหาร</option>
+                                            <option value="เครื่องดื่ม">🥤 เครื่องดื่ม</option>
+                                            <option value="ของใช้">🛍️ ของใช้</option>
+                                            <option value="ยา">💊 ยา</option>
+                                            <option value="ขนม">🍪 ขนม</option>
+                                            <option value="ผลไม้">🍎 ผลไม้</option>
+                                            <option value="ผัก">🥬 ผัก</option>
+                                            <option value="เนื้อสัตว์">🥩 เนื้อสัตว์</option>
+                                            <option value="นม">🥛 นม</option>
+                                            <option value="ขนมปัง">🍞 ขนมปัง</option>
+                                        </select>
+                                        <button type="button" id="emoji-picker-btn"
+                                                class="mobile-button mobile-button-secondary" style="width: auto; padding: 8px 12px;" onclick="showEmojiPicker()">
+                                            😊
+                                        </button>
+                                        <button type="button" id="add-tag-btn"
+                                                class="mobile-button mobile-button-secondary" style="width: auto; padding: 8px 12px;">
+                                            ➕
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Emoji Picker Modal -->
+                                <div id="emoji-picker-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                                    <div class="bg-white rounded-lg p-4 max-w-sm w-full mx-4 max-h-96 overflow-y-auto">
+                                        <div class="flex justify-between items-center mb-4">
+                                            <h3 class="text-lg font-semibold">เลือกอิโมจิ</h3>
+                                            <button onclick="closeEmojiPicker()" class="text-gray-500 hover:text-gray-700">
+                                                ✕
+                                            </button>
+                                        </div>
+                                        <div id="emoji-grid" class="grid grid-cols-8 gap-2">
+                                            <!-- Emojis will be populated here -->
+                                        </div>
+                                        <div class="mt-4 text-center">
+                                            <button onclick="closeEmojiPicker()" class="mobile-button mobile-button-secondary">
+                                                ปิด
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mobile-item-field">
+                                    <button type="button" id="add-item-btn"
+                                            class="mobile-button mobile-button-success">
+                                        ➕ เพิ่มรายการ
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Custom Tag Input -->
+                            <div id="custom-tag-input" class="mt-2 hidden">
+                                <div class="flex gap-2">
+                                    <input type="text" id="new-tag" placeholder="พิมพ์แท็กใหม่..."
+                                           class="flex-1 border border-purple-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-400">
+                                    <button type="button" onclick="addCustomTag()"
+                                            class="btn-animate bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg">
+                                        เพิ่มแท็ก
+                                    </button>
+                                    <button type="button" onclick="cancelAddTag()"
+                                            class="btn-animate bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
+                                        ยกเลิก
+                                    </button>
+                                </div>
+                                <div class="text-xs text-purple-600 mt-1">💡 กด Enter เพื่อเพิ่มแท็กใหม่</div>
+                            </div>
+                        </div>
+
+                        <!-- Total Display -->
+                        <div class="mt-4 pt-4 border-t">
+                            <div class="flex justify-between items-center">
+                                <div class="flex flex-col lg:flex-row items-start lg:items-center gap-3">
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="font-semibold">จำนวนรายการ: <span id="total-items" class="text-blue-600">0</span></span>
+                                        <button type="button" onclick="clearAllItems()" 
+                                                class="mobile-button mobile-button-danger" style="width: auto; padding: 6px 12px; font-size: 12px;">
+                                            🗑️ ล้างทั้งหมด
+                                        </button>
+                                        <button type="button" onclick="showItemsSummary()" 
+                                                class="mobile-button mobile-button-primary" style="width: auto; padding: 6px 12px; font-size: 12px;">
+                                            📋 สรุปรายการ
+                                        </button>
+                                        <button type="button" onclick="showTagFilter()" 
+                                                class="mobile-button mobile-button-secondary" style="width: auto; padding: 6px 12px; font-size: 12px;">
+                                            🏷️ กรองแท็ก
+                                        </button>
+                                    </div>
+                                </div>
+                                <span class="font-semibold text-lg">ยอดรวม: <span id="total-amount" class="text-green-600">0.00</span> บาท</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vendor Section (for expense transactions) -->
+                <div id="vendor-section" class="hidden">
+                    <label class="block font-semibold mb-2">🏪 ร้านค้า</label>
+                    <div class="flex gap-2">
+                        <select id="vendor-select" name="vendor" 
+                                class="flex-1 border rounded-lg p-3 focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+                            <option value="">--เลือกร้านค้า--</option>
+                            <option value="ร้านยายจ่อย">ร้านยายจ่อย</option>
+                            <option value="ร้านผัก">ร้านผัก</option>
+                            <option value="เจ้นัน">เจ้นัน</option>
+                            <option value="7-Eleven">7-Eleven</option>
+                            <option value="เงินสด">เงินสด</option>
+                        </select>
+                        <button type="button" id="add-vendor-btn"
+                                class="btn-animate bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg text-sm">
+                            ➕ เพิ่ม
+                        </button>
+                    </div>
+                    <!-- Custom vendor input -->
+                    <div id="custom-vendor-input" class="mt-2 hidden">
+                        <input type="text" id="new-vendor" placeholder="พิมพ์ชื่อร้านค้าใหม่..."
+                               class="w-full border border-green-300 rounded-lg p-2 focus:ring-2 focus:ring-green-400">
+                        <div class="text-xs text-green-600 mt-1">💡 กด Enter เพื่อเพิ่มร้านค้าใหม่</div>
+                    </div>
+                </div>
+
+                <!-- Hidden inputs for form submission -->
+                <input type="hidden" id="items-data" name="items_data">
+                <input type="hidden" id="calculated-total" name="amount">
+                <input type="hidden" id="description" name="description">
+
+                <!-- Submit Button -->
+                <div class="flex justify-center lg:justify-end pt-4">
+                    <button type="submit" 
+                            class="btn-animate bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-3 rounded-full font-semibold shadow-lg">
+                        <span class="text-xl mr-2">💾</span>
+                        บันทึก
                     </button>
                 </div>
-            `;
-            container.appendChild(itemDiv);
-        });
-    }
+            </form>
+        </div>
 
-    // อัพเดทยอดรวม
-    if (totalItemsSpan) totalItemsSpan.textContent = selectedItems.length;
-    if (totalAmountSpan) totalAmountSpan.textContent = grandTotal.toFixed(2);
-
-    // เตรียมข้อมูลสำหรับส่งไปยัง backend
-    if (itemsDataInput) itemsDataInput.value = JSON.stringify(selectedItems);
-    if (calculatedTotalInput) calculatedTotalInput.value = grandTotal.toFixed(2);
-    if (descriptionInput) descriptionInput.value = descriptionItems.join(', ');
-
-    // ตรวจสอบว่ามีรายการหรือไม่
-    if (itemsDataInput) itemsDataInput.required = selectedItems.length === 0;
-}
-
-// ฟังก์ชันล้างรายการทั้งหมด
-function clearAllItems() {
-    if (selectedItems.length > 0 && confirm('ต้องการล้างรายการทั้งหมดหรือไม่?')) {
-        selectedItems = [];
-        updateSelectedItemsDisplay();
-    }
-}
-
-// ฟังก์ชันจัดการ Modal
-function showManageItems() {
-    const modal = document.getElementById("manage-items-modal");
-    if (modal) {
-        modal.classList.remove('hidden');
-        switchTab('default');
-    }
-}
-
-function hideManageItems() {
-    const modal = document.getElementById("manage-items-modal");
-    if (modal) {
-        modal.classList.add('hidden');
-    }
-}
-
-// โหลดสินค้าเริ่มต้น
-function loadDefaultItems() {
-    const container = document.getElementById("default-items-content");
-    if (!container) return;
-
-    let html = '';
-
-    Object.keys(items).forEach(category => {
-        html += `<div class="mb-6">
-            <div class="flex justify-between items-center mb-3">
-                <h4 class="font-semibold text-lg">${category}</h4>
-                <button onclick="addDefaultItem('${category}')"
-                        class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">
-                    ➕ เพิ่มสินค้า
-                </button>
+        <!-- Month Selection -->
+        <div class="bg-white p-4 lg:p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-lg lg:text-xl font-semibold mb-4">📅 เลือกเดือนที่ต้องการดู</h2>
+            <div class="flex flex-col lg:flex-row items-start lg:items-center gap-3">
+                <label class="font-semibold">เดือน:</label>
+                <select id="month-select" class="border rounded-lg p-2 focus:ring-2 focus:ring-blue-400" onchange="changeMonth(this.value)">
+                    {% for month in available_months %}
+                        <option value="{{ month.month }}" {% if month.month == selected_month %}selected{% endif %}>
+                            {{ month.display }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <div class="text-sm text-gray-600">
+                    แสดงข้อมูล รายรับ-รายจ่าย ประจำเดือน ({{ total_records }} รายการ)
+                </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">`;
+        </div>
 
-        items[category].forEach((item, index) => {
-            html += `<div class="flex items-center justify-between bg-gray-50 p-3 rounded border">
-                <div class="flex-1">
-                    <input type="text" value="${item.name}"
-                           onchange="updateDefaultItemName('${category}', ${index}, this.value)"
-                           class="font-medium bg-transparent border-none outline-none w-full">
-                    <div class="flex items-center gap-2 mt-1">
-                        <span class="text-sm text-gray-600">ราคา:</span>
-                        <input type="number" value="${item.defaultPrice}" step="0.01" min="0"
-                               onchange="updateDefaultItemPrice('${category}', ${index}, this.value)"
-                               class="w-20 border rounded px-2 py-1 text-sm">
-                        <span class="text-sm text-gray-600">บาท</span>
-                    </div>
-                </div>
-                <button onclick="deleteDefaultItem('${category}', ${index})"
-                        class="text-red-600 hover:text-red-800 ml-2" title="ลบ">
-                    ✕
-                </button>
-            </div>`;
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+            <div class="bg-green-100 p-4 rounded-lg text-center">
+                <div class="text-green-800 font-bold text-xl">{{ "%.2f"|format(monthly_total_income) }}</div>
+                <div class="text-green-600 text-sm">รายรับ (บาท)</div>
+            </div>
+            <div class="bg-red-100 p-4 rounded-lg text-center">
+                <div class="text-red-800 font-bold text-xl">{{ "%.2f"|format(monthly_total_expense) }}</div>
+                <div class="text-red-600 text-sm">รายจ่าย (บาท)</div>
+            </div>
+            <div class="bg-blue-100 p-4 rounded-lg text-center">
+                <div class="text-blue-800 font-bold text-xl">{{ "%.2f"|format(monthly_total_income - monthly_total_expense) }}</div>
+                <div class="text-blue-600 text-sm">คงเหลือ (บาท)</div>
+            </div>
+        </div>
+
+        <!-- Records Table -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="p-4 lg:p-6 border-b">
+                <h2 class="text-lg lg:text-xl font-semibold">📊 รายการทั้งหมด</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">วันที่</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">รายละเอียด</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">จำนวน</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">ร้านค้า</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">ประเภท</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="records-tbody">
+                        {% if records %}
+                            {% for record in records %}
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="px-4 py-3 text-sm">{{ record.date }}</td>
+                                    <td class="px-4 py-3 text-sm">{{ record.description }}</td>
+                                    <td class="px-4 py-3 text-sm font-medium {% if record.category == 'income' %}text-green-600{% else %}text-red-600{% endif %}">
+                                        {{ "%.2f"|format(record.amount) }}
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">{{ record.vendor or '-' }}</td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <span class="px-2 py-1 rounded-full text-xs {% if record.category == 'income' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                                            {% if record.category == 'income' %}💰 รายรับ{% else %}💸 รายจ่าย{% endif %}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <div class="flex gap-2">
+                                            <a href="/edit-income-expense/{{ record.id }}" 
+                                               class="text-blue-600 hover:text-blue-800 text-sm">
+                                                ✏️ แก้ไข
+                                            </a>
+                                            <form method="POST" action="/delete-income-expense/{{ record.id }}" 
+                                                  class="inline" onsubmit="return confirm('ต้องการลบรายการนี้หรือไม่?')">
+                                                <button type="submit" class="text-red-600 hover:text-red-800 text-sm">
+                                                    🗑️ ลบ
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                                    <div class="text-4xl mb-2">📭</div>
+                                    <div>ไม่มีข้อมูลในเดือนนี้</div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application State
+        let selectedItems = [];
+        let itemCounter = 0;
+        let availableTags = [
+            'อาหาร', 'เครื่องดื่ม', 'ของใช้', 'ยา', 'ขนม', 
+            'ผลไม้', 'ผัก', 'เนื้อสัตว์', 'นม', 'ขนมปัง'
+        ];
+        
+        // Emoji data
+        const emojiData = {
+            'อาหาร': ['🍽️', '🍜', '🍕', '🍔', '🍟', '🌮', '🌯', '🥪', '🍱', '🍛'],
+            'เครื่องดื่ม': ['🥤', '☕', '🧃', '🍺', '🍷', '🥛', '🧋', '🍹', '🥤', '💧'],
+            'ของใช้': ['🛍️', '🧴', '🧻', '🧽', '👕', '👖', '👟', '👜', '💄', '🪞'],
+            'ยา': ['💊', '🏥', '🩺', '🩹', '🩻', '💉', '🩸', '🧬', '🔬', '📋'],
+            'ขนม': ['🍪', '🍩', '🍰', '🧁', '🍦', '🍨', '🍭', '🍫', '🍬', '🍡'],
+            'ผลไม้': ['🍎', '🍌', '🍊', '🍇', '🍓', '🍑', '🥭', '🍍', '🥥', '🥝'],
+            'ผัก': ['🥬', '🥕', '🥦', '🥒', '🍅', '🌽', '🥑', '🥒', '🧅', '🧄'],
+            'เนื้อสัตว์': ['🥩', '🍗', '🍖', '🥓', '🍖', '🐟', '🦐', '🦑', '🦞', '🦀'],
+            'นม': ['🥛', '🧀', '🍦', '🍨', '🥛', '🧈', '🥛', '🍼', '🥛', '🥛'],
+            'ขนมปัง': ['🍞', '🥖', '🥨', '🥯', '🥐', '🥪', '🍞', '🥖', '🥨', '🥯']
+        };
+        
+        // Default emoji for each tag
+        const defaultEmojis = {
+            'อาหาร': '🍽️',
+            'เครื่องดื่ม': '🥤',
+            'ของใช้': '🛍️',
+            'ยา': '💊',
+            'ขนม': '🍪',
+            'ผลไม้': '🍎',
+            'ผัก': '🥬',
+            'เนื้อสัตว์': '🥩',
+            'นม': '🥛',
+            'ขนมปัง': '🍞'
+        };
+        
+        // Category data structure
+        const categoryData = {
+            income: {
+                '💰 เงินเดือน': ['💼 เงินเดือนประจำ', '🎯 โบนัส', '📈 เงินเพิ่ม'],
+                '💼 งานพิเศษ': ['🖥️ งานออนไลน์', '✍️ งานเขียน', '🎨 งานออกแบบ'],
+                '🎁 ของขวัญ': ['🎂 วันเกิด', '💝 วันคริสต์มาส', '🎊 วันปีใหม่'],
+                '🏦 ดอกเบี้ย': ['💰 เงินฝาก', '📊 เงินลงทุน', '🏠 เงินกู้'],
+                '📈 เงินลงทุน': ['📊 หุ้น', '🏠 อสังหาริมทรัพย์', '💰 คริปโต'],
+                '🔄 เงินคืน': ['🛒 เงินคืนสินค้า', '💳 เงินคืนบัตร', '🏦 เงินคืนธนาคาร']
+            },
+            expense: {
+                '🍽️ อาหาร': ['🍚 อาหารหลัก', '🍜 ก๋วยเตี๋ยว', '🍕 อาหารฟาสต์ฟู้ด', '☕ เครื่องดื่ม'],
+                '🛍️ ของใช้': ['🧴 สบู่/แชมพู', '🧻 กระดาษชำระ', '🧽 ของใช้ในบ้าน', '👕 เสื้อผ้า'],
+                '🥤 เครื่องดื่ม': ['☕ กาแฟ', '🥤 น้ำอัดลม', '🧃 น้ำผลไม้', '🍺 เครื่องดื่มแอลกอฮอล์'],
+                '🚗 ค่าเดินทาง': ['⛽ น้ำมัน', '🚌 รถเมล์', '🚕 แท็กซี่', '🚇 รถไฟฟ้า'],
+                '💊 ยา': ['💊 ยารักษาโรค', '💊 ยาเสริม', '🏥 ค่าหมอ', '💊 ยาแก้ปวด'],
+                '🎮 ความบันเทิง': ['🎬 ดูหนัง', '🎮 เล่นเกม', '🎵 ฟังเพลง', '📚 อ่านหนังสือ']
+            }
+        };
+        
+        // DOM Elements
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const transactionTypeSelect = document.getElementById('transaction-type');
+        const mainCategorySelect = document.getElementById('main-category');
+        const subCategorySelect = document.getElementById('sub-category');
+        const incomeAmountSection = document.getElementById('income-amount-section');
+        const itemsSection = document.getElementById('items-section');
+        const vendorSection = document.getElementById('vendor-section');
+        const selectedItemsDiv = document.getElementById('selected-items');
+        const totalItemsSpan = document.getElementById('total-items');
+        const totalAmountSpan = document.getElementById('total-amount');
+
+        // Mobile Menu Toggle
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
         });
 
-        html += `</div></div>`;
-    });
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
 
-    container.innerHTML = html;
-}
+        // Transaction Type Change Handler
+        transactionTypeSelect.addEventListener('change', function() {
+            const type = this.value;
+            
+            // Clear category options
+            mainCategorySelect.innerHTML = '<option value="">--เลือกประเภทหลัก--</option>';
+            subCategorySelect.innerHTML = '<option value="">--เลือกประเภทย่อย--</option>';
+            updateCategoryDisplay();
+            
+            if (type === 'income') {
+                // Show income amount section, hide items and vendor sections
+                incomeAmountSection.classList.remove('hidden');
+                itemsSection.classList.add('hidden');
+                vendorSection.classList.add('hidden');
+                
+                // Add income main categories
+                Object.keys(categoryData.income).forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category;
+                    mainCategorySelect.appendChild(option);
+                });
+                
+            } else if (type === 'expense') {
+                // Show items and vendor sections, hide income amount section
+                incomeAmountSection.classList.add('hidden');
+                itemsSection.classList.remove('hidden');
+                vendorSection.classList.remove('hidden');
+                
+                // Add expense main categories
+                Object.keys(categoryData.expense).forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category;
+                    mainCategorySelect.appendChild(option);
+                });
+            } else {
+                // Hide all conditional sections
+                incomeAmountSection.classList.add('hidden');
+                itemsSection.classList.add('hidden');
+                vendorSection.classList.add('hidden');
+            }
+        });
 
-// โหลดสินค้าที่เพิ่มเอง
-function loadCustomItems() {
-    const container = document.getElementById("custom-items-content");
-    if (!container) return;
+        // Main Category Change Handler
+        mainCategorySelect.addEventListener('change', function() {
+            const mainCategory = this.value;
+            const transactionType = transactionTypeSelect.value;
+            
+            // Clear sub category options
+            subCategorySelect.innerHTML = '<option value="">--เลือกประเภทย่อย--</option>';
+            
+            if (mainCategory && transactionType) {
+                const subCategories = categoryData[transactionType][mainCategory] || [];
+                subCategories.forEach(subCategory => {
+                    const option = document.createElement('option');
+                    option.value = subCategory;
+                    option.textContent = subCategory;
+                    subCategorySelect.appendChild(option);
+                });
+            }
+            
+            updateCategoryDisplay();
+        });
 
-    let html = '';
+        // Sub Category Change Handler
+        subCategorySelect.addEventListener('change', function() {
+            updateCategoryDisplay();
+        });
 
-    Object.keys(customItems).forEach(category => {
-        if (customItems[category].length > 0) {
-            html += `<div class="mb-6">
-                <h4 class="font-semibold text-lg mb-3">${category}</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">`;
-
-            customItems[category].forEach((item, index) => {
-                html += `<div class="flex items-center justify-between bg-gray-50 p-3 rounded border">
-                    <div class="flex-1">
-                        <input type="text" value="${item.name}"
-                               onchange="updateCustomItemName('${category}', ${index}, this.value)"
-                               class="font-medium bg-transparent border-none outline-none w-full">
-                        <div class="flex items-center gap-2 mt-1">
-                            <span class="text-sm text-gray-600">ราคา:</span>
-                            <input type="number" value="${item.defaultPrice}" step="0.01" min="0"
-                                   onchange="updateCustomItemPrice('${category}', ${index}, this.value)"
-                                   class="w-20 border rounded px-2 py-1 text-sm">
-                            <span class="text-sm text-gray-600">บาท</span>
-                        </div>
-                    </div>
-                    <button onclick="deleteCustomItem('${category}', ${index})"
-                            class="text-red-600 hover:text-red-800 ml-2" title="ลบ">
-                        ✕
-                    </button>
-                </div>`;
-            });
-
-            html += `</div></div>`;
+        // Update Category Display Function
+        function updateCategoryDisplay() {
+            const mainCategory = mainCategorySelect.value;
+            const subCategory = subCategorySelect.value;
+            
+            document.getElementById('selected-main-category').textContent = mainCategory || '-';
+            document.getElementById('selected-sub-category').textContent = subCategory || '-';
+            
+            // Update combined category for form submission
+            const combinedCategory = mainCategory && subCategory ? `${mainCategory} > ${subCategory}` : '';
+            document.getElementById('combined-category').value = combinedCategory;
         }
-    });
 
-    if (html === '') {
-        html = '<div class="text-gray-500 text-center py-8">ยังไม่มีสินค้าที่เพิ่มเอง</div>';
-    }
+        // Add Item Function
+        document.getElementById('add-item-btn').addEventListener('click', function() {
+            addNewItem();
+        });
 
-    container.innerHTML = html;
-}
-
-// เพิ่มสินค้าเริ่มต้น
-function addDefaultItem(category) {
-    const name = prompt('ชื่อสินค้า:');
-    if (!name || name.trim() === '') return;
-
-    const priceStr = prompt('ราคาเริ่มต้น:');
-    const price = parseFloat(priceStr);
-    if (isNaN(price) || price < 0) {
-        alert('กรุณาใส่ราคาที่ถูกต้อง');
-        return;
-    }
-
-    if (!items[category]) {
-        items[category] = [];
-    }
-
-    items[category].push({
-        name: name.trim(),
-        defaultPrice: price
-    });
-
-    saveDefaultItems();
-    loadDefaultItems();
-    updateItems();
-}
-
-// อัปเดตชื่อสินค้าเริ่มต้น
-function updateDefaultItemName(category, index, newName) {
-    if (newName.trim()) {
-        items[category][index].name = newName.trim();
-        saveDefaultItems();
-        updateItems();
-    }
-}
-
-// อัปเดตราคาสินค้าเริ่มต้น
-function updateDefaultItemPrice(category, index, newPrice) {
-    const price = parseFloat(newPrice);
-    if (price >= 0) {
-        items[category][index].defaultPrice = price;
-        saveDefaultItems();
-        updateItems();
-    }
-}
-
-// ลบสินค้าเริ่มต้น
-function deleteDefaultItem(category, index) {
-    if (confirm('ต้องการลบสินค้านี้หรือไม่?')) {
-        items[category].splice(index, 1);
-        saveDefaultItems();
-        loadDefaultItems();
-        updateItems();
-    }
-}
-
-// อัปเดตชื่อสินค้าที่เพิ่มเอง
-function updateCustomItemName(category, index, newName) {
-    if (newName.trim()) {
-        customItems[category][index].name = newName.trim();
-        saveCustomItems();
-        updateItems();
-    }
-}
-
-// อัปเดตราคาสินค้าที่เพิ่มเอง
-function updateCustomItemPrice(category, index, newPrice) {
-    const price = parseFloat(newPrice);
-    if (price >= 0) {
-        customItems[category][index].defaultPrice = price;
-        saveCustomItems();
-        updateItems();
-    }
-}
-
-// ลบสินค้าที่เพิ่มเอง
-function deleteCustomItem(category, index) {
-    if (confirm('ต้องการลบสินค้านี้หรือไม่?')) {
-        customItems[category].splice(index, 1);
-        if (customItems[category].length === 0) {
-            delete customItems[category];
-        }
-        saveCustomItems();
-        updateItems();
-        loadCustomItems();
-    }
-}
-
-// เพิ่มสินค้าใหม่จาก Modal
-function addNewItemFromModal() {
-    const category = document.getElementById('new-item-category').value;
-    const name = document.getElementById('new-item-name').value.trim();
-    const price = parseFloat(document.getElementById('new-item-price').value);
-
-    if (!category || !name || isNaN(price) || price < 0) {
-        alert('กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง');
-        return;
-    }
-
-    // ตรวจสอบว่ามีสินค้าชื่อนี้แล้วหรือไม่
-    const existsInDefault = items[category] && items[category].some(item =>
-        item.name.toLowerCase() === name.toLowerCase()
-    );
-    const existsInCustom = customItems[category] && customItems[category].some(item =>
-        item.name.toLowerCase() === name.toLowerCase()
-    );
-
-    if (existsInDefault || existsInCustom) {
-        alert('มีสินค้าชื่อนี้อยู่แล้ว');
-        return;
-    }
-
-    saveCustomItem(category, name, price);
-    clearNewItemForm();
-
-    // รีเฟรชแท็บที่เกี่ยวข้อง
-    if (currentTab === 'custom') {
-        loadCustomItems();
-    }
-    updateItems();
-
-    alert('เพิ่มสินค้าเรียบร้อยแล้ว');
-}
-
-// ล้างฟอร์มเพิ่มสินค้า
-function clearNewItemForm() {
-    const categorySelect = document.getElementById('new-item-category');
-    const nameInput = document.getElementById('new-item-name');
-    const priceInput = document.getElementById('new-item-price');
-
-    if (categorySelect) categorySelect.value = '';
-    if (nameInput) nameInput.value = '';
-    if (priceInput) priceInput.value = '';
-}
-
-// Export ข้อมูลสินค้า
-function exportItems() {
-    const data = {
-        defaultItems: items,
-        customItems: customItems,
-        recentItems: recentItems,
-        exportDate: new Date().toISOString(),
-        version: "1.0"
-    };
-
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `สินค้า_${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    alert('ส่งออกข้อมูลเรียบร้อยแล้ว');
-}
-
-// Import ข้อมูลสินค้า
-function importItems() {
-    document.getElementById('import-file').click();
-}
-
-function handleImportFile(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const data = JSON.parse(e.target.result);
-
-            if (!data.defaultItems && !data.customItems) {
-                alert('ไฟล์ไม่มีข้อมูลสินค้า');
+                // Add New Item Function
+        function addNewItem() {
+            const name = document.getElementById('item-name').value.trim();
+            const price = parseFloat(document.getElementById('item-price').value) || 0;
+            const quantity = parseInt(document.getElementById('item-quantity').value) || 1;
+            const tag = document.getElementById('item-tag').value;
+            const emojiBtn = document.getElementById('emoji-picker-btn');
+            const emoji = emojiBtn.textContent;
+            
+            if (!name) {
+                alert('กรุณากรอกชื่อสินค้า');
+                document.getElementById('item-name').focus();
                 return;
             }
 
-            if (confirm('การ Import จะเขียนทับข้อมูลเดิม\nต้องการดำเนินการต่อหรือไม่?')) {
-                if (data.defaultItems) {
-                    items = data.defaultItems;
-                    saveDefaultItems();
-                }
-
-                if (data.customItems) {
-                    customItems = data.customItems;
-                    saveCustomItems();
-                }
-
-                if (data.recentItems) {
-                    recentItems = data.recentItems;
-                    localStorage.setItem('recentItems', JSON.stringify(recentItems));
-                }
-
-                // รีเฟรชทุกอย่าง
-                updateItems();
-                loadDefaultItems();
-                loadCustomItems();
-                updateRecentItems();
-
-                alert('นำเข้าข้อมูลเรียบร้อยแล้ว');
+            if (price <= 0) {
+                alert('กรุณากรอกราคาที่มากกว่า 0');
+                document.getElementById('item-price').focus();
+                return;
             }
-        } catch (error) {
-            console.error('Import error:', error);
-            alert('ไฟล์ไม่ถูกต้อง กรุณาตรวจสอบและลองใหม่');
-        }
-    };
-    reader.readAsText(file);
-
-    // ล้างค่า input
-    event.target.value = '';
-}
-
-// รีเซ็ตข้อมูลทั้งหมด
-function resetAllItems() {
-    if (confirm('ต้องการรีเซ็ตข้อมูลสินค้าทั้งหมดกลับเป็นค่าเริ่มต้นหรือไม่?\n\n⚠️ ข้อมูลที่แก้ไขและเพิ่มเองจะหายไปทั้งหมด')) {
-        // รีเซ็ตสินค้าเริ่มต้น
-        items = {
-            "อาหาร": [
-                {name: "ปลาทู", defaultPrice: 25},
-                {name: "แกงถุง", defaultPrice: 25},
-                {name: "น่องไก่", defaultPrice: 20},
-                {name: "ข้าวเหนียว", defaultPrice: 10},
-                {name: "ขนมกล่อง", defaultPrice: 10},
-                {name: "ปลาดุก", defaultPrice: 55}
-            ],
-            "ของใช้": [
-                {name: "สบู่", defaultPrice: 25},
-                {name: "ยาสีฟัน", defaultPrice: 45},
-                {name: "แชมพู", defaultPrice: 120},
-                {name: "ผงซักฟอก", defaultPrice: 85},
-                {name: "ถุงขยะ", defaultPrice: 30},
-                {name: "ทิชชู่", defaultPrice: 35}
-            ],
-            "เครื่องดื่ม": [
-                {name: "น้ำเปล่า", defaultPrice: 8},
-                {name: "น้ำอัดลม", defaultPrice: 15},
-                {name: "กาแฟ", defaultPrice: 17},
-                {name: "กาแฟซอง", defaultPrice: 5},
-                {name: "ชา", defaultPrice: 20},
-                {name: "น้ำผลไม้", defaultPrice: 30},
-                {name: "น้ำแข็ง", defaultPrice: 10}
-            ]
-        };
-
-        // ลบสินค้าที่เพิ่มเอง
-        customItems = {};
-        recentItems = [];
-
-        // บันทึกและรีเฟรช
-        saveDefaultItems();
-        saveCustomItems();
-        localStorage.removeItem('recentItems');
-
-        updateItems();
-        loadDefaultItems();
-        loadCustomItems();
-        updateRecentItems();
-
-        alert('รีเซ็ตข้อมูลเรียบร้อยแล้ว');
-    }
-}
-
-// บันทึกข้อมูล
-function saveDefaultItems() {
-    localStorage.setItem('defaultItems', JSON.stringify(items));
-}
-
-function saveCustomItems() {
-    localStorage.setItem('customItems', JSON.stringify(customItems));
-}
-
-function confirmDelete(description) {
-  return confirm('ยืนยันการลบรายการ: ' + description + ' ?');
-}
-
-// เพิ่มฟังก์ชันสำรองข้อมูลอัตโนมัติ
-function autoBackup() {
-    const backupData = {
-        defaultItems: items,
-        customItems: customItems,
-        recentItems: recentItems,
-        backupDate: new Date().toISOString()
-    };
-
-    localStorage.setItem('itemsBackup', JSON.stringify(backupData));
-}
-
-// เรียกใช้ backup ทุก 5 นาที
-setInterval(autoBackup, 5 * 60 * 1000);
-
-// Backup เมื่อออกจากหน้า
-window.addEventListener('beforeunload', autoBackup);
-
-// Dropdown menu functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const menuButton = document.getElementById('menu-button');
-    const dropdownMenu = document.getElementById('dropdown-menu');
-    const menuArrow = document.getElementById('menu-arrow');
-    
-    if (menuButton && dropdownMenu && menuArrow) {
-        // เปิด/ปิด dropdown เมื่อคลิกปุ่ม
-        menuButton.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const isHidden = dropdownMenu.classList.contains('hidden');
             
-            if (isHidden) {
-                dropdownMenu.classList.remove('hidden');
-                menuArrow.style.transform = 'rotate(180deg)';
-            } else {
-                dropdownMenu.classList.add('hidden');
-                menuArrow.style.transform = 'rotate(0deg)';
+            const item = {
+                id: ++itemCounter,
+                name: name,
+                tag: tag,
+                emoji: emoji,
+                price: price,
+                quantity: quantity,
+                total: price * quantity
+            };
+            
+            selectedItems.push(item);
+            updateItemsDisplay();
+            
+            // Clear inputs
+            document.getElementById('item-name').value = '';
+            document.getElementById('item-price').value = '';
+            document.getElementById('item-quantity').value = '1';
+            document.getElementById('item-tag').value = '';
+            emojiBtn.textContent = '😊';
+            
+            // Focus back to item name for next entry
+            document.getElementById('item-name').focus();
+            
+            // Show success feedback
+            const addBtn = document.getElementById('add-item-btn');
+            const originalText = addBtn.innerHTML;
+            addBtn.innerHTML = '✅ เพิ่มแล้ว';
+            addBtn.classList.add('bg-green-600');
+            setTimeout(() => {
+                addBtn.innerHTML = originalText;
+                addBtn.classList.remove('bg-green-600');
+            }, 1000);
+        }
+
+        // Enter key handler for item inputs
+        document.getElementById('item-name').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('item-price').focus();
             }
         });
-        
-        // ปิด dropdown เมื่อคลิกนอกเมนู
-        document.addEventListener('click', function() {
-            dropdownMenu.classList.add('hidden');
-            menuArrow.style.transform = 'rotate(0deg)';
-        });
-        
-        // ป้องกันการปิด dropdown เมื่อคลิกภายในเมนู
-        dropdownMenu.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-    }
-});
-</script>
 
+        document.getElementById('item-price').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('item-quantity').focus();
+            }
+        });
+
+        document.getElementById('item-quantity').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addNewItem();
+            }
+        });
+
+        // Update Items Display
+        function updateItemsDisplay() {
+            if (selectedItems.length === 0) {
+                selectedItemsDiv.innerHTML = '<div class="text-gray-500 text-center py-4">ยังไม่มีรายการสินค้า</div>';
+                totalItemsSpan.textContent = '0';
+                totalAmountSpan.textContent = '0.00';
+                return;
+            }
+            
+            let totalAmount = 0;
+            
+            // Check if mobile view
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile) {
+                // Mobile compact table view
+                let html = `
+                    <table class="items-table mobile-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>ชื่อ</th>
+                                <th>แท็ก</th>
+                                <th>ราคา</th>
+                                <th>จำนวน</th>
+                                <th>รวม</th>
+                                <th>จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                selectedItems.forEach((item, index) => {
+                    totalAmount += item.total;
+                    html += `
+                        <tr>
+                            <td class="text-center">
+                                <div class="flex flex-col items-center gap-1">
+                                    <div class="w-5 h-5 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                                        ${index + 1}
+                                    </div>
+                                    <div class="flex gap-1">
+                                        <button onclick="moveItemUp(${item.id})" 
+                                                class="text-gray-500 hover:text-blue-600 text-xs ${index === 0 ? 'opacity-50 cursor-not-allowed' : ''}" 
+                                                title="เลื่อนขึ้น" ${index === 0 ? 'disabled' : ''}>
+                                            ⬆️
+                                        </button>
+                                        <button onclick="moveItemDown(${item.id})" 
+                                                class="text-gray-500 hover:text-blue-600 text-xs ${index === selectedItems.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}" 
+                                                title="เลื่อนลง" ${index === selectedItems.length - 1 ? 'disabled' : ''}>
+                                            ⬇️
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" value="${item.name}" 
+                                       onchange="updateItemName(${item.id}, this.value)"
+                                       class="w-full border rounded px-1 py-1 text-xs focus:ring-1 focus:ring-blue-400">
+                            </td>
+                            <td>
+                                <div class="flex items-center gap-1">
+                                    <span class="text-lg">${item.emoji || '😊'}</span>
+                                    <select onchange="updateItemTag(${item.id}, this.value)" 
+                                            class="flex-1 border rounded px-1 py-1 text-xs focus:ring-1 focus:ring-blue-400">
+                                        <option value="">--</option>
+                                        <option value="อาหาร" ${item.tag === 'อาหาร' ? 'selected' : ''}>🍽️</option>
+                                        <option value="เครื่องดื่ม" ${item.tag === 'เครื่องดื่ม' ? 'selected' : ''}>🥤</option>
+                                        <option value="ของใช้" ${item.tag === 'ของใช้' ? 'selected' : ''}>🛍️</option>
+                                        <option value="ยา" ${item.tag === 'ยา' ? 'selected' : ''}>💊</option>
+                                        <option value="ขนม" ${item.tag === 'ขนม' ? 'selected' : ''}>🍪</option>
+                                        <option value="ผลไม้" ${item.tag === 'ผลไม้' ? 'selected' : ''}>🍎</option>
+                                        <option value="ผัก" ${item.tag === 'ผัก' ? 'selected' : ''}>🥬</option>
+                                        <option value="เนื้อสัตว์" ${item.tag === 'เนื้อสัตว์' ? 'selected' : ''}>🥩</option>
+                                        <option value="นม" ${item.tag === 'นม' ? 'selected' : ''}>🥛</option>
+                                        <option value="ขนมปัง" ${item.tag === 'ขนมปัง' ? 'selected' : ''}>🍞</option>
+                                    </select>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="flex items-center gap-1">
+                                    <button onclick="decreasePrice(${item.id})" 
+                                            class="text-red-500 hover:text-red-700 text-xs px-1">-</button>
+                                    <input type="number" value="${item.price}" step="0.01" min="0"
+                                           onchange="updateItemPrice(${item.id}, this.value)"
+                                           class="w-full border rounded px-1 py-1 text-xs focus:ring-1 focus:ring-blue-400">
+                                    <button onclick="increasePrice(${item.id})" 
+                                            class="text-green-500 hover:text-green-700 text-xs px-1">+</button>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="flex items-center gap-1">
+                                    <button onclick="decreaseQuantity(${item.id})" 
+                                            class="text-red-500 hover:text-red-700 text-xs px-1">-</button>
+                                    <input type="number" value="${item.quantity}" min="1"
+                                           onchange="updateItemQuantity(${item.id}, this.value)"
+                                           class="w-full border rounded px-1 py-1 text-xs focus:ring-1 focus:ring-blue-400">
+                                    <button onclick="increaseQuantity(${item.id})" 
+                                            class="text-green-500 hover:text-green-700 text-xs px-1">+</button>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="text-xs font-medium text-green-600">${item.total.toFixed(2)}</div>
+                            </td>
+                            <td class="text-center">
+                                <div class="flex gap-1 justify-center">
+                                    <button onclick="duplicateItem(${item.id})" 
+                                            class="text-blue-500 hover:text-blue-700 text-xs px-1 py-1 rounded hover:bg-blue-50" title="คัดลอก">
+                                        📋
+                                    </button>
+                                    <button onclick="removeItem(${item.id})" 
+                                            class="text-red-500 hover:text-red-700 text-xs px-1 py-1 rounded hover:bg-red-50" title="ลบรายการ">
+                                        🗑️
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                // Add total row
+                html += `
+                            <tr class="total-row">
+                                <td colspan="5" class="text-right text-xs">ยอดรวม:</td>
+                                <td class="text-center text-green-600 font-bold text-xs">${totalAmount.toFixed(2)}</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+                
+                selectedItemsDiv.innerHTML = html;
+            } else {
+                // Desktop table view
+                let html = `
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th>ลำดับ</th>
+                                <th>ชื่อสินค้า</th>
+                                <th>แท็ก</th>
+                                <th>ราคา (บาท)</th>
+                                <th>จำนวน</th>
+                                <th>รวม (บาท)</th>
+                                <th>จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                selectedItems.forEach((item, index) => {
+                    totalAmount += item.total;
+                    html += `
+                        <tr>
+                            <td class="text-center">
+                                <div class="flex flex-col items-center gap-1">
+                                    <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                                        ${index + 1}
+                                    </div>
+                                    <div class="flex gap-1">
+                                        <button onclick="moveItemUp(${item.id})" 
+                                                class="text-gray-500 hover:text-blue-600 text-xs ${index === 0 ? 'opacity-50 cursor-not-allowed' : ''}" 
+                                                title="เลื่อนขึ้น" ${index === 0 ? 'disabled' : ''}>
+                                            ⬆️
+                                        </button>
+                                        <button onclick="moveItemDown(${item.id})" 
+                                                class="text-gray-500 hover:text-blue-600 text-xs ${index === selectedItems.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}" 
+                                                title="เลื่อนลง" ${index === selectedItems.length - 1 ? 'disabled' : ''}>
+                                            ⬇️
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" value="${item.name}" 
+                                       onchange="updateItemName(${item.id}, this.value)"
+                                       class="w-full border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-blue-400">
+                            </td>
+                            <td>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xl">${item.emoji || '😊'}</span>
+                                    <select onchange="updateItemTag(${item.id}, this.value)" 
+                                            class="flex-1 border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-blue-400">
+                                        <option value="">--เลือกแท็ก--</option>
+                                        <option value="อาหาร" ${item.tag === 'อาหาร' ? 'selected' : ''}>🍽️ อาหาร</option>
+                                        <option value="เครื่องดื่ม" ${item.tag === 'เครื่องดื่ม' ? 'selected' : ''}>🥤 เครื่องดื่ม</option>
+                                        <option value="ของใช้" ${item.tag === 'ของใช้' ? 'selected' : ''}>🛍️ ของใช้</option>
+                                        <option value="ยา" ${item.tag === 'ยา' ? 'selected' : ''}>💊 ยา</option>
+                                        <option value="ขนม" ${item.tag === 'ขนม' ? 'selected' : ''}>🍪 ขนม</option>
+                                        <option value="ผลไม้" ${item.tag === 'ผลไม้' ? 'selected' : ''}>🍎 ผลไม้</option>
+                                        <option value="ผัก" ${item.tag === 'ผัก' ? 'selected' : ''}>🥬 ผัก</option>
+                                        <option value="เนื้อสัตว์" ${item.tag === 'เนื้อสัตว์' ? 'selected' : ''}>🥩 เนื้อสัตว์</option>
+                                        <option value="นม" ${item.tag === 'นม' ? 'selected' : ''}>🥛 นม</option>
+                                        <option value="ขนมปัง" ${item.tag === 'ขนมปัง' ? 'selected' : ''}>🍞 ขนมปัง</option>
+                                    </select>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="flex items-center gap-1">
+                                    <button onclick="decreasePrice(${item.id})" 
+                                            class="text-red-500 hover:text-red-700 text-sm px-1">-</button>
+                                    <input type="number" value="${item.price}" step="0.01" min="0"
+                                           onchange="updateItemPrice(${item.id}, this.value)"
+                                           class="w-full border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-blue-400">
+                                    <button onclick="increasePrice(${item.id})" 
+                                            class="text-green-500 hover:text-green-700 text-sm px-1">+</button>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="flex items-center gap-1">
+                                    <button onclick="decreaseQuantity(${item.id})" 
+                                            class="text-red-500 hover:text-red-700 text-sm px-1">-</button>
+                                    <input type="number" value="${item.quantity}" min="1"
+                                       onchange="updateItemQuantity(${item.id}, this.value)"
+                                       class="w-full border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-blue-400">
+                                    <button onclick="increaseQuantity(${item.id})" 
+                                            class="text-green-500 hover:text-green-700 text-sm px-1">+</button>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="text-sm font-medium text-green-600">${item.total.toFixed(2)}</div>
+                            </td>
+                            <td class="text-center">
+                                <div class="flex gap-1 justify-center">
+                                    <button onclick="duplicateItem(${item.id})" 
+                                            class="text-blue-500 hover:text-blue-700 text-sm px-2 py-1 rounded hover:bg-blue-50" title="คัดลอก">
+                                        📋
+                                    </button>
+                                    <button onclick="removeItem(${item.id})" 
+                                            class="text-red-500 hover:text-red-700 text-sm px-2 py-1 rounded hover:bg-red-50" title="ลบรายการ">
+                                        🗑️
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                // Add total row
+                html += `
+                            <tr class="total-row">
+                                <td colspan="5" class="text-right">ยอดรวมทั้งหมด:</td>
+                                <td class="text-center text-green-600 font-bold">${totalAmount.toFixed(2)}</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+                
+                selectedItemsDiv.innerHTML = html;
+            }
+            
+            totalItemsSpan.textContent = selectedItems.length.toString();
+            totalAmountSpan.textContent = totalAmount.toFixed(2);
+            
+            // Update hidden inputs
+            document.getElementById('items-data').value = JSON.stringify(selectedItems);
+            document.getElementById('calculated-total').value = totalAmount.toFixed(2);
+            
+            // Create description
+            const descriptions = selectedItems.map(item => 
+                `${item.name} x${item.quantity}`
+            );
+            document.getElementById('description').value = descriptions.join(', ');
+        }
+
+        // Update Item Name Function
+        function updateItemName(itemId, newName) {
+            const item = selectedItems.find(item => item.id === itemId);
+            if (item && newName.trim()) {
+                item.name = newName.trim();
+                updateItemsDisplay();
+            }
+        }
+
+        // Update Item Price Function
+        function updateItemPrice(itemId, newPrice) {
+            const item = selectedItems.find(item => item.id === itemId);
+            const price = parseFloat(newPrice);
+            if (item && !isNaN(price) && price >= 0) {
+                item.price = price;
+                item.total = item.price * item.quantity;
+                updateItemsDisplay();
+            }
+        }
+
+        // Update Item Quantity Function
+        function updateItemQuantity(itemId, newQuantity) {
+            const item = selectedItems.find(item => item.id === itemId);
+            const quantity = parseInt(newQuantity);
+            if (item && !isNaN(quantity) && quantity > 0) {
+                item.quantity = quantity;
+                item.total = item.price * item.quantity;
+                updateItemsDisplay();
+            }
+        }
+
+        // Increase/Decrease Price Functions
+        function increasePrice(itemId) {
+            const item = selectedItems.find(item => item.id === itemId);
+            if (item) {
+                item.price += 1;
+                item.total = item.price * item.quantity;
+                updateItemsDisplay();
+            }
+        }
+
+        function decreasePrice(itemId) {
+            const item = selectedItems.find(item => item.id === itemId);
+            if (item && item.price > 0) {
+                item.price = Math.max(0, item.price - 1);
+                item.total = item.price * item.quantity;
+                updateItemsDisplay();
+            }
+        }
+
+        // Increase/Decrease Quantity Functions
+        function increaseQuantity(itemId) {
+            const item = selectedItems.find(item => item.id === itemId);
+            if (item) {
+                item.quantity += 1;
+                item.total = item.price * item.quantity;
+                updateItemsDisplay();
+            }
+        }
+
+        function decreaseQuantity(itemId) {
+            const item = selectedItems.find(item => item.id === itemId);
+            if (item && item.quantity > 1) {
+                item.quantity = Math.max(1, item.quantity - 1);
+                item.total = item.price * item.quantity;
+                updateItemsDisplay();
+            }
+        }
+
+        // Duplicate Item Function
+        function duplicateItem(itemId) {
+            const originalItem = selectedItems.find(item => item.id === itemId);
+            if (originalItem) {
+                const newItem = {
+                    id: ++itemCounter,
+                    name: originalItem.name + ' (คัดลอก)',
+                    tag: originalItem.tag,
+                    emoji: originalItem.emoji,
+                    price: originalItem.price,
+                    quantity: originalItem.quantity,
+                    total: originalItem.price * originalItem.quantity
+                };
+                
+                selectedItems.push(newItem);
+                updateItemsDisplay();
+                
+                // Show feedback
+                const duplicateBtn = document.querySelector(`[onclick="duplicateItem(${itemId})"]`);
+                if (duplicateBtn) {
+                    duplicateBtn.style.transform = 'scale(1.2)';
+                    setTimeout(() => {
+                        duplicateBtn.style.transform = 'scale(1)';
+                    }, 200);
+                }
+            }
+        }
+
+        // Remove Item Function
+        function removeItem(itemId) {
+            if (confirm('ต้องการลบรายการนี้หรือไม่?')) {
+                selectedItems = selectedItems.filter(item => item.id !== itemId);
+                updateItemsDisplay();
+                
+                // Show feedback
+                const itemElement = document.querySelector(`[onclick="removeItem(${itemId})"]`);
+                if (itemElement) {
+                    itemElement.style.backgroundColor = '#fef2f2';
+                    itemElement.style.borderColor = '#ef4444';
+                    setTimeout(() => {
+                        itemElement.style.backgroundColor = '';
+                        itemElement.style.borderColor = '';
+                    }, 300);
+                }
+            }
+        }
+
+        // Clear All Items Function
+        function clearAllItems() {
+            if (selectedItems.length > 0 && confirm('ต้องการล้างรายการทั้งหมดหรือไม่?')) {
+                selectedItems = [];
+                updateItemsDisplay();
+                alert('ล้างรายการทั้งหมดเรียบร้อยแล้ว');
+            }
+        }
+
+        // Move Item Up Function
+        function moveItemUp(itemId) {
+            const index = selectedItems.findIndex(item => item.id === itemId);
+            if (index > 0) {
+                const temp = selectedItems[index];
+                selectedItems[index] = selectedItems[index - 1];
+                selectedItems[index - 1] = temp;
+                updateItemsDisplay();
+            }
+        }
+
+        // Move Item Down Function
+        function moveItemDown(itemId) {
+            const index = selectedItems.findIndex(item => item.id === itemId);
+            if (index < selectedItems.length - 1) {
+                const temp = selectedItems[index];
+                selectedItems[index] = selectedItems[index + 1];
+                selectedItems[index + 1] = temp;
+                updateItemsDisplay();
+            }
+        }
+
+        // Show Items Summary Function
+        function showItemsSummary() {
+            if (selectedItems.length === 0) {
+                alert('ไม่มีรายการสินค้าให้แสดงสรุป');
+                return;
+            }
+
+            let summary = '📋 สรุปรายการสินค้า\n\n';
+            let totalAmount = 0;
+
+            selectedItems.forEach((item, index) => {
+                summary += `${index + 1}. ${item.emoji || '😊'} ${item.name}`;
+                if (item.tag) {
+                    summary += ` [${item.tag}]`;
+                }
+                summary += `\n`;
+                summary += `   ราคา: ${item.price.toFixed(2)} บาท × ${item.quantity} = ${item.total.toFixed(2)} บาท\n\n`;
+                totalAmount += item.total;
+            });
+
+            summary += `💰 ยอดรวมทั้งหมด: ${totalAmount.toFixed(2)} บาท`;
+            summary += `\n📊 จำนวนรายการ: ${selectedItems.length} รายการ`;
+
+            alert(summary);
+        }
+
+        // Add Tag Button Handler
+        document.getElementById('add-tag-btn').addEventListener('click', function() {
+            const customInput = document.getElementById('custom-tag-input');
+            const newTagInput = document.getElementById('new-tag');
+            
+            if (customInput.classList.contains('hidden')) {
+                customInput.classList.remove('hidden');
+                newTagInput.focus();
+            } else {
+                addCustomTag();
+            }
+        });
+
+        // Add Custom Tag Function
+        function addCustomTag() {
+            const newTagInput = document.getElementById('new-tag');
+            const tagName = newTagInput.value.trim();
+            
+            if (!tagName) {
+                alert('กรุณาใส่ชื่อแท็ก');
+                return;
+            }
+            
+            if (availableTags.includes(tagName)) {
+                alert('แท็กนี้มีอยู่แล้ว');
+                return;
+            }
+            
+            // Add to available tags
+            availableTags.push(tagName);
+            
+            // Add to select options
+            const tagSelect = document.getElementById('item-tag');
+            const option = document.createElement('option');
+            option.value = tagName;
+            option.textContent = tagName;
+            tagSelect.appendChild(option);
+            
+            // Select the new tag
+            tagSelect.value = tagName;
+            
+            // Hide input and clear
+            document.getElementById('custom-tag-input').classList.add('hidden');
+            newTagInput.value = '';
+            
+            alert(`เพิ่มแท็ก "${tagName}" เรียบร้อยแล้ว`);
+        }
+
+        // Cancel Add Tag Function
+        function cancelAddTag() {
+            document.getElementById('custom-tag-input').classList.add('hidden');
+            document.getElementById('new-tag').value = '';
+        }
+
+        // Update Item Tag Function
+        function updateItemTag(itemId, newTag) {
+            const item = selectedItems.find(item => item.id === itemId);
+            if (item) {
+                item.tag = newTag;
+                updateItemsDisplay();
+            }
+        }
+
+        // Enter key handler for custom tag
+        document.getElementById('new-tag').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addCustomTag();
+            }
+        });
+
+        // Show Emoji Picker Function
+        function showEmojiPicker() {
+            const modal = document.getElementById('emoji-picker-modal');
+            const grid = document.getElementById('emoji-grid');
+            const selectedTag = document.getElementById('item-tag').value;
+            
+            // Clear previous emojis
+            grid.innerHTML = '';
+            
+            if (selectedTag && emojiData[selectedTag]) {
+                // Show emojis for selected tag
+                emojiData[selectedTag].forEach(emoji => {
+                    const button = document.createElement('button');
+                    button.className = 'text-2xl p-2 hover:bg-gray-100 rounded';
+                    button.textContent = emoji;
+                    button.onclick = () => selectEmoji(emoji);
+                    grid.appendChild(button);
+                });
+            } else {
+                // Show all emojis
+                const allEmojis = [
+                    '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇',
+                    '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚',
+                    '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩',
+                    '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣',
+                    '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬',
+                    '🤯', '😳', '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗',
+                    '🤔', '🤭', '🤫', '🤥', '😶', '😐', '😑', '😯', '😦', '😧',
+                    '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴', '🤢',
+                    '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '💩', '🤡', '👹',
+                    '👺', '👻', '👽', '👾', '🤖', '😺', '😸', '😹', '😻', '😼',
+                    '😽', '🙀', '😿', '😾', '🙈', '🙉', '🙊', '💌', '💘', '💝',
+                    '💖', '💗', '💓', '💞', '💕', '💟', '❣️', '💔', '❤️', '🧡',
+                    '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💯', '💢', '💥',
+                    '💫', '💦', '💨', '🕳️', '💬', '🗨️', '🗯️', '💭', '💤', '👋',
+                    '🤚', '🖐️', '✋', '🖖', '👌', '🤌', '🤏', '✌️', '🤞', '🤟',
+                    '🤘', '🤙', '👈', '👉', '👆', '🖕', '👇', '☝️', '👍', '👎',
+                    '✊', '👊', '🤛', '🤜', '👏', '🙌', '👐', '🤲', '🤝', '🙏',
+                    '✍️', '💪', '🦾', '🦿', '🦵', '🦶', '👂', '🦻', '👃', '🧠',
+                    '🫀', '🫁', '🦷', '🦴', '👀', '👁️', '👅', '👄', '💋', '🩸',
+                    '🍽️', '🍜', '🍕', '🍔', '🍟', '🌮', '🌯', '🥪', '🍱', '🍛',
+                    '🥤', '☕', '🧃', '🍺', '🍷', '🥛', '🧋', '🍹', '🥤', '💧',
+                    '🛍️', '🧴', '🧻', '🧽', '👕', '👖', '👟', '👜', '💄', '🪞',
+                    '💊', '🏥', '🩺', '🩹', '🩻', '💉', '🩸', '🧬', '🔬', '📋',
+                    '🍪', '🍩', '🍰', '🧁', '🍦', '🍨', '🍭', '🍫', '🍬', '🍡',
+                    '🍎', '🍌', '🍊', '🍇', '🍓', '🍑', '🥭', '🍍', '🥥', '🥝',
+                    '🥬', '🥕', '🥦', '🥒', '🍅', '🌽', '🥑', '🥒', '🧅', '🧄',
+                    '🥩', '🍗', '🍖', '🥓', '🍖', '🐟', '🦐', '🦑', '🦞', '🦀',
+                    '🥛', '🧀', '🍦', '🍨', '🥛', '🧈', '🥛', '🍼', '🥛', '🥛',
+                    '🍞', '🥖', '🥨', '🥯', '🥐', '🥪', '🍞', '🥖', '🥨', '🥯'
+                ];
+                
+                allEmojis.forEach(emoji => {
+                    const button = document.createElement('button');
+                    button.className = 'text-2xl p-2 hover:bg-gray-100 rounded';
+                    button.textContent = emoji;
+                    button.onclick = () => selectEmoji(emoji);
+                    grid.appendChild(button);
+                });
+            }
+            
+            modal.classList.remove('hidden');
+        }
+
+        // Close Emoji Picker Function
+        function closeEmojiPicker() {
+            document.getElementById('emoji-picker-modal').classList.add('hidden');
+        }
+
+        // Select Emoji Function
+        function selectEmoji(emoji) {
+            const selectedTag = document.getElementById('item-tag').value;
+            const emojiBtn = document.getElementById('emoji-picker-btn');
+            
+            // Update emoji button
+            emojiBtn.textContent = emoji;
+            
+            // Store selected emoji for the current tag
+            if (selectedTag) {
+                if (!window.selectedEmojis) {
+                    window.selectedEmojis = {};
+                }
+                window.selectedEmojis[selectedTag] = emoji;
+            }
+            
+            closeEmojiPicker();
+        }
+
+        // Update Tag Emoji Function
+        function updateTagEmoji() {
+            const selectedTag = document.getElementById('item-tag').value;
+            const emojiBtn = document.getElementById('emoji-picker-btn');
+            
+            if (selectedTag) {
+                // Use stored emoji or default
+                const storedEmoji = window.selectedEmojis && window.selectedEmojis[selectedTag];
+                const defaultEmoji = defaultEmojis[selectedTag];
+                emojiBtn.textContent = storedEmoji || defaultEmoji || '😊';
+            } else {
+                emojiBtn.textContent = '😊';
+            }
+        }
+
+        // Show Tag Filter Function
+        function showTagFilter() {
+            if (selectedItems.length === 0) {
+                alert('ไม่มีรายการสินค้าให้กรอง');
+                return;
+            }
+
+            // Get unique tags from items
+            const itemTags = selectedItems.map(item => item.tag).filter(tag => tag);
+            const uniqueTags = [...new Set(itemTags)];
+
+            if (uniqueTags.length === 0) {
+                alert('ไม่มีแท็กในรายการสินค้า');
+                return;
+            }
+
+            let filterOptions = '🏷️ เลือกแท็กที่ต้องการกรอง:\n\n';
+            uniqueTags.forEach((tag, index) => {
+                const count = selectedItems.filter(item => item.tag === tag).length;
+                filterOptions += `${index + 1}. ${tag} (${count} รายการ)\n`;
+            });
+            filterOptions += '\n0. แสดงทั้งหมด';
+
+            const choice = prompt(filterOptions + '\n\nกรุณาใส่หมายเลขที่ต้องการ:');
+            
+            if (choice === null) return; // User cancelled
+            
+            const choiceNum = parseInt(choice);
+            if (choiceNum === 0) {
+                // Show all items
+                updateItemsDisplay();
+                alert('แสดงรายการทั้งหมด');
+            } else if (choiceNum >= 1 && choiceNum <= uniqueTags.length) {
+                // Filter by selected tag
+                const selectedTag = uniqueTags[choiceNum - 1];
+                const filteredItems = selectedItems.filter(item => item.tag === selectedTag);
+                
+                if (filteredItems.length > 0) {
+                    let summary = `🏷️ รายการสินค้าที่มีแท็ก "${selectedTag}":\n\n`;
+                    let totalAmount = 0;
+
+                    filteredItems.forEach((item, index) => {
+                        summary += `${index + 1}. ${item.emoji || '😊'} ${item.name}\n`;
+                        summary += `   ราคา: ${item.price.toFixed(2)} บาท × ${item.quantity} = ${item.total.toFixed(2)} บาท\n\n`;
+                        totalAmount += item.total;
+                    });
+
+                    summary += `💰 ยอดรวม: ${totalAmount.toFixed(2)} บาท`;
+                    summary += `\n📊 จำนวนรายการ: ${filteredItems.length} รายการ`;
+
+                    alert(summary);
+                }
+            } else {
+                alert('กรุณาเลือกหมายเลขที่ถูกต้อง');
+            }
+        }
+
+        // Form Submit Handler
+        document.getElementById('transaction-form').addEventListener('submit', function(e) {
+            const transactionType = transactionTypeSelect.value;
+            const mainCategory = mainCategorySelect.value;
+            const subCategory = subCategorySelect.value;
+            
+            if (!transactionType) {
+                e.preventDefault();
+                alert('กรุณาเลือกประเภทรายการ');
+                return;
+            }
+            
+            if (!mainCategory) {
+                e.preventDefault();
+                alert('กรุณาเลือกประเภทหลัก');
+                return;
+            }
+            
+            if (!subCategory) {
+                e.preventDefault();
+                alert('กรุณาเลือกประเภทย่อย');
+                return;
+            }
+            
+            if (transactionType === 'income') {
+                const incomeAmount = parseFloat(document.getElementById('income-amount').value) || 0;
+                if (incomeAmount <= 0) {
+                    e.preventDefault();
+                    alert('กรุณากรอกจำนวนเงินสำหรับรายรับ');
+                    return;
+                }
+                
+                // Set values for income
+                document.getElementById('calculated-total').value = incomeAmount.toFixed(2);
+                document.getElementById('description').value = `รายรับ: ${mainCategory} > ${subCategory}`;
+                document.getElementById('items-data').value = '';
+                
+            } else if (transactionType === 'expense') {
+                if (selectedItems.length === 0) {
+                    e.preventDefault();
+                    alert('กรุณาเพิ่มรายการสินค้าอย่างน้อย 1 รายการ');
+                    return;
+                }
+                
+                const vendor = document.getElementById('vendor-select').value;
+                if (!vendor) {
+                    e.preventDefault();
+                    alert('กรุณาเลือกร้านค้า');
+                    return;
+                }
+            }
+        });
+
+        // Add Main Category Button Handler
+        document.getElementById('add-main-category-btn').addEventListener('click', function() {
+            const customInput = document.getElementById('custom-main-category-input');
+            const newCategoryInput = document.getElementById('new-main-category');
+            
+            if (customInput.classList.contains('hidden')) {
+                customInput.classList.remove('hidden');
+                newCategoryInput.focus();
+            } else {
+                addCustomMainCategory();
+            }
+        });
+
+        // Add Custom Main Category Function
+        function addCustomMainCategory() {
+            const newCategoryInput = document.getElementById('new-main-category');
+            const categoryName = newCategoryInput.value.trim();
+            const transactionType = transactionTypeSelect.value;
+            
+            if (!categoryName) {
+                alert('กรุณาใส่ชื่อประเภทหลัก');
+                return;
+            }
+            
+            if (!transactionType) {
+                alert('กรุณาเลือกประเภทรายการก่อน');
+                return;
+            }
+            
+            // Add to category data structure
+            if (!categoryData[transactionType][categoryName]) {
+                categoryData[transactionType][categoryName] = [];
+            }
+            
+            // Add to select options
+            const option = document.createElement('option');
+            option.value = categoryName;
+            option.textContent = categoryName;
+            mainCategorySelect.appendChild(option);
+            
+            // Select the new category
+            mainCategorySelect.value = categoryName;
+            
+            // Hide input and clear
+            document.getElementById('custom-main-category-input').classList.add('hidden');
+            newCategoryInput.value = '';
+            
+            // Clear sub categories
+            subCategorySelect.innerHTML = '<option value="">--เลือกประเภทย่อย--</option>';
+            updateCategoryDisplay();
+            
+            alert(`เพิ่มประเภทหลัก "${categoryName}" เรียบร้อยแล้ว`);
+        }
+
+        // Enter key handler for custom main category
+        document.getElementById('new-main-category').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addCustomMainCategory();
+            }
+        });
+
+        // Add Sub Category Button Handler
+        document.getElementById('add-sub-category-btn').addEventListener('click', function() {
+            const customInput = document.getElementById('custom-sub-category-input');
+            const newCategoryInput = document.getElementById('new-sub-category');
+            
+            if (customInput.classList.contains('hidden')) {
+                customInput.classList.remove('hidden');
+                newCategoryInput.focus();
+            } else {
+                addCustomSubCategory();
+            }
+        });
+
+        // Add Custom Sub Category Function
+        function addCustomSubCategory() {
+            const newCategoryInput = document.getElementById('new-sub-category');
+            const subCategoryName = newCategoryInput.value.trim();
+            const mainCategory = mainCategorySelect.value;
+            const transactionType = transactionTypeSelect.value;
+            
+            if (!subCategoryName) {
+                alert('กรุณาใส่ชื่อประเภทย่อย');
+                return;
+            }
+            
+            if (!mainCategory) {
+                alert('กรุณาเลือกประเภทหลักก่อน');
+                return;
+            }
+            
+            // Add to category data structure
+            if (!categoryData[transactionType][mainCategory]) {
+                categoryData[transactionType][mainCategory] = [];
+            }
+            
+            if (categoryData[transactionType][mainCategory].includes(subCategoryName)) {
+                alert('ประเภทย่อยนี้มีอยู่แล้ว');
+                return;
+            }
+            
+            categoryData[transactionType][mainCategory].push(subCategoryName);
+            
+            // Add to select options
+            const option = document.createElement('option');
+            option.value = subCategoryName;
+            option.textContent = subCategoryName;
+            subCategorySelect.appendChild(option);
+            
+            // Select the new sub category
+            subCategorySelect.value = subCategoryName;
+            
+            // Hide input and clear
+            document.getElementById('custom-sub-category-input').classList.add('hidden');
+            newCategoryInput.value = '';
+            
+            updateCategoryDisplay();
+            
+            alert(`เพิ่มประเภทย่อย "${subCategoryName}" เรียบร้อยแล้ว`);
+        }
+
+        // Enter key handler for custom sub category
+        document.getElementById('new-sub-category').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addCustomSubCategory();
+            }
+        });
+
+        // Add Vendor Button Handler
+        document.getElementById('add-vendor-btn').addEventListener('click', function() {
+            const customInput = document.getElementById('custom-vendor-input');
+            const newVendorInput = document.getElementById('new-vendor');
+            
+            if (customInput.classList.contains('hidden')) {
+                customInput.classList.remove('hidden');
+                newVendorInput.focus();
+            } else {
+                addCustomVendor();
+            }
+        });
+
+        // Add Custom Vendor Function
+        function addCustomVendor() {
+            const newVendorInput = document.getElementById('new-vendor');
+            const vendorName = newVendorInput.value.trim();
+            
+            if (!vendorName) {
+                alert('กรุณาใส่ชื่อร้านค้า');
+                return;
+            }
+            
+            const vendorSelect = document.getElementById('vendor-select');
+            
+            // Check if vendor already exists
+            const existingOptions = Array.from(vendorSelect.options);
+            const exists = existingOptions.some(option => option.value === vendorName);
+            
+            if (exists) {
+                alert('ร้านค้านี้มีอยู่แล้ว');
+                return;
+            }
+            
+            // Add new option
+            const option = document.createElement('option');
+            option.value = vendorName;
+            option.textContent = vendorName;
+            vendorSelect.appendChild(option);
+            
+            // Select the new vendor
+            vendorSelect.value = vendorName;
+            
+            // Hide input and clear
+            document.getElementById('custom-vendor-input').classList.add('hidden');
+            newVendorInput.value = '';
+            
+            alert(`เพิ่มร้านค้า "${vendorName}" เรียบร้อยแล้ว`);
+        }
+
+        // Enter key handler for custom vendor
+        document.getElementById('new-vendor').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addCustomVendor();
+            }
+        });
+
+        // Change Month Function
+        function changeMonth(month) {
+            window.location.href = `/income-expense?month=${month}`;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date as default
+            const today = new Date().toISOString().split('T')[0];
+            document.querySelector('input[name="date"]').value = today;
+            
+            // Auto refresh after form submission
+            if (window.location.search.includes('success=true')) {
+                setTimeout(() => {
+                    window.location.href = window.location.pathname;
+                }, 2000);
+            }
+            
+            // Handle window resize for responsive design
+            window.addEventListener('resize', function() {
+                if (selectedItems.length > 0) {
+                    updateItemsDisplay();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
