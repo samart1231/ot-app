@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ตั้งค่า</title>
+    <script src="{{ url_for('static', filename='js/tailwind.min.js') }}"></script>
+</head>
+<body class="p-4 sm:p-8 bg-gray-100 text-gray-800 min-h-screen">
+    <!-- Mobile Menu -->
+    <div class="lg:hidden fixed top-0 left-0 w-full bg-white shadow-lg z-50">
+        <div class="flex items-center justify-between p-4">
+            <h1 class="text-xl font-bold text-gray-800">⚙️ ตั้งค่า</h1>
+            <button onclick="toggleMobileMenu()" class="text-gray-600 hover:text-gray-800">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden bg-white border-t">
+            <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📅 บันทึกโอที</a>
+            <a href="/income-expense" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">💰 รายรับ/รายจ่าย</a>
+            <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">🎉 วันหยุด</a>
+            <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📊 นำเข้า CSV รายรับ/รายจ่าย</a>
+            <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⏰ นำเข้า CSV โอที</a>
+            <a href="/settings" class="block px-4 py-3 bg-gray-100 text-gray-700 font-medium">⚙️ ตั้งค่า</a>
+            <div class="px-4 py-3 border-b">
+                <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
+            </div>
+            <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50">🚪 ออกจากระบบ</a>
+        </div>
+    </div>
+
+    <!-- Desktop Menu -->
+    <div class="hidden lg:block fixed top-0 left-0 w-64 h-full bg-white shadow-lg">
+        <div class="p-6">
+            <h1 class="text-2xl font-bold text-gray-800 mb-8">📊 ระบบจัดการ</h1>
+            <nav class="space-y-2">
+                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">📅 บันทึกโอที</a>
+                <a href="/income-expense" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">💰 รายรับ/รายจ่าย</a>
+                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">🎉 วันหยุด</a>
+                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">📊 นำเข้า CSV รายรับ/รายจ่าย</a>
+                <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">⏰ นำเข้า CSV โอที</a>
+                <a href="/settings" class="block px-4 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg">⚙️ ตั้งค่า</a>
+            </nav>
+            <div class="mt-8 pt-6 border-t">
+                <div class="px-4 py-2">
+                    <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
+                </div>
+                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors">🚪 ออกจากระบบ</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="lg:ml-64 pt-16 lg:pt-0">
+        <div class="p-6">
+            <h1 class="text-2xl sm:text-3xl font-bold mb-6">⚙️ ตั้งค่า</h1>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="mb-4 p-3 rounded-lg text-sm
+                            {% if category == 'error' %}bg-red-100 border border-red-400 text-red-700
+                            {% else %}bg-green-100 border border-green-400 text-green-700{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- ข้อมูลผู้ใช้ -->
+            <div class="bg-white p-6 rounded-lg shadow mb-6">
+                <h2 class="text-xl font-semibold mb-4">👤 ข้อมูลผู้ใช้</h2>
+                <div class="space-y-3">
+                    <div>
+                        <span class="text-gray-600">อีเมล:</span>
+                        <span class="font-medium">{{ session.user_email }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">ID ผู้ใช้:</span>
+                        <span class="font-medium">{{ session.user_id }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- เปลี่ยนรหัสผ่าน -->
+            <div class="bg-white p-6 rounded-lg shadow mb-6">
+                <h2 class="text-xl font-semibold mb-4">🔐 เปลี่ยนรหัสผ่าน</h2>
+                <form method="POST" action="/change-password" class="space-y-4">
+                    <div>
+                        <label for="current_password" class="block text-sm font-medium text-gray-700 mb-2">รหัสผ่านปัจจุบัน</label>
+                        <input type="password" id="current_password" name="current_password" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label for="new_password" class="block text-sm font-medium text-gray-700 mb-2">รหัสผ่านใหม่</label>
+                        <input type="password" id="new_password" name="new_password" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label for="confirm_password" class="block text-sm font-medium text-gray-700 mb-2">ยืนยันรหัสผ่านใหม่</label>
+                        <input type="password" id="confirm_password" name="confirm_password" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors">
+                        💾 บันทึกรหัสผ่านใหม่
+                    </button>
+                </form>
+            </div>
+
+            <!-- ตั้งค่าเวลาเข้างาน -->
+            <div class="bg-white p-6 rounded-lg shadow mb-6">
+                <h2 class="text-xl font-semibold mb-4">🕐 ตั้งค่าเวลาเข้างาน</h2>
+                <form method="POST" action="/update-work-time-settings" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="work_start_time" class="block text-sm font-medium text-gray-700 mb-2">เวลาเริ่มงาน</label>
+                            <input type="time" id="work_start_time" name="work_start_time" 
+                                   value="{{ work_settings.work_start_time if work_settings else '08:00' }}"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <p class="text-xs text-gray-500 mt-1">เวลาที่เริ่มงานปกติ (เช่น 08:00)</p>
+                        </div>
+                        <div>
+                            <label for="work_end_time" class="block text-sm font-medium text-gray-700 mb-2">เวลาเลิกงานปกติ</label>
+                            <input type="time" id="work_end_time" name="work_end_time" 
+                                   value="{{ work_settings.work_end_time if work_settings else '17:00' }}"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <p class="text-xs text-gray-500 mt-1">เวลาที่เลิกงานปกติ (เช่น 17:00)</p>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="ot_rate" class="block text-sm font-medium text-gray-700 mb-2">อัตราค่าโอที (บาท/ชั่วโมง)</label>
+                        <input type="number" id="ot_rate" name="ot_rate" step="0.01" min="0"
+                               value="{{ work_settings.ot_rate if work_settings else '50.00' }}"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">อัตราค่าโอทีต่อชั่วโมง (เช่น 50 บาท)</p>
+                    </div>
+                    <div>
+                        <label for="work_days" class="block text-sm font-medium text-gray-700 mb-2">วันทำงาน</label>
+                        <div class="grid grid-cols-7 gap-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" name="work_days" value="0" 
+                                       {% if work_settings and '0' in work_settings.work_days %}checked{% endif %}
+                                       class="mr-2">
+                                <span class="text-sm">อา</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="work_days" value="1" 
+                                       {% if work_settings and '1' in work_settings.work_days %}checked{% endif %}
+                                       class="mr-2">
+                                <span class="text-sm">จ</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="work_days" value="2" 
+                                       {% if work_settings and '2' in work_settings.work_days %}checked{% endif %}
+                                       class="mr-2">
+                                <span class="text-sm">อ</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="work_days" value="3" 
+                                       {% if work_settings and '3' in work_settings.work_days %}checked{% endif %}
+                                       class="mr-2">
+                                <span class="text-sm">พ</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="work_days" value="4" 
+                                       {% if work_settings and '4' in work_settings.work_days %}checked{% endif %}
+                                       class="mr-2">
+                                <span class="text-sm">พฤ</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="work_days" value="5" 
+                                       {% if work_settings and '5' in work_settings.work_days %}checked{% endif %}
+                                       class="mr-2">
+                                <span class="text-sm">ศ</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="work_days" value="6" 
+                                       {% if work_settings and '6' in work_settings.work_days %}checked{% endif %}
+                                       class="mr-2">
+                                <span class="text-sm">ส</span>
+                            </label>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">เลือกวันทำงานปกติ</p>
+                    </div>
+                    
+                    <!-- ตั้งค่าเวลาพักเที่ยง -->
+                    <div class="border-t pt-4 mt-4">
+                        <h3 class="text-lg font-medium text-gray-800 mb-3">🍽️ เวลาพักเที่ยง</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="lunch_start" class="block text-sm font-medium text-gray-700 mb-2">เวลาเริ่มพักเที่ยง</label>
+                                <input type="time" id="lunch_start" name="lunch_start" 
+                                       value="{{ work_settings.lunch_start if work_settings else '12:00' }}"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <p class="text-xs text-gray-500 mt-1">เวลาเริ่มพักเที่ยง (เช่น 12:00)</p>
+                            </div>
+                            <div>
+                                <label for="lunch_end" class="block text-sm font-medium text-gray-700 mb-2">เวลาเลิกพักเที่ยง</label>
+                                <input type="time" id="lunch_end" name="lunch_end" 
+                                       value="{{ work_settings.lunch_end if work_settings else '13:00' }}"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <p class="text-xs text-gray-500 mt-1">เวลาเลิกพักเที่ยง (เช่น 13:00)</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- ตั้งค่าเวลาเบรคเย็น -->
+                    <div class="border-t pt-4 mt-4">
+                        <h3 class="text-lg font-medium text-gray-800 mb-3">🌆 เวลาเบรคเย็น (จันทร์-เสาร์)</h3>
+                        <div class="border rounded-lg p-4 bg-gray-50">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="evening_break_start" class="block text-sm font-medium text-gray-700 mb-2">เวลาเริ่มเบรค</label>
+                                    <input type="time" id="evening_break_start" name="evening_break_start" 
+                                           value="{{ work_settings.evening_break_start if work_settings else '17:00' }}"
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                </div>
+                                <div>
+                                    <label for="evening_break_end" class="block text-sm font-medium text-gray-700 mb-2">เวลาเลิกเบรค</label>
+                                    <input type="time" id="evening_break_end" name="evening_break_end" 
+                                           value="{{ work_settings.evening_break_end if work_settings else '17:30' }}"
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="evening_break_ot" value="1" 
+                                           {% if work_settings and work_settings.evening_break_ot == '1' %}checked{% endif %}
+                                           class="mr-2">
+                                    <span class="text-sm text-gray-700">คิดโอทีในเวลาเบรคเย็น</span>
+                                </label>
+                                <p class="text-xs text-gray-500 mt-1">เบรคเย็นจะใช้ในวันจันทร์-เสาร์</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors">
+                        💾 บันทึกการตั้งค่าเวลา
+                    </button>
+                </form>
+            </div>
+
+            <!-- ตั้งค่าการแสดงผล -->
+            <div class="bg-white p-6 rounded-lg shadow mb-6">
+                <h2 class="text-xl font-semibold mb-4">🎨 ตั้งค่าการแสดงผล</h2>
+                <form method="POST" action="/update-display-settings" class="space-y-4">
+                    <div>
+                        <label for="items_per_page" class="block text-sm font-medium text-gray-700 mb-2">จำนวนรายการต่อหน้า</label>
+                        <select id="items_per_page" name="items_per_page" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="10">10 รายการ</option>
+                            <option value="20" selected>20 รายการ</option>
+                            <option value="50">50 รายการ</option>
+                            <option value="100">100 รายการ</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="date_format" class="block text-sm font-medium text-gray-700 mb-2">รูปแบบวันที่</label>
+                        <select id="date_format" name="date_format" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="DD/MM/YYYY" selected>วัน/เดือน/ปี (31/12/2024)</option>
+                            <option value="YYYY-MM-DD">ปี-เดือน-วัน (2024-12-31)</option>
+                            <option value="DD-MM-YYYY">วัน-เดือน-ปี (31-12-2024)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors">
+                        💾 บันทึกการตั้งค่า
+                    </button>
+                </form>
+            </div>
+
+            <!-- ส่งออกข้อมูล -->
+            <div class="bg-white p-6 rounded-lg shadow mb-6">
+                <h2 class="text-xl font-semibold mb-4">📤 ส่งออกข้อมูลทั้งหมด</h2>
+                <p class="text-gray-600 mb-4">ดาวน์โหลดข้อมูลทั้งหมดของคุณในรูปแบบ CSV</p>
+                <div class="flex flex-wrap gap-3">
+                    <a href="/export-all-ot" class="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg transition-colors inline-block">
+                        📅 ส่งออกข้อมูล OT ทั้งหมด
+                    </a>
+                    <a href="/export-all-income-expense" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-colors inline-block">
+                        💰 ส่งออกรายรับ/รายจ่ายทั้งหมด
+                    </a>
+                </div>
+            </div>
+
+            <!-- ลบบัญชี -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-semibold mb-4 text-red-600">⚠️ โซนอันตราย</h2>
+                <p class="text-gray-600 mb-4">การลบบัญชีจะลบข้อมูลทั้งหมดของคุณอย่างถาวร และไม่สามารถกู้คืนได้</p>
+                <button onclick="confirmDeleteAccount()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors">
+                    🗑️ ลบบัญชีผู้ใช้
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function confirmDeleteAccount() {
+            if (confirm('คุณแน่ใจหรือไม่ที่จะลบบัญชี?\n\nการดำเนินการนี้ไม่สามารถยกเลิกได้ และข้อมูลทั้งหมดจะถูกลบอย่างถาวร')) {
+                if (confirm('กรุณายืนยันอีกครั้ง\n\nคุณต้องการลบบัญชีและข้อมูลทั้งหมดจริงๆ ใช่หรือไม่?')) {
+                    window.location.href = '/delete-account';
+                }
+            }
+        }
+    </script>
+</body>
+</html> 
