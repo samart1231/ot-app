@@ -929,45 +929,59 @@ def income_expense():
         print("Files:", request.files)
         
         date = request.form['date']
-        transaction_type = request.form.get('transaction_type')
-        category = request.form['category']
+        category = request.form['category']  # income หรือ expense
+        main_category = request.form.get('main_category', '')
+        sub_category = request.form.get('sub_category', '')
+        combined_category = request.form.get('combined_category', '')
         items_data = request.form.get('items_data')  # JSON string จาก JavaScript
-        description = request.form.get('description')  # รายการสินค้าที่สร้างอัตโนมัติ
-        amount = float(request.form['amount'])
+        description = request.form.get('description', '')  # รายการสินค้าที่สร้างอัตโนมัติ
+        amount = request.form.get('amount')
+        calculated_amount = request.form.get('calculated_amount')
         vendor = request.form.get('vendor') or None
 
         print("=== DEBUG: Parsed Data ===")
         print("Date:", date)
-        print("Transaction Type:", transaction_type)
         print("Category:", category)
+        print("Main Category:", main_category)
+        print("Sub Category:", sub_category)
+        print("Combined Category:", combined_category)
         print("Items Data:", items_data)
         print("Description:", description)
         print("Amount:", amount)
+        print("Calculated Amount:", calculated_amount)
         print("Vendor:", vendor)
 
         # ตรวจสอบประเภทรายการ
-        if transaction_type == 'income':
+        if category == 'income':
             # สำหรับรายรับ
+            if not amount or float(amount) <= 0:
+                flash('กรุณากรอกจำนวนเงินที่ถูกต้อง', 'error')
+                return redirect('/income-expense')
+            
             if not description:
-                description = f"รายรับ: {category}"
+                description = f"รายรับ: {main_category}"
+            
             conn.execute('''
                          INSERT INTO income_expense (user_id, date, description, amount, category, vendor, main_category, sub_category)
                          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                         ''', (user_id, date, description, amount, 'income', vendor, category, None))
+                         ''', (user_id, date, description, float(amount), 'income', vendor, main_category, sub_category))
         else:
             # สำหรับรายจ่าย
-            if not items_data or not description:
+            if not items_data:
                 flash('กรุณาเลือกรายการสินค้า', 'error')
                 return redirect('/income-expense')
 
-            # ใช้ main_category และ sub_category จากฟอร์มโดยตรง
-            main_category = request.form.get('main_category', '')
-            sub_category = request.form.get('sub_category', '')
+            # ใช้ calculated_amount หรือ amount
+            final_amount = float(calculated_amount) if calculated_amount else float(amount or 0)
+            
+            if final_amount <= 0:
+                flash('กรุณากรอกจำนวนเงินที่ถูกต้อง', 'error')
+                return redirect('/income-expense')
 
             conn.execute('''
                          INSERT INTO income_expense (user_id, date, description, amount, category, vendor, main_category, sub_category)
                          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                         ''', (user_id, date, description, amount, 'expense', vendor, main_category, sub_category))
+                         ''', (user_id, date, description, final_amount, 'expense', vendor, main_category, sub_category))
 
         conn.commit()
         flash('บันทึกข้อมูลเรียบร้อยแล้ว', 'success')
