@@ -27,4 +27,12 @@ Thumbs.db
 
 # Temporary files
 *.tmp
-*.temp 
+*.temp
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Config files with sensitive data
+config_local.py 

@@ -7,10 +7,44 @@ import os
 import re
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
+import requests
+import json
+from config import Config
+import os
+
+# Try to load dotenv if available
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 app = Flask(__name__)
-DB_FILE = 'ot.db'
-app.secret_key = 'your_secret_key_change_this_in_production'
+app.config.from_object(Config)
+app.secret_key = app.config['SECRET_KEY']
+DB_FILE = app.config['DATABASE_FILE']
+
+# Google OAuth Configuration (optional)
+try:
+    from flask_oauthlib.client import OAuth
+    oauth = OAuth(app)
+    google = oauth.remote_app(
+        'google',
+        consumer_key=app.config['GOOGLE_CLIENT_ID'],
+        consumer_secret=app.config['GOOGLE_CLIENT_SECRET'],
+        request_token_params={
+            'scope': 'email profile'
+        },
+        base_url='https://www.googleapis.com/oauth2/v1/',
+        request_token_url=None,
+        access_token_method='POST',
+        access_token_url='https://accounts.google.com/o/oauth2/token',
+        authorize_url='https://accounts.google.com/o/oauth2/auth'
+    )
+    GOOGLE_OAUTH_AVAILABLE = True
+except ImportError:
+    GOOGLE_OAUTH_AVAILABLE = False
+    print("Warning: Flask-OAuthlib not installed. Google OAuth will be disabled.")
 
 def login_required(f):
     @wraps(f)
@@ -23,6 +57,34 @@ def login_required(f):
 def validate_email(email):
     pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     return re.match(pattern, email) is not None
+
+def get_or_create_user_from_google(google_user_info):
+    """สร้างหรือดึงข้อมูลผู้ใช้จาก Google OAuth"""
+    conn = get_db_connection()
+    
+    # ตรวจสอบว่าผู้ใช้มีอยู่แล้วหรือไม่
+    user = conn.execute(
+        'SELECT id, email FROM users WHERE email = ?', (google_user_info['email'],)
+    ).fetchone()
+    
+    if user:
+        # ผู้ใช้มีอยู่แล้ว
+        conn.close()
+        return user
+    else:
+        # สร้างผู้ใช้ใหม่
+        conn.execute(
+            'INSERT INTO users (email, password_hash, google_id, name) VALUES (?, ?, ?, ?)',
+            (google_user_info['email'], 'google_oauth', google_user_info.get('id'), google_user_info.get('name', ''))
+        )
+        conn.commit()
+        
+        # ดึงข้อมูลผู้ใช้ที่เพิ่งสร้าง
+        new_user = conn.execute(
+            'SELECT id, email FROM users WHERE email = ?', (google_user_info['email'],)
+        ).fetchone()
+        conn.close()
+        return new_user
 
 @app.route('/add', methods=['POST'])
 def add_income_expense():
@@ -105,7 +167,7 @@ def login():
         else:
             flash('Email หรือรหัสผ่านไม่ถูกต้อง', 'error')
 
-    return render_template('login.html')
+    return render_template('login.html', config={'GOOGLE_OAUTH_AVAILABLE': GOOGLE_OAUTH_AVAILABLE})
 
 
 @app.route('/logout')
@@ -113,6 +175,62 @@ def logout():
     session.clear()
     flash('ออกจากระบบสำเร็จ', 'success')
     return redirect(url_for('login'))
+
+@app.route('/login/google')
+def google_login():
+    """เริ่มต้น Google OAuth login"""
+    if not GOOGLE_OAUTH_AVAILABLE:
+        flash('Google OAuth ไม่พร้อมใช้งาน กรุณาติดตั้ง Flask-OAuthlib', 'error')
+        return redirect(url_for('login'))
+    return google.authorize(callback=url_for('google_authorized', _external=True))
+
+@app.route('/login/google/authorized')
+def google_authorized():
+    """จัดการ callback จาก Google OAuth"""
+    if not GOOGLE_OAUTH_AVAILABLE:
+        flash('Google OAuth ไม่พร้อมใช้งาน', 'error')
+        return redirect(url_for('login'))
+    
+    resp = google.authorized_response()
+    if resp is None or resp.get('access_token') is None:
+        flash('การเข้าสู่ระบบด้วย Google ล้มเหลว', 'error')
+        return redirect(url_for('login'))
+    
+    session['google_token'] = (resp['access_token'], '')
+    
+    # ดึงข้อมูลผู้ใช้จาก Google
+    user_info = google.get('userinfo')
+    if user_info.status != 200:
+        flash('ไม่สามารถดึงข้อมูลผู้ใช้จาก Google ได้', 'error')
+        return redirect(url_for('login'))
+    
+    google_user_data = user_info.data
+    user_info_dict = {
+        'id': google_user_data.get('id'),
+        'email': google_user_data.get('email'),
+        'name': google_user_data.get('name', ''),
+        'picture': google_user_data.get('picture', '')
+    }
+    
+    # สร้างหรือดึงข้อมูลผู้ใช้
+    user = get_or_create_user_from_google(user_info_dict)
+    
+    if user:
+        session['user_id'] = user['id']
+        session['user_email'] = user['email']
+        session['user_name'] = user_info_dict.get('name', '')
+        session['user_picture'] = user_info_dict.get('picture', '')
+        flash('เข้าสู่ระบบด้วย Google สำเร็จ!', 'success')
+        return redirect(url_for('index'))
+    else:
+        flash('เกิดข้อผิดพลาดในการเข้าสู่ระบบ', 'error')
+        return redirect(url_for('login'))
+
+if GOOGLE_OAUTH_AVAILABLE:
+    @google.tokengetter
+    def get_google_oauth_token():
+        """ฟังก์ชันสำหรับดึง Google OAuth token"""
+        return session.get('google_token')
 
 @app.route('/dashboard')
 @login_required
@@ -149,9 +267,22 @@ def init_db():
                      id INTEGER PRIMARY KEY AUTOINCREMENT,
                      email TEXT UNIQUE NOT NULL,
                      password_hash TEXT NOT NULL,
+                     google_id TEXT,
+                     name TEXT,
                      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                  )
                  ''')
+    
+    # เพิ่มคอลัมน์สำหรับ Google OAuth ถ้ายังไม่มี
+    try:
+        conn.execute('ALTER TABLE users ADD COLUMN google_id TEXT')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    try:
+        conn.execute('ALTER TABLE users ADD COLUMN name TEXT')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
     
     conn.execute('''
                  CREATE TABLE IF NOT EXISTS ot_records

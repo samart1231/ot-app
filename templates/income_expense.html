@@ -292,13 +292,23 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden bg-white border-t">
             <nav class="py-2">
-                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📅 OT Records</a>
+                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📅 [OT Records]</a>
                 <a href="/income-expense" class="block px-4 py-3 bg-green-100 text-green-700 font-medium border-b">💰 Income/Expense</a>
                 <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">🎉 Holidays</a>
-                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📊 Import CSV</a>
+                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📊 Import income_expense CSV</a>
                 <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⏰ Import OT CSV</a>
                 <div class="px-4 py-3 border-b">
-                    <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
+                    {% if session.user_picture %}
+                        <div class="flex items-center gap-3">
+                            <img src="{{ session.user_picture }}" alt="Profile" class="w-6 h-6 rounded-full">
+                            <div>
+                                <div class="text-sm font-medium text-gray-800">{{ session.user_name or session.user_email }}</div>
+                                <div class="text-xs text-gray-500">{{ session.user_email }}</div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
+                    {% endif %}
                 </div>
                 <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50">🚪 Logout</a>
             </nav>
@@ -317,8 +327,20 @@
                 <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">⏰ Import OT CSV</a>
             </nav>
             <div class="mt-8 pt-6 border-t">
-                <div class="px-4 py-2">
-                    <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
+                <div class="px-4 py-3">
+                    {% if session.user_picture %}
+                        <div class="flex items-center gap-3 mb-3">
+                            <img src="{{ session.user_picture }}" alt="Profile" class="w-8 h-8 rounded-full">
+                            <div>
+                                <div class="text-sm font-medium text-gray-800">{{ session.user_name or session.user_email }}</div>
+                                <div class="text-xs text-gray-500">{{ session.user_email }}</div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="px-4 py-2">
+                            <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
+                        </div>
+                    {% endif %}
                 </div>
                 <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg smooth-transition">🚪 Logout</a>
             </div>
