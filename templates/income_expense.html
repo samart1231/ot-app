@@ -351,6 +351,195 @@
                 transform: translateY(-1px);
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             }
+            
+            /* Mobile table responsive */
+            .mobile-table-responsive {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .mobile-table-responsive table {
+                min-width: 800px;
+            }
+            
+            /* Mobile card view for records */
+            .mobile-records-container {
+                display: none;
+            }
+            
+            @media (max-width: 768px) {
+                .desktop-table {
+                    display: none;
+                }
+                
+                .mobile-records-container {
+                    display: block;
+                }
+            }
+            
+            /* Mobile record card */
+            .mobile-record-card {
+                background: white;
+                border-radius: 12px;
+                padding: 16px;
+                margin-bottom: 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                border: 1px solid #e5e7eb;
+            }
+            
+            .mobile-record-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 12px;
+            }
+            
+            .mobile-record-date {
+                font-size: 14px;
+                font-weight: 600;
+                color: #374151;
+            }
+            
+            .mobile-record-amount {
+                font-size: 18px;
+                font-weight: bold;
+            }
+            
+            .mobile-record-amount.income {
+                color: #059669;
+            }
+            
+            .mobile-record-amount.expense {
+                color: #dc2626;
+            }
+            
+            .mobile-record-description {
+                font-size: 16px;
+                font-weight: 600;
+                color: #111827;
+                margin-bottom: 8px;
+            }
+            
+            .mobile-record-details {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+                margin-bottom: 12px;
+            }
+            
+            .mobile-record-detail {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 12px;
+                color: #6b7280;
+            }
+            
+            .mobile-record-actions {
+                display: flex;
+                gap: 8px;
+            }
+            
+            .mobile-record-btn {
+                flex: 1;
+                padding: 8px 12px;
+                border-radius: 8px;
+                font-size: 12px;
+                font-weight: 600;
+                text-align: center;
+                text-decoration: none;
+                border: none;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+            
+            .mobile-record-btn-edit {
+                background: #3b82f6;
+                color: white;
+            }
+            
+            .mobile-record-btn-delete {
+                background: #dc2626;
+                color: white;
+            }
+            
+            .mobile-record-btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            
+            /* Mobile form improvements */
+            .mobile-form-section {
+                background: white;
+                border-radius: 12px;
+                padding: 16px;
+                margin-bottom: 16px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+            
+            .mobile-form-label {
+                display: block;
+                font-size: 14px;
+                font-weight: 600;
+                color: #374151;
+                margin-bottom: 8px;
+            }
+            
+            .mobile-form-input {
+                width: 100%;
+                padding: 12px;
+                border: 2px solid #e5e7eb;
+                border-radius: 8px;
+                font-size: 16px;
+                transition: border-color 0.2s ease;
+            }
+            
+            .mobile-form-input:focus {
+                outline: none;
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            }
+            
+            .mobile-form-select {
+                width: 100%;
+                padding: 12px;
+                border: 2px solid #e5e7eb;
+                border-radius: 8px;
+                font-size: 16px;
+                background-color: white;
+                transition: border-color 0.2s ease;
+            }
+            
+            .mobile-form-select:focus {
+                outline: none;
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            }
+            
+            .mobile-submit-btn {
+                width: 100%;
+                padding: 16px;
+                background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+                color: white;
+                border: none;
+                border-radius: 12px;
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            }
+            
+            .mobile-submit-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+            }
+            
+            .mobile-submit-btn:active {
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
@@ -451,252 +640,98 @@
 
         <!-- Add Transaction Form -->
         <div class="bg-white p-4 lg:p-6 rounded-lg shadow-md mb-6">
-            <form id="transaction-form" method="POST" class="space-y-4">
-                <!-- Date and Transaction Type -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-semibold mb-2">📅 วันที่</label>
-                        <input type="date" name="date" required 
-                               class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-400 focus:border-transparent">
-                    </div>
-                    <div>
-                        <label class="block font-semibold mb-2">📊 ประเภทรายการ</label>
-                        <select id="transaction-type" name="transaction_type" required 
-                                class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-400 focus:border-transparent">
-                            <option value="">--เลือกรายรับ/รายจ่าย--</option>
-                            <option value="expense">💸 รายจ่าย</option>
-                            <option value="income">💰 รายรับ</option>
-                        </select>
-                    </div>
+            <div class="p-4 lg:p-6 border-b">
+                <h2 class="text-lg lg:text-xl font-semibold text-gray-800">➕ เพิ่มรายการใหม่</h2>
+                <p class="text-sm text-gray-600 mt-1">บันทึกรายรับหรือรายจ่ายใหม่</p>
+            </div>
+            
+            <form method="POST" class="p-4 lg:p-6 space-y-4 lg:space-y-6">
+                <!-- Date Input -->
+                <div class="mobile-form-section">
+                    <label class="mobile-form-label">📅 วันที่</label>
+                    <input type="date" name="date" required 
+                           class="mobile-form-input mobile-input-touch">
                 </div>
 
-                <!-- Category Section -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-semibold mb-2">📋 ประเภทหลัก</label>
-                        <div class="flex gap-2">
-                            <select id="main-category" name="main_category" required 
-                                    class="flex-1 border rounded-lg p-3 focus:ring-2 focus:ring-blue-400 focus:border-transparent">
-                                <option value="">--เลือกประเภทหลัก--</option>
-                            </select>
-                            <button type="button" id="add-main-category-btn"
-                                    class="btn-animate bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-lg text-sm">
-                                ➕ เพิ่ม
-                            </button>
-                        </div>
-                        <!-- Custom main category input -->
-                        <div id="custom-main-category-input" class="mt-2 hidden">
-                            <input type="text" id="new-main-category" placeholder="พิมพ์ประเภทหลักใหม่..."
-                                   class="w-full border border-purple-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-400">
-                            <div class="text-xs text-purple-600 mt-1">💡 กด Enter เพื่อเพิ่มประเภทหลักใหม่</div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold mb-2">📋 ประเภทย่อย</label>
-                        <div class="flex gap-2">
-                            <select id="sub-category" name="sub_category" required 
-                                    class="flex-1 border rounded-lg p-3 focus:ring-2 focus:ring-blue-400 focus:border-transparent">
-                                <option value="">--เลือกประเภทย่อย--</option>
-                            </select>
-                            <button type="button" id="add-sub-category-btn"
-                                    class="btn-animate bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm">
-                                ➕ เพิ่ม
-                            </button>
-                        </div>
-                        <!-- Custom sub category input -->
-                        <div id="custom-sub-category-input" class="mt-2 hidden">
-                            <input type="text" id="new-sub-category" placeholder="พิมพ์ประเภทย่อยใหม่..."
-                                   class="w-full border border-blue-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-400">
-                            <div class="text-xs text-blue-600 mt-1">💡 กด Enter เพื่อเพิ่มประเภทย่อยใหม่</div>
-                        </div>
-                    </div>
+                <!-- Transaction Type -->
+                <div class="mobile-form-section">
+                    <label class="mobile-form-label">📊 ประเภทรายการ</label>
+                    <select id="transaction-type" name="transaction_type" required 
+                            class="mobile-form-select mobile-input-touch">
+                        <option value="">-- เลือกประเภทรายการ --</option>
+                        <option value="income">💰 รายรับ</option>
+                        <option value="expense">💸 รายจ่าย</option>
+                    </select>
                 </div>
 
-                <!-- Combined Category Display -->
-                <div class="bg-gray-50 p-3 rounded-lg border">
-                    <label class="block font-semibold mb-2">📋 ประเภทที่เลือก</label>
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm text-gray-600">ประเภทหลัก:</span>
-                        <span id="selected-main-category" class="font-medium text-purple-600">-</span>
-                        <span class="text-sm text-gray-600">|</span>
-                        <span class="text-sm text-gray-600">ประเภทย่อย:</span>
-                        <span id="selected-sub-category" class="font-medium text-blue-600">-</span>
+                <!-- Category Selection -->
+                <div class="mobile-form-section">
+                    <label class="mobile-form-label">🏷️ ประเภทหลัก</label>
+                    <select id="main-category" name="main_category" required 
+                            class="mobile-form-select mobile-input-touch">
+                        <option value="">-- เลือกประเภทหลัก --</option>
+                    </select>
+                </div>
+
+                <div class="mobile-form-section">
+                    <label class="mobile-form-label">📂 ประเภทย่อย</label>
+                    <select id="sub-category" name="sub_category" required 
+                            class="mobile-form-select mobile-input-touch">
+                        <option value="">-- เลือกประเภทย่อย --</option>
+                    </select>
+                </div>
+
+                <!-- Income Amount Section -->
+                <div id="income-amount-section" class="mobile-form-section hidden">
+                    <label class="mobile-form-label">💰 จำนวนเงิน (บาท)</label>
+                    <input type="number" step="0.01" name="income_amount" 
+                           class="mobile-form-input mobile-input-touch" placeholder="0.00">
+                </div>
+
+                <!-- Items Section (for expense) -->
+                <div id="items-section" class="mobile-form-section hidden">
+                    <label class="mobile-form-label">🛒 รายการสินค้า</label>
+                    <div class="space-y-3">
+                        <div id="selected-items" class="space-y-2"></div>
+                        <button type="button" onclick="addItem()" 
+                                class="mobile-button mobile-button-primary mobile-button-touch">
+                            ➕ เพิ่มรายการ
+                        </button>
                     </div>
-                    <input type="hidden" id="combined-category" name="category" value="">
-                </div>
-
-                <!-- Income Amount (for income transactions) -->
-                <div id="income-amount-section" class="hidden">
-                    <label class="block font-semibold mb-2">💰 จำนวนเงิน</label>
-                    <input type="number" id="income-amount" name="income_amount" step="0.01" placeholder="0.00"
-                           class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-400 focus:border-transparent">
-                </div>
-
-                <!-- Items Section (for expense transactions) -->
-                <div id="items-section" class="hidden">
-                    <label class="block font-semibold mb-2">📦 รายการสินค้า</label>
-                    <div class="border rounded-lg p-4 bg-gray-50">
-                        <!-- Selected Items Display -->
-                        <div id="selected-items" class="mb-4 mobile-items-container">
-                            <div class="text-gray-500 text-center py-4">ยังไม่มีรายการสินค้า</div>
+                    <div class="mt-4 p-3 bg-gray-50 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold">รวมทั้งหมด:</span>
+                            <span id="total-items" class="text-gray-600">0 รายการ</span>
                         </div>
-
-                        <!-- Add New Item - Mobile Optimized -->
-                        <div class="border-t pt-4">
-                            <div class="space-y-4">
-                                <!-- Item Name -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">📝 ชื่อสินค้า</label>
-                                    <input type="text" id="item-name" placeholder="เช่น: ขนมปัง, นม, ผักกาด"
-                                           class="w-full border border-gray-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input-touch transition-all duration-200 hover:border-gray-400">
-                                </div>
-                                
-                                <!-- Price and Quantity Row -->
-                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">💰 ราคา (บาท)</label>
-                                        <div class="relative">
-                                            <input type="number" id="item-price" step="0.01" placeholder="0.00"
-                                                   class="w-full border border-gray-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input-touch transition-all duration-200 hover:border-gray-400">
-                                            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                                                <span class="text-gray-500 text-sm">฿</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">📊 จำนวน</label>
-                                        <input type="number" id="item-quantity" min="1" value="1"
-                                               class="w-full border border-gray-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input-touch transition-all duration-200 hover:border-gray-400">
-                                    </div>
-                                </div>
-                                
-                                <!-- Tag Selection -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">🏷️ แท็ก</label>
-                                    <div class="flex flex-col lg:flex-row gap-3">
-                                        <select id="item-tag" class="flex-1 border border-gray-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input-touch transition-all duration-200 hover:border-gray-400" onchange="updateTagEmoji()">
-                                            <option value="">--เลือกแท็ก--</option>
-                                            <option value="อาหาร">🍽️ อาหาร</option>
-                                            <option value="เครื่องดื่ม">🥤 เครื่องดื่ม</option>
-                                            <option value="ของใช้">🛍️ ของใช้</option>
-                                            <option value="ยา">💊 ยา</option>
-                                            <option value="ขนม">🍪 ขนม</option>
-                                            <option value="ผลไม้">🍎 ผลไม้</option>
-                                            <option value="ผัก">🥬 ผัก</option>
-                                            <option value="เนื้อสัตว์">🥩 เนื้อสัตว์</option>
-                                            <option value="นม">🥛 นม</option>
-                                            <option value="ขนมปัง">🍞 ขนมปัง</option>
-                                        </select>
-                                        <div class="flex gap-2">
-                                            <button type="button" id="emoji-picker-btn"
-                                                    class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-3 rounded-lg text-lg mobile-button-touch transition-all duration-200 hover:shadow-lg" onclick="showEmojiPicker()">
-                                                😊
-                                            </button>
-                                            <button type="button" id="add-tag-btn"
-                                                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-lg text-lg mobile-button-touch transition-all duration-200 hover:shadow-lg">
-                                                ➕
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Emoji Picker Modal -->
-                                <div id="emoji-picker-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-                                    <div class="bg-white rounded-lg p-6 max-w-sm w-full max-h-96 overflow-y-auto">
-                                        <div class="flex justify-between items-center mb-4">
-                                            <h3 class="text-lg font-semibold">เลือกอิโมจิ</h3>
-                                            <button onclick="closeEmojiPicker()" class="text-gray-500 hover:text-gray-700 text-xl">
-                                                ✕
-                                            </button>
-                                        </div>
-                                        <div id="emoji-grid" class="grid grid-cols-8 gap-3">
-                                            <!-- Emojis will be populated here -->
-                                        </div>
-                                        <div class="mt-4 text-center">
-                                            <button onclick="closeEmojiPicker()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg">
-                                                ปิด
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Add Item Button -->
-                                <div>
-                                    <button type="button" id="add-item-btn"
-                                            class="w-full bg-green-500 hover:bg-green-600 text-white py-4 px-6 rounded-lg font-semibold text-lg mobile-button-touch transition-all duration-200 hover:shadow-lg transform hover:scale-105">
-                                        ➕ เพิ่มรายการสินค้า
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Custom Tag Input -->
-                            <div id="custom-tag-input" class="mt-2 hidden">
-                                <div class="flex gap-2">
-                                    <input type="text" id="new-tag" placeholder="พิมพ์แท็กใหม่..."
-                                           class="flex-1 border border-purple-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-400">
-                                    <button type="button" onclick="addCustomTag()"
-                                            class="btn-animate bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg">
-                                        เพิ่มแท็ก
-                                    </button>
-                                    <button type="button" onclick="cancelAddTag()"
-                                            class="btn-animate bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
-                                        ยกเลิก
-                                    </button>
-                                </div>
-                                <div class="text-xs text-purple-600 mt-1">💡 กด Enter เพื่อเพิ่มแท็กใหม่</div>
-                            </div>
-                        </div>
-
-                        <!-- Total Display -->
-                        <div class="mt-4 pt-4 border-t">
-                            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-                                <div class="flex flex-wrap gap-2">
-                                    <span class="font-semibold text-gray-700">จำนวนรายการ: <span id="total-items" class="text-blue-600">0</span></span>
-                                    <button type="button" onclick="clearAllItems()" 
-                                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:shadow-lg">
-                                        🗑️ ล้างทั้งหมด
-                                    </button>
-                                    <button type="button" onclick="showItemsSummary()" 
-                                            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:shadow-lg">
-                                        📋 สรุปรายการ
-                                    </button>
-                                    <button type="button" onclick="showTagFilter()" 
-                                            class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:shadow-lg">
-                                        🏷️ กรองแท็ก
-                                    </button>
-                                </div>
-                                <div class="bg-green-50 border border-green-200 rounded-lg px-6 py-3">
-                                    <span class="font-bold text-lg text-green-800">ยอดรวม: <span id="total-amount" class="text-green-600">0.00</span> บาท</span>
-                                </div>
-                            </div>
+                        <div class="flex justify-between items-center mt-1">
+                            <span class="font-semibold">ยอดรวม:</span>
+                            <span id="total-amount" class="text-lg font-bold text-blue-600">0.00 บาท</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Vendor Section (for expense transactions) -->
-                <div id="vendor-section" class="hidden">
-                    <label class="block font-semibold mb-2">🏪 ร้านค้า</label>
+                <!-- Vendor Section -->
+                <div id="vendor-section" class="mobile-form-section hidden">
+                    <label class="mobile-form-label">🏪 ร้านค้า</label>
                     <div class="flex gap-2">
                         <select id="vendor-select" name="vendor" 
-                                class="flex-1 border rounded-lg p-3 focus:ring-2 focus:ring-blue-400 focus:border-transparent">
-                                <option value="none">ไม่เลือก</option>
+                                class="mobile-form-select mobile-input-touch flex-1">
+                            <option value="none">ไม่เลือก</option>
                             <option value="ร้านยายจ่อย">ร้านยายจ่อย</option>
                             <option value="ร้านผัก">ร้านผัก</option>
                             <option value="เจ้นัน">เจ้นัน</option>
                             <option value="7-Eleven">7-Eleven</option>
                             <option value="เงินสด">เงินสด</option>
-<option value="none">ไม่เลือก</option>
                         </select>
                         <button type="button" id="add-vendor-btn"
-                                class="btn-animate bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg text-sm">
-                            ➕ เพิ่ม
+                                class="mobile-button mobile-button-success mobile-button-touch">
+                            ➕
                         </button>
                     </div>
                     <!-- Custom vendor input -->
                     <div id="custom-vendor-input" class="mt-2 hidden">
                         <input type="text" id="new-vendor" placeholder="พิมพ์ชื่อร้านค้าใหม่..."
-                               class="w-full border border-green-300 rounded-lg p-2 focus:ring-2 focus:ring-green-400">
+                               class="mobile-form-input mobile-input-touch">
                         <div class="text-xs text-green-600 mt-1">💡 กด Enter เพื่อเพิ่มร้านค้าใหม่</div>
                     </div>
                 </div>
@@ -707,9 +742,8 @@
                 <input type="hidden" id="description" name="description">
 
                 <!-- Submit Button -->
-                <div class="flex justify-center lg:justify-end pt-4">
-                    <button type="submit" 
-                            class="btn-animate bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-3 rounded-full font-semibold shadow-lg">
+                <div class="pt-4">
+                    <button type="submit" class="mobile-submit-btn">
                         <span class="text-xl mr-2">💾</span>
                         บันทึก
                     </button>
@@ -818,7 +852,9 @@
                 <h2 class="text-lg lg:text-xl font-semibold text-gray-800">📊 รายการทั้งหมด</h2>
                 <p class="text-sm text-gray-600 mt-1">แสดงรายการรายรับ-รายจ่ายทั้งหมดในเดือนที่เลือก</p>
             </div>
-            <div class="overflow-x-auto">
+            
+            <!-- Desktop Table View -->
+            <div class="desktop-table overflow-x-auto">
                 <table class="w-full border-collapse">
                     <thead class="bg-gray-50">
                         <tr>
@@ -965,6 +1001,67 @@
                         {% endif %}
                     </tbody>
                 </table>
+            </div>
+            
+            <!-- Mobile Card View -->
+            <div class="mobile-records-container p-4">
+                {% if records %}
+                    {% for record in records %}
+                        <div class="mobile-record-card" onclick="showMobileRecordDetails({{ record.id }})">
+                            <div class="mobile-record-header">
+                                <div class="mobile-record-date">📅 {{ record.date }}</div>
+                                <div class="mobile-record-amount {% if record.category == 'income' %}income{% else %}expense{% endif %}">
+                                    {% if record.category == 'income' %}💰{% else %}💸{% endif %} {{ "%.2f"|format(record.amount) }}
+                                </div>
+                            </div>
+                            <div class="mobile-record-description">{{ record.description }}</div>
+                            <div class="mobile-record-details">
+                                <div class="mobile-record-detail">
+                                    <span>🏪</span>
+                                    <span>{{ record.vendor or 'ไม่ระบุ' }}</span>
+                                </div>
+                                <div class="mobile-record-detail">
+                                    <span>📊</span>
+                                    <span>{% if record.category == 'income' %}รายรับ{% else %}รายจ่าย{% endif %}</span>
+                                </div>
+                                <div class="mobile-record-detail">
+                                    <span>🏷️</span>
+                                    <span>{{ record.main_category or 'ไม่ระบุ' }}</span>
+                                </div>
+                                <div class="mobile-record-detail">
+                                    <span>📂</span>
+                                    <span>{{ record.sub_category or 'ไม่ระบุ' }}</span>
+                                </div>
+                            </div>
+                            <div class="mobile-record-actions" onclick="event.stopPropagation()">
+                                <a href="/edit-income-expense/{{ record.id }}" class="mobile-record-btn mobile-record-btn-edit">
+                                    ✏️ แก้ไข
+                                </a>
+                                <form method="POST" action="/delete-income-expense/{{ record.id }}" class="inline" onsubmit="return confirm('ต้องการลบรายการนี้หรือไม่?')">
+                                    <button type="submit" class="mobile-record-btn mobile-record-btn-delete">
+                                        🗑️ ลบ
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-12">
+                        <div class="text-6xl mb-4 text-gray-300">📭</div>
+                        <div class="text-lg font-medium text-gray-500 mb-2">ไม่มีข้อมูลในเดือนนี้</div>
+                        <div class="text-sm text-gray-400 mb-4">ลองเพิ่มรายการใหม่หรือเลือกเดือนอื่น</div>
+                        <div class="flex flex-col gap-2">
+                            <button onclick="document.getElementById('transaction-type').focus()" 
+                                    class="mobile-submit-btn">
+                                ➕ เพิ่มรายการใหม่
+                            </button>
+                            <button onclick="document.getElementById('month-select').focus()" 
+                                    class="mobile-button mobile-button-secondary">
+                                📅 เลือกเดือนอื่น
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
             
             <!-- Table Footer -->
@@ -2241,6 +2338,31 @@
                     behavior: 'smooth', 
                     block: 'nearest' 
                 });
+            }
+        }
+
+        // Show Mobile Record Details Function
+        function showMobileRecordDetails(recordId) {
+            // แสดง modal หรือ alert สำหรับรายละเอียดบนมือถือ
+            const record = document.querySelector(`[onclick="showMobileRecordDetails(${recordId})"]`);
+            if (record) {
+                const description = record.querySelector('.mobile-record-description').textContent;
+                const amount = record.querySelector('.mobile-record-amount').textContent;
+                const date = record.querySelector('.mobile-record-date').textContent;
+                
+                let details = `📋 รายละเอียดรายการ\n\n`;
+                details += `📅 วันที่: ${date}\n`;
+                details += `📝 รายละเอียด: ${description}\n`;
+                details += `💰 จำนวน: ${amount}\n`;
+                
+                // ดึงข้อมูลเพิ่มเติมจากรายการ
+                const detailElements = record.querySelectorAll('.mobile-record-detail');
+                detailElements.forEach(detail => {
+                    const text = detail.textContent.trim();
+                    details += `${text}\n`;
+                });
+                
+                alert(details);
             }
         }
 
