@@ -5,6 +5,7 @@ import pandas as pd
 import io
 import os
 import re
+import csv
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 # import requests
@@ -382,6 +383,90 @@ def init_db():
                      UNIQUE(user_id, date)
                  )
                  ''')
+    
+    # เพิ่มตาราง work_settings
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS work_settings (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            work_start_time TEXT DEFAULT '08:00',
+            work_end_time TEXT DEFAULT '17:00',
+            ot_rate REAL DEFAULT 50.00,
+            work_days TEXT DEFAULT '1,2,3,4,5',
+            lunch_start TEXT DEFAULT '12:00',
+            lunch_end TEXT DEFAULT '13:00',
+            morning_break_start TEXT DEFAULT '10:00',
+            morning_break_end TEXT DEFAULT '10:15',
+            afternoon_break_start TEXT DEFAULT '15:00',
+            afternoon_break_end TEXT DEFAULT '15:15',
+            evening_break_start TEXT DEFAULT '17:00',
+            evening_break_end TEXT DEFAULT '17:30',
+            morning_break_ot TEXT DEFAULT '0',
+            afternoon_break_ot TEXT DEFAULT '0',
+            evening_break_ot TEXT DEFAULT '0',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users (id),
+            UNIQUE(user_id)
+        )
+    ''')
+    
+    # เพิ่มคอลัมน์ใหม่สำหรับฐานข้อมูลเก่า
+    try:
+        conn.execute('ALTER TABLE work_settings ADD COLUMN lunch_start TEXT DEFAULT "12:00"')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    try:
+        conn.execute('ALTER TABLE work_settings ADD COLUMN lunch_end TEXT DEFAULT "13:00"')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    try:
+        conn.execute('ALTER TABLE work_settings ADD COLUMN morning_break_start TEXT DEFAULT "10:00"')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    try:
+        conn.execute('ALTER TABLE work_settings ADD COLUMN morning_break_end TEXT DEFAULT "10:15"')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    try:
+        conn.execute('ALTER TABLE work_settings ADD COLUMN afternoon_break_start TEXT DEFAULT "15:00"')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    try:
+        conn.execute('ALTER TABLE work_settings ADD COLUMN afternoon_break_end TEXT DEFAULT "15:15"')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    try:
+        conn.execute('ALTER TABLE work_settings ADD COLUMN evening_break_start TEXT DEFAULT "17:00"')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    try:
+        conn.execute('ALTER TABLE work_settings ADD COLUMN evening_break_end TEXT DEFAULT "17:30"')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    try:
+        conn.execute('ALTER TABLE work_settings ADD COLUMN morning_break_ot TEXT DEFAULT "0"')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    try:
+        conn.execute('ALTER TABLE work_settings ADD COLUMN afternoon_break_ot TEXT DEFAULT "0"')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    try:
+        conn.execute('ALTER TABLE work_settings ADD COLUMN evening_break_ot TEXT DEFAULT "0"')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
     conn.commit()
     conn.close()
 
@@ -391,21 +476,68 @@ def calculate_ot(start_str, end_str, user_id):
     end = datetime.strptime(end_str, "%Y-%m-%dT%H:%M")
     date_str = start.strftime("%Y-%m-%d")
 
-    # ❌ ไม่คิด OT วันอาทิตย์
-    if start.weekday() == 6:
+    # ดึงการตั้งค่าเวลาทำงานของผู้ใช้
+    conn = get_db_connection()
+    work_settings = conn.execute('''
+        SELECT work_start_time, work_end_time, work_days,
+               lunch_start, lunch_end,
+               evening_break_start, evening_break_end,
+               evening_break_ot
+        FROM work_settings 
+        WHERE user_id = ?
+    ''', (user_id,)).fetchone()
+    conn.close()
+    
+    # ใช้ค่าเริ่มต้นถ้าไม่มีการตั้งค่า
+    work_start_time = work_settings['work_start_time'] if work_settings else '08:00'
+    work_end_time = work_settings['work_end_time'] if work_settings else '17:00'
+    work_days = work_settings['work_days'].split(',') if work_settings else ['1', '2', '3', '4', '5']
+    
+    # เวลาพักเที่ยง
+    lunch_start = work_settings['lunch_start'] if work_settings else '12:00'
+    lunch_end = work_settings['lunch_end'] if work_settings else '13:00'
+    
+    # เวลาเบรคเย็น
+    evening_break_start = work_settings['evening_break_start'] if work_settings else '17:00'
+    evening_break_end = work_settings['evening_break_end'] if work_settings else '17:30'
+    
+    # การตั้งค่าโอทีในเบรคเย็น
+    evening_break_ot = work_settings['evening_break_ot'] if work_settings else '0'
+    
+    # ตรวจสอบว่าเป็นวันทำงานหรือไม่
+    current_weekday = str(start.weekday())
+    if current_weekday not in work_days:
         return 0.0
 
+    # คำนวณเวลาเริ่มงานและเลิกงานปกติ
+    work_start = datetime.strptime(f"{date_str} {work_start_time}", "%Y-%m-%d %H:%M")
+    work_end = datetime.strptime(f"{date_str} {work_end_time}", "%Y-%m-%d %H:%M")
+    
+    # เริ่มคิด OT หลังจากเวลาเลิกงานปกติ
+    if start.time() < work_end.time():
+        start = work_end
+
+    # สร้างรายการเวลาพักจากฐานข้อมูล
     breaks = []
+    
+    # ตรวจสอบว่าเป็นวันหยุดหรือไม่
     if is_holiday(date_str, user_id):
-        breaks = [(12, 0, 13, 0)]
-    elif start.weekday() == 5:  # เสาร์
-        if start.time() < time(13, 0):
-            start = datetime.combine(start.date(), time(13, 0))
-        breaks = [(12, 0, 13, 0), (17, 0, 17, 30)]
+        # วันหยุด - มีแค่พักเที่ยง
+        lunch_start_h, lunch_start_m = map(int, lunch_start.split(':'))
+        lunch_end_h, lunch_end_m = map(int, lunch_end.split(':'))
+        breaks.append((lunch_start_h, lunch_start_m, lunch_end_h, lunch_end_m))
     else:
-        if start.time() < time(17, 30):
-            start = datetime.combine(start.date(), time(17, 30))
-        breaks = [(12, 0, 13, 0)]
+        # วันทำงานปกติ - มีพักเที่ยงและเบรคเย็น (จันทร์-เสาร์)
+        # เพิ่มเวลาพักเที่ยง
+        lunch_start_h, lunch_start_m = map(int, lunch_start.split(':'))
+        lunch_end_h, lunch_end_m = map(int, lunch_end.split(':'))
+        breaks.append((lunch_start_h, lunch_start_m, lunch_end_h, lunch_end_m))
+        
+        # เพิ่มเวลาเบรคเย็น (จันทร์-เสาร์) ถ้าไม่คิดโอที
+        if evening_break_ot == '0':
+            evening_start_h, evening_start_m = map(int, evening_break_start.split(':'))
+            evening_end_h, evening_end_m = map(int, evening_break_end.split(':'))
+            breaks.append((evening_start_h, evening_start_m, evening_end_h, evening_end_m))
 
     total_seconds = (end - start).total_seconds()
 
@@ -429,7 +561,17 @@ def index():
     if request.method == 'POST':
         work_date = request.form['work_date']
         end_time = request.form['end_time']
-        start_time = f"{work_date}T08:00"
+        
+        # ดึงเวลาเริ่มงานจากฐานข้อมูล
+        work_settings = conn.execute('''
+            SELECT work_start_time 
+            FROM work_settings 
+            WHERE user_id = ?
+        ''', (user_id,)).fetchone()
+        
+        work_start_time = work_settings['work_start_time'] if work_settings else '08:00'
+        start_time = f"{work_date}T{work_start_time}"
+        
         ot_hours = calculate_ot(start_time, end_time, user_id)
         conn.execute('INSERT INTO ot_records (user_id, work_date, start_time, end_time, ot_hours) VALUES (?, ?, ?, ?, ?)',
                      (user_id, work_date, start_time, end_time, ot_hours))
@@ -510,6 +652,15 @@ def index():
     # คำนวณ OT รวมทั้งหมด
     total_ot = conn.execute('SELECT SUM(ot_hours) FROM ot_records WHERE user_id = ?', (user_id,)).fetchone()[0] or 0
     
+    # ดึงเวลาเริ่มงานสำหรับแสดงในหน้า
+    work_settings = conn.execute('''
+        SELECT work_start_time 
+        FROM work_settings 
+        WHERE user_id = ?
+    ''', (user_id,)).fetchone()
+    
+    work_start_time = work_settings['work_start_time'] if work_settings else '08:00'
+    
     conn.close()
     return render_template('index.html', 
                          records=records, 
@@ -521,7 +672,8 @@ def index():
                          total_pages=1, 
                          total_records=total_records,
                          selected_month=selected_month,
-                         available_months=selectable_months)
+                         available_months=selectable_months,
+                         work_start_time=work_start_time)
 
 
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
@@ -1239,6 +1391,223 @@ def export_ot_template():
         as_attachment=True,
         download_name='ot_records_template.csv'
     )
+
+# Settings page
+@app.route('/settings')
+@login_required
+def settings():
+    conn = get_db_connection()
+    user_id = session['user_id']
+    
+    # ดึงการตั้งค่าเวลาทำงานของผู้ใช้
+    work_settings = conn.execute('''
+        SELECT work_start_time, work_end_time, ot_rate, work_days,
+               lunch_start, lunch_end,
+               evening_break_start, evening_break_end,
+               evening_break_ot
+        FROM work_settings 
+        WHERE user_id = ?
+    ''', (user_id,)).fetchone()
+    
+    conn.close()
+    
+    return render_template('settings.html', work_settings=work_settings)
+
+# Change password
+@app.route('/change-password', methods=['POST'])
+@login_required
+def change_password():
+    current_password = request.form.get('current_password')
+    new_password = request.form.get('new_password')
+    confirm_password = request.form.get('confirm_password')
+    
+    if new_password != confirm_password:
+        flash('รหัสผ่านใหม่ไม่ตรงกัน', 'error')
+        return redirect('/settings')
+    
+    if len(new_password) < 6:
+        flash('รหัสผ่านใหม่ต้องมีอย่างน้อย 6 ตัวอักษร', 'error')
+        return redirect('/settings')
+    
+    conn = get_db_connection()
+    user = conn.execute('SELECT * FROM users WHERE id = ?', (session['user_id'],)).fetchone()
+    
+    if not check_password_hash(user['password'], current_password):
+        conn.close()
+        flash('รหัสผ่านปัจจุบันไม่ถูกต้อง', 'error')
+        return redirect('/settings')
+    
+    hashed_password = generate_password_hash(new_password)
+    conn.execute('UPDATE users SET password = ? WHERE id = ?', (hashed_password, session['user_id']))
+    conn.commit()
+    conn.close()
+    
+    flash('เปลี่ยนรหัสผ่านสำเร็จ', 'success')
+    return redirect('/settings')
+
+# Update work time settings
+@app.route('/update-work-time-settings', methods=['POST'])
+@login_required
+def update_work_time_settings():
+    user_id = session['user_id']
+    work_start_time = request.form.get('work_start_time', '08:00')
+    work_end_time = request.form.get('work_end_time', '17:00')
+    ot_rate = request.form.get('ot_rate', '50.00')
+    work_days = request.form.getlist('work_days')
+    
+    # เวลาพักเที่ยง
+    lunch_start = request.form.get('lunch_start', '12:00')
+    lunch_end = request.form.get('lunch_end', '13:00')
+    
+    # เวลาเบรคเย็น
+    evening_break_start = request.form.get('evening_break_start', '17:00')
+    evening_break_end = request.form.get('evening_break_end', '17:30')
+    
+    # การตั้งค่าโอทีในเบรคเย็น
+    evening_break_ot = '1' if request.form.get('evening_break_ot') else '0'
+    
+    # แปลง work_days เป็น string
+    work_days_str = ','.join(work_days) if work_days else '1,2,3,4,5'
+    
+    conn = get_db_connection()
+    
+    # ตรวจสอบว่ามีการตั้งค่าแล้วหรือไม่
+    existing = conn.execute('SELECT id FROM work_settings WHERE user_id = ?', (user_id,)).fetchone()
+    
+    if existing:
+        # อัพเดทการตั้งค่าที่มีอยู่
+        conn.execute('''
+            UPDATE work_settings 
+            SET work_start_time = ?, work_end_time = ?, ot_rate = ?, work_days = ?,
+                lunch_start = ?, lunch_end = ?,
+                evening_break_start = ?, evening_break_end = ?,
+                evening_break_ot = ?,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE user_id = ?
+        ''', (work_start_time, work_end_time, ot_rate, work_days_str,
+              lunch_start, lunch_end,
+              evening_break_start, evening_break_end,
+              evening_break_ot,
+              user_id))
+    else:
+        # สร้างการตั้งค่าใหม่
+        conn.execute('''
+            INSERT INTO work_settings (
+                user_id, work_start_time, work_end_time, ot_rate, work_days,
+                lunch_start, lunch_end,
+                evening_break_start, evening_break_end,
+                evening_break_ot
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (user_id, work_start_time, work_end_time, ot_rate, work_days_str,
+              lunch_start, lunch_end,
+              evening_break_start, evening_break_end,
+              evening_break_ot))
+    
+    conn.commit()
+    conn.close()
+    
+    flash('บันทึกการตั้งค่าเวลาทำงานสำเร็จ', 'success')
+    return redirect('/settings')
+
+# Update display settings
+@app.route('/update-display-settings', methods=['POST'])
+@login_required
+def update_display_settings():
+    # ในอนาคตสามารถบันทึกการตั้งค่าลงฐานข้อมูลได้
+    flash('บันทึกการตั้งค่าสำเร็จ', 'success')
+    return redirect('/settings')
+
+# Export all OT data
+@app.route('/export-all-ot')
+@login_required
+def export_all_ot():
+    conn = get_db_connection()
+    records = conn.execute('''
+        SELECT * FROM ot_records 
+        WHERE user_id = ? 
+        ORDER BY work_date DESC
+    ''', (session['user_id'],)).fetchall()
+    conn.close()
+    
+    # สร้าง CSV
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['วันที่', 'เวลาเริ่ม', 'เวลาสิ้นสุด', 'จำนวนชั่วโมง OT'])
+    
+    for record in records:
+        writer.writerow([
+            record['work_date'],
+            record['start_time'],
+            record['end_time'],
+            record['ot_hours']
+        ])
+    
+    output.seek(0)
+    return Response(
+        output.getvalue(),
+        mimetype='text/csv',
+        headers={
+            'Content-Disposition': 'attachment; filename=all_ot_records.csv',
+            'Content-Type': 'text/csv; charset=utf-8-sig'
+        }
+    )
+
+# Export all income/expense data
+@app.route('/export-all-income-expense')
+@login_required
+def export_all_income_expense():
+    conn = get_db_connection()
+    records = conn.execute('''
+        SELECT * FROM income_expense 
+        WHERE user_id = ? 
+        ORDER BY date DESC
+    ''', (session['user_id'],)).fetchall()
+    conn.close()
+    
+    # สร้าง CSV
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['วันที่', 'ประเภท', 'หมวดหมู่หลัก', 'หมวดหมู่ย่อย', 'รายละเอียด', 'จำนวนเงิน', 'แท็ก'])
+    
+    for record in records:
+        writer.writerow([
+            record['date'],
+            'รายรับ' if record['category'] == 'income' else 'รายจ่าย',
+            record['main_category'],
+            record['sub_category'],
+            record['description'],
+            record['amount'],
+            record['tags']
+        ])
+    
+    output.seek(0)
+    return Response(
+        output.getvalue(),
+        mimetype='text/csv',
+        headers={
+            'Content-Disposition': 'attachment; filename=all_income_expense.csv',
+            'Content-Type': 'text/csv; charset=utf-8-sig'
+        }
+    )
+
+# Delete account
+@app.route('/delete-account')
+@login_required
+def delete_account():
+    user_id = session['user_id']
+    
+    conn = get_db_connection()
+    # ลบข้อมูลทั้งหมดของผู้ใช้
+    conn.execute('DELETE FROM ot_records WHERE user_id = ?', (user_id,))
+    conn.execute('DELETE FROM income_expense WHERE user_id = ?', (user_id,))
+    conn.execute('DELETE FROM users WHERE id = ?', (user_id,))
+    conn.commit()
+    conn.close()
+    
+    session.clear()
+    flash('ลบบัญชีเรียบร้อยแล้ว', 'success')
+    return redirect('/login')
 
 
 # if __name__ == '__main__':

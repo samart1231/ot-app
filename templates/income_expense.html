@@ -274,6 +274,83 @@
                 font-size: 12px;
                 opacity: 0.8;
             }
+            
+            /* Mobile Items Display Optimization */
+            .mobile-items-container {
+                max-height: 60vh;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .mobile-item-card {
+                transition: all 0.2s ease;
+            }
+            
+            .mobile-item-card:focus-within {
+                box-shadow: 0 0 0 2px #3b82f6;
+            }
+            
+            .mobile-input-touch {
+                min-height: 44px; /* iOS touch target minimum */
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+            
+            .mobile-button-touch {
+                min-height: 44px;
+                min-width: 44px;
+                touch-action: manipulation;
+            }
+            
+            /* Mobile table optimization */
+            .mobile-table {
+                font-size: 12px;
+            }
+            
+            .mobile-table th,
+            .mobile-table td {
+                padding: 4px;
+                vertical-align: middle;
+            }
+            
+            .mobile-table input,
+            .mobile-table select {
+                font-size: 12px;
+                padding: 2px 4px;
+            }
+            
+            /* Desktop table optimization */
+            .items-table {
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            
+            .items-table th {
+                background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+            
+            .items-table tr:hover {
+                background-color: #f8fafc;
+                transition: background-color 0.2s ease;
+            }
+            
+            .items-table input:focus,
+            .items-table select:focus {
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+                border-color: #3b82f6;
+            }
+            
+            .items-table button {
+                transition: all 0.2s ease;
+            }
+            
+            .items-table button:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
         }
     </style>
 </head>
@@ -292,11 +369,12 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden bg-white border-t">
             <nav class="py-2">
-                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📅 [OT Records]</a>
+                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📅 บันทึกโอที</a>
                 <a href="/income-expense" class="block px-4 py-3 bg-green-100 text-green-700 font-medium border-b">💰 รายรับ/รายจ่าย</a>
-                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">🎉 Holidays</a>
-                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📊 Import income_expense CSV</a>
-                <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⏰ Import OT CSV</a>
+                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">🎉 วันหยุด</a>
+                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📊 นำเข้า CSV รายรับ/รายจ่าย</a>
+                <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⏰ นำเข้า CSV โอที</a>
+                <a href="/settings" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⚙️ ตั้งค่า</a>
                 <div class="px-4 py-3 border-b">
                     {% if session.user_picture %}
                         <div class="flex items-center gap-3">
@@ -310,7 +388,7 @@
                     <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
                     {% endif %}
                 </div>
-                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50">🚪 Logout</a>
+                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50">🚪 ออกจากระบบ</a>
             </nav>
         </div>
     </div>
@@ -320,11 +398,12 @@
         <div class="p-6">
             <h1 class="text-2xl font-bold text-gray-800 mb-8">📊 ระบบจัดการ</h1>
             <nav class="space-y-2">
-                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">📅 OT Records</a>
+                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">📅 บันทึกโอที</a>
                 <a href="/income-expense" class="block px-4 py-3 bg-green-100 text-green-700 font-medium rounded-lg">💰 รายรับ/รายจ่าย</a>
-                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">🎉 Holidays</a>
-                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">📊 Import CSV</a>
-                <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">⏰ Import OT CSV</a>
+                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">🎉 วันหยุด</a>
+                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">📊 นำเข้า CSV รายรับ/รายจ่าย</a>
+                <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">⏰ นำเข้า CSV โอที</a>
+                <a href="/settings" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">⚙️ ตั้งค่า</a>
             </nav>
             <div class="mt-8 pt-6 border-t">
                 <div class="px-4 py-3">
@@ -342,13 +421,13 @@
                         </div>
                     {% endif %}
                 </div>
-                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg smooth-transition">🚪 Logout</a>
+                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg smooth-transition">🚪 ออกจากระบบ</a>
             </div>
         </div>
     </div>
 
     <!-- Main Content -->
-    <div class="lg:ml-64 pt-20 lg:pt-6 p-4 lg:p-6">
+    <div class="lg:ml-64 pt-20 lg:pt-6 p-4 lg:p-6 min-h-screen">
         <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -447,12 +526,11 @@
                     <input type="hidden" id="combined-category" name="category" value="">
                 </div>
 
-                    <!-- Income Amount (for income transactions) -->
-                    <div id="income-amount-section" class="hidden">
-                        <label class="block font-semibold mb-2">💰 จำนวนเงิน</label>
-                        <input type="number" id="income-amount" name="income_amount" step="0.01" placeholder="0.00"
-                               class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-400 focus:border-transparent">
-                    </div>
+                <!-- Income Amount (for income transactions) -->
+                <div id="income-amount-section" class="hidden">
+                    <label class="block font-semibold mb-2">💰 จำนวนเงิน</label>
+                    <input type="number" id="income-amount" name="income_amount" step="0.01" placeholder="0.00"
+                           class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-400 focus:border-transparent">
                 </div>
 
                 <!-- Items Section (for expense transactions) -->
@@ -460,36 +538,44 @@
                     <label class="block font-semibold mb-2">📦 รายการสินค้า</label>
                     <div class="border rounded-lg p-4 bg-gray-50">
                         <!-- Selected Items Display -->
-                        <div id="selected-items" class="mb-4">
+                        <div id="selected-items" class="mb-4 mobile-items-container">
                             <div class="text-gray-500 text-center py-4">ยังไม่มีรายการสินค้า</div>
                         </div>
 
-                        <!-- Add New Item -->
+                        <!-- Add New Item - Mobile Optimized -->
                         <div class="border-t pt-4">
-                            <div class="mobile-form-grid">
-                                <div class="mobile-item-field">
-                                    <div class="mobile-item-label">สินค้า</div>
-                                    <input type="text" id="item-name" placeholder="ชื่อสินค้า"
-                                           class="mobile-item-input">
+                            <div class="space-y-4">
+                                <!-- Item Name -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">📝 ชื่อสินค้า</label>
+                                    <input type="text" id="item-name" placeholder="เช่น: ขนมปัง, นม, ผักกาด"
+                                           class="w-full border border-gray-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input-touch transition-all duration-200 hover:border-gray-400">
                                 </div>
                                 
-                                <div class="mobile-form-row">
-                                    <div class="mobile-item-field">
-                                        <div class="mobile-item-label">ราคา</div>
-                                        <input type="number" id="item-price" step="0.01" placeholder="0.00"
-                                               class="mobile-item-input">
+                                <!-- Price and Quantity Row -->
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">💰 ราคา (บาท)</label>
+                                        <div class="relative">
+                                            <input type="number" id="item-price" step="0.01" placeholder="0.00"
+                                                   class="w-full border border-gray-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input-touch transition-all duration-200 hover:border-gray-400">
+                                            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                                <span class="text-gray-500 text-sm">฿</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="mobile-item-field">
-                                        <div class="mobile-item-label">จำนวน</div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">📊 จำนวน</label>
                                         <input type="number" id="item-quantity" min="1" value="1"
-                                               class="mobile-item-input">
+                                               class="w-full border border-gray-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input-touch transition-all duration-200 hover:border-gray-400">
                                     </div>
                                 </div>
                                 
-                                <div class="mobile-item-field">
-                                    <div class="mobile-item-label">แท็ก</div>
-                                    <div class="flex gap-1">
-                                        <select id="item-tag" class="flex-1 mobile-item-select" onchange="updateTagEmoji()">
+                                <!-- Tag Selection -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">🏷️ แท็ก</label>
+                                    <div class="flex flex-col lg:flex-row gap-3">
+                                        <select id="item-tag" class="flex-1 border border-gray-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input-touch transition-all duration-200 hover:border-gray-400" onchange="updateTagEmoji()">
                                             <option value="">--เลือกแท็ก--</option>
                                             <option value="อาหาร">🍽️ อาหาร</option>
                                             <option value="เครื่องดื่ม">🥤 เครื่องดื่ม</option>
@@ -502,41 +588,44 @@
                                             <option value="นม">🥛 นม</option>
                                             <option value="ขนมปัง">🍞 ขนมปัง</option>
                                         </select>
-                                        <button type="button" id="emoji-picker-btn"
-                                                class="mobile-button mobile-button-secondary" style="width: auto; padding: 8px 12px;" onclick="showEmojiPicker()">
-                                            😊
-                                        </button>
-                                        <button type="button" id="add-tag-btn"
-                                                class="mobile-button mobile-button-secondary" style="width: auto; padding: 8px 12px;">
-                                            ➕
-                                        </button>
+                                        <div class="flex gap-2">
+                                            <button type="button" id="emoji-picker-btn"
+                                                    class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-3 rounded-lg text-lg mobile-button-touch transition-all duration-200 hover:shadow-lg" onclick="showEmojiPicker()">
+                                                😊
+                                            </button>
+                                            <button type="button" id="add-tag-btn"
+                                                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-lg text-lg mobile-button-touch transition-all duration-200 hover:shadow-lg">
+                                                ➕
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 
                                 <!-- Emoji Picker Modal -->
-                                <div id="emoji-picker-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-                                    <div class="bg-white rounded-lg p-4 max-w-sm w-full mx-4 max-h-96 overflow-y-auto">
+                                <div id="emoji-picker-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+                                    <div class="bg-white rounded-lg p-6 max-w-sm w-full max-h-96 overflow-y-auto">
                                         <div class="flex justify-between items-center mb-4">
                                             <h3 class="text-lg font-semibold">เลือกอิโมจิ</h3>
-                                            <button onclick="closeEmojiPicker()" class="text-gray-500 hover:text-gray-700">
+                                            <button onclick="closeEmojiPicker()" class="text-gray-500 hover:text-gray-700 text-xl">
                                                 ✕
                                             </button>
                                         </div>
-                                        <div id="emoji-grid" class="grid grid-cols-8 gap-2">
+                                        <div id="emoji-grid" class="grid grid-cols-8 gap-3">
                                             <!-- Emojis will be populated here -->
                                         </div>
                                         <div class="mt-4 text-center">
-                                            <button onclick="closeEmojiPicker()" class="mobile-button mobile-button-secondary">
+                                            <button onclick="closeEmojiPicker()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg">
                                                 ปิด
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                                 
-                                <div class="mobile-item-field">
+                                <!-- Add Item Button -->
+                                <div>
                                     <button type="button" id="add-item-btn"
-                                            class="mobile-button mobile-button-success">
-                                        ➕ เพิ่มรายการ
+                                            class="w-full bg-green-500 hover:bg-green-600 text-white py-4 px-6 rounded-lg font-semibold text-lg mobile-button-touch transition-all duration-200 hover:shadow-lg transform hover:scale-105">
+                                        ➕ เพิ่มรายการสินค้า
                                     </button>
                                 </div>
                             </div>
@@ -561,25 +650,25 @@
 
                         <!-- Total Display -->
                         <div class="mt-4 pt-4 border-t">
-                            <div class="flex justify-between items-center">
-                                <div class="flex flex-col lg:flex-row items-start lg:items-center gap-3">
-                                    <div class="flex flex-wrap gap-2">
-                                        <span class="font-semibold">จำนวนรายการ: <span id="total-items" class="text-blue-600">0</span></span>
-                                        <button type="button" onclick="clearAllItems()" 
-                                                class="mobile-button mobile-button-danger" style="width: auto; padding: 6px 12px; font-size: 12px;">
-                                            🗑️ ล้างทั้งหมด
-                                        </button>
-                                        <button type="button" onclick="showItemsSummary()" 
-                                                class="mobile-button mobile-button-primary" style="width: auto; padding: 6px 12px; font-size: 12px;">
-                                            📋 สรุปรายการ
-                                        </button>
-                                        <button type="button" onclick="showTagFilter()" 
-                                                class="mobile-button mobile-button-secondary" style="width: auto; padding: 6px 12px; font-size: 12px;">
-                                            🏷️ กรองแท็ก
-                                        </button>
-                                    </div>
+                            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="font-semibold text-gray-700">จำนวนรายการ: <span id="total-items" class="text-blue-600">0</span></span>
+                                    <button type="button" onclick="clearAllItems()" 
+                                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:shadow-lg">
+                                        🗑️ ล้างทั้งหมด
+                                    </button>
+                                    <button type="button" onclick="showItemsSummary()" 
+                                            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:shadow-lg">
+                                        📋 สรุปรายการ
+                                    </button>
+                                    <button type="button" onclick="showTagFilter()" 
+                                            class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:shadow-lg">
+                                        🏷️ กรองแท็ก
+                                    </button>
                                 </div>
-                                <span class="font-semibold text-lg">ยอดรวม: <span id="total-amount" class="text-green-600">0.00</span> บาท</span>
+                                <div class="bg-green-50 border border-green-200 rounded-lg px-6 py-3">
+                                    <span class="font-bold text-lg text-green-800">ยอดรวม: <span id="total-amount" class="text-green-600">0.00</span> บาท</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -629,47 +718,57 @@
 
         <!-- Month Selection and Export -->
         <div class="bg-white p-4 lg:p-6 rounded-lg shadow-md mb-6">
-            <h2 class="text-lg lg:text-xl font-semibold mb-4">📅 เลือกเดือนที่ต้องการดู</h2>
-            <div class="flex flex-col lg:flex-row items-start lg:items-center gap-3 mb-4">
-                <label class="font-semibold">เดือน:</label>
-                <select id="month-select" class="border rounded-lg p-2 focus:ring-2 focus:ring-blue-400" onchange="changeMonth(this.value)">
-                    {% for month in available_months %}
-                        <option value="{{ month.month }}" {% if month.month == selected_month %}selected{% endif %}>
-                            {{ month.display }}
-                        </option>
-                    {% endfor %}
-                </select>
-                <div class="text-sm text-gray-600">
-                    แสดงข้อมูล รายรับ-รายจ่าย ประจำเดือน ({{ total_records }} รายการ)
-                </div>
+            <div class="p-4 lg:p-6 border-b">
+                <h2 class="text-lg lg:text-xl font-semibold text-gray-800 mb-2">📅 เลือกเดือนที่ต้องการดู</h2>
+                <p class="text-sm text-gray-600">เลือกเดือนเพื่อดูข้อมูลรายรับ-รายจ่าย</p>
             </div>
+            <div class="p-4 lg:p-6">
+                <div class="flex flex-col lg:flex-row items-start lg:items-center gap-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <label class="font-semibold text-gray-700">📅 เดือน:</label>
+                        <select id="month-select" class="border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white" onchange="changeMonth(this.value)">
+                            {% for month in available_months %}
+                                <option value="{{ month.month }}" {% if month.month == selected_month %}selected{% endif %}>
+                                    {{ month.display }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2">
+                        <div class="text-sm text-gray-700">
+                            <span class="font-medium">📊 สถานะ:</span> แสดงข้อมูล รายรับ-รายจ่าย ประจำเดือน 
+                            <span class="font-bold text-gray-900">{{ selected_month.split('-')[1] }}/{{ selected_month.split('-')[0] }}</span>
+                            <span class="text-gray-600">({{ total_records }} รายการ)</span>
+                        </div>
+                    </div>
+                </div>
             
             <!-- Export Buttons -->
-            <div class="border-t pt-4">
-                <h3 class="text-md font-semibold mb-3">📊 ส่งออกข้อมูล</h3>
+            <div class="border-t pt-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">📊 ส่งออกข้อมูล</h3>
                 <div class="flex flex-wrap gap-2">
                     <button onclick="exportData('all', '{{ selected_month }}')" 
-                            class="btn-animate bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">
+                            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
                         📄 ส่งออกทั้งหมด
                     </button>
                     <button onclick="exportData('income', '{{ selected_month }}')" 
-                            class="btn-animate bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm">
+                            class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
                         💰 ส่งออกรายรับ
                     </button>
                     <button onclick="exportData('expense', '{{ selected_month }}')" 
-                            class="btn-animate bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
+                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
                         💸 ส่งออกรายจ่าย
                     </button>
                     <button onclick="showMonthlySummary()" 
-                            class="btn-animate bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm">
+                            class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
                         📋 สรุปประจำเดือน
                     </button>
                     <button onclick="showYearlyView()" 
-                            class="btn-animate bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm">
+                            class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
                         📅 ดูรายปี
                     </button>
                     <button onclick="exportYearData('{{ selected_month.split('-')[0] }}')" 
-                            class="btn-animate bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm">
+                            class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
                         📊 ส่งออกรายปี
                     </button>
                 </div>
@@ -677,62 +776,100 @@
         </div>
 
         <!-- Summary Cards -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-            <div class="bg-green-100 p-4 rounded-lg text-center">
-                <div class="text-green-800 font-bold text-xl">{{ "%.2f"|format(monthly_total_income) }}</div>
-                <div class="text-green-600 text-sm">รายรับ (บาท)</div>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="text-green-600 text-xl">💰</div>
+                    <div class="text-gray-600 text-sm">รายรับ</div>
+                </div>
+                <div class="text-green-700 font-bold text-xl mb-1">{{ "%.2f"|format(monthly_total_income) }}</div>
+                <div class="text-gray-500 text-sm">บาท</div>
             </div>
-            <div class="bg-red-100 p-4 rounded-lg text-center">
-                <div class="text-red-800 font-bold text-xl">{{ "%.2f"|format(monthly_total_expense) }}</div>
-                <div class="text-red-600 text-sm">รายจ่าย (บาท)</div>
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="text-red-600 text-xl">💸</div>
+                    <div class="text-gray-600 text-sm">รายจ่าย</div>
+                </div>
+                <div class="text-red-700 font-bold text-xl mb-1">{{ "%.2f"|format(monthly_total_expense) }}</div>
+                <div class="text-gray-500 text-sm">บาท</div>
             </div>
-            <div class="bg-blue-100 p-4 rounded-lg text-center">
-                <div class="text-blue-800 font-bold text-xl">{{ "%.2f"|format(monthly_total_income - monthly_total_expense) }}</div>
-                <div class="text-blue-600 text-sm">คงเหลือ (บาท)</div>
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="text-blue-600 text-xl">📊</div>
+                    <div class="text-gray-600 text-sm">คงเหลือ</div>
+                </div>
+                <div class="text-blue-700 font-bold text-xl mb-1">{{ "%.2f"|format(monthly_total_income - monthly_total_expense) }}</div>
+                <div class="text-gray-500 text-sm">บาท</div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="text-gray-600 text-xl">📝</div>
+                    <div class="text-gray-600 text-sm">รายการ</div>
+                </div>
+                <div class="text-gray-700 font-bold text-xl mb-1">{{ total_records }}</div>
+                <div class="text-gray-500 text-sm">รายการ</div>
             </div>
         </div>
 
         <!-- Records Table -->
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <div class="p-4 lg:p-6 border-b">
-                <h2 class="text-lg lg:text-xl font-semibold">📊 รายการทั้งหมด</h2>
+                <h2 class="text-lg lg:text-xl font-semibold text-gray-800">📊 รายการทั้งหมด</h2>
+                <p class="text-sm text-gray-600 mt-1">แสดงรายการรายรับ-รายจ่ายทั้งหมดในเดือนที่เลือก</p>
             </div>
             <div class="overflow-x-auto">
-                <table class="w-full">
+                <table class="w-full border-collapse">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">วันที่</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">รายละเอียด</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">จำนวน</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">ร้านค้า</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">ประเภท</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">จัดการ</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200">📅 วันที่</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200">📝 รายละเอียด</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200">💰 จำนวน (บาท)</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200">🏪 ร้านค้า</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200">🏷️ ประเภท</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200">⚙️ จัดการ</th>
                         </tr>
                     </thead>
                     <tbody id="records-tbody">
                         {% if records %}
                             {% for record in records %}
-                                <tr class="border-b hover:bg-gray-50">
-                                    <td class="px-4 py-3 text-sm">{{ record.date }}</td>
-                                    <td class="px-4 py-3 text-sm">{{ record.description }}</td>
-                                    <td class="px-4 py-3 text-sm font-medium {% if record.category == 'income' %}text-green-600{% else %}text-red-600{% endif %}">
-                                        {{ "%.2f"|format(record.amount) }}
+                                <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200">
+                                    <td class="px-4 py-4 text-sm text-gray-700 font-medium">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-gray-400">📅</span>
+                                            {{ record.date }}
+                                        </div>
                                     </td>
-                                    <td class="px-4 py-3 text-sm">{{ record.vendor or '-' }}</td>
-                                    <td class="px-4 py-3 text-sm">
-                                        <span class="px-2 py-1 rounded-full text-xs {% if record.category == 'income' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                                    <td class="px-4 py-4 text-sm text-gray-800">
+                                        <div class="max-w-xs truncate" title="{{ record.description }}">
+                                            {{ record.description }}
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-4 text-sm font-bold {% if record.category == 'income' %}text-green-600{% else %}text-red-600{% endif %}">
+                                        <div class="flex items-center gap-1">
+                                            <span>{% if record.category == 'income' %}💰{% else %}💸{% endif %}</span>
+                                            {{ "%.2f"|format(record.amount) }}
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-4 text-sm text-gray-600">
+                                        <div class="flex items-center gap-1">
+                                            <span class="text-gray-400">🏪</span>
+                                            {{ record.vendor or '-' }}
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-4 text-sm">
+                                        <span class="px-3 py-1 rounded-full text-xs font-medium {% if record.category == 'income' %}bg-green-100 text-green-700 border border-green-200{% else %}bg-red-100 text-red-700 border border-red-200{% endif %}">
                                             {% if record.category == 'income' %}💰 รายรับ{% else %}💸 รายจ่าย{% endif %}
                                         </span>
                                     </td>
-                                    <td class="px-4 py-3 text-sm">
+                                    <td class="px-4 py-4 text-sm">
                                         <div class="flex gap-2">
                                             <a href="/edit-income-expense/{{ record.id }}" 
-                                               class="text-blue-600 hover:text-blue-800 text-sm">
+                                               class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-medium transition-all duration-200 hover:shadow-md">
                                                 ✏️ แก้ไข
                                             </a>
                                             <form method="POST" action="/delete-income-expense/{{ record.id }}" 
                                                   class="inline" onsubmit="return confirm('ต้องการลบรายการนี้หรือไม่?')">
-                                                <button type="submit" class="text-red-600 hover:text-red-800 text-sm">
+                                                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-xs font-medium transition-all duration-200 hover:shadow-md">
                                                     🗑️ ลบ
                                                 </button>
                                             </form>
@@ -742,15 +879,49 @@
                             {% endfor %}
                         {% else %}
                             <tr>
-                                <td colspan="6" class="px-4 py-8 text-center text-gray-500">
-                                    <div class="text-4xl mb-2">📭</div>
-                                    <div>ไม่มีข้อมูลในเดือนนี้</div>
+                                <td colspan="6" class="px-4 py-12 text-center">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <div class="text-6xl mb-4 text-gray-300">📭</div>
+                                        <div class="text-lg font-medium text-gray-500 mb-2">ไม่มีข้อมูลในเดือนนี้</div>
+                                        <div class="text-sm text-gray-400">ลองเพิ่มรายการใหม่หรือเลือกเดือนอื่น</div>
+                                        <div class="mt-4 flex gap-2">
+                                            <button onclick="document.getElementById('transaction-type').focus()" 
+                                                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">
+                                                ➕ เพิ่มรายการใหม่
+                                            </button>
+                                            <button onclick="document.getElementById('month-select').focus()" 
+                                                    class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">
+                                                📅 เลือกเดือนอื่น
+                                            </button>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                         {% endif %}
                     </tbody>
                 </table>
             </div>
+            
+            <!-- Table Footer -->
+            {% if records %}
+            <div class="p-4 lg:p-6 border-t bg-gray-50">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                    <div class="text-sm text-gray-600">
+                        แสดง {{ records|length }} รายการ จากทั้งหมด {{ total_records }} รายการ
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="exportData('all', '{{ selected_month }}')" 
+                                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                            📄 ส่งออกทั้งหมด
+                        </button>
+                        <button onclick="showMonthlySummary()" 
+                                class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                            📋 สรุปข้อมูล
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 
@@ -1016,174 +1187,176 @@
             const isMobile = window.innerWidth <= 768;
             
             if (isMobile) {
-                // Mobile compact table view
-                let html = `
-                    <table class="items-table mobile-table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>ชื่อ</th>
-                                <th>แท็ก</th>
-                                <th>ราคา</th>
-                                <th>จำนวน</th>
-                                <th>รวม</th>
-                                <th>จัดการ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
+                // Mobile card view - easier to edit on mobile
+                let html = '<div class="space-y-3">';
                 
                 selectedItems.forEach((item, index) => {
                     totalAmount += item.total;
                     html += `
-                        <tr>
-                            <td class="text-center">
-                                <div class="flex flex-col items-center gap-1">
-                                    <div class="w-5 h-5 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                        <div class="bg-white border rounded-lg p-4 shadow-sm">
+                            <!-- Item Header -->
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
                                         ${index + 1}
                                     </div>
-                                    <div class="flex gap-1">
-                                        <button onclick="moveItemUp(${item.id})" 
-                                                class="text-gray-500 hover:text-blue-600 text-xs ${index === 0 ? 'opacity-50 cursor-not-allowed' : ''}" 
-                                                title="เลื่อนขึ้น" ${index === 0 ? 'disabled' : ''}>
-                                            ⬆️
-                                        </button>
-                                        <button onclick="moveItemDown(${item.id})" 
-                                                class="text-gray-500 hover:text-blue-600 text-xs ${index === selectedItems.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}" 
-                                                title="เลื่อนลง" ${index === selectedItems.length - 1 ? 'disabled' : ''}>
-                                            ⬇️
-                                        </button>
+                                    <span class="text-lg">${item.emoji || '😊'}</span>
+                                    <span class="font-medium text-gray-800">${item.name}</span>
+                                </div>
+                                <div class="flex gap-1">
+                                    <button onclick="moveItemUp(${item.id})" 
+                                            class="text-gray-500 hover:text-blue-600 p-1 ${index === 0 ? 'opacity-50 cursor-not-allowed' : ''}" 
+                                            title="เลื่อนขึ้น" ${index === 0 ? 'disabled' : ''}>
+                                        ⬆️
+                                    </button>
+                                    <button onclick="moveItemDown(${item.id})" 
+                                            class="text-gray-500 hover:text-blue-600 p-1 ${index === selectedItems.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}" 
+                                            title="เลื่อนลง" ${index === selectedItems.length - 1 ? 'disabled' : ''}>
+                                        ⬇️
+                                    </button>
+                                </div>
+                            </div>
+                            
+                                                            <!-- Item Name -->
+                                <div class="mb-3">
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">📝 ชื่อสินค้า</label>
+                                    <input type="text" value="${item.name}" 
+                                           onchange="updateItemName(${item.id}, this.value)"
+                                           class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input-touch">
+                                </div>
+                            
+                            <!-- Price and Quantity Row -->
+                            <div class="grid grid-cols-2 gap-3 mb-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">💰 ราคา (บาท)</label>
+                                    <div class="flex items-center gap-1">
+                                                                            <button onclick="decreasePrice(${item.id})" 
+                                            class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm mobile-button-touch">-</button>
+                                        <input type="number" value="${item.price}" step="0.01" min="0"
+                                               onchange="updateItemPrice(${item.id}, this.value)"
+                                               class="flex-1 border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input-touch">
+                                        <button onclick="increasePrice(${item.id})" 
+                                                class="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-sm mobile-button-touch">+</button>
                                     </div>
                                 </div>
-                            </td>
-                            <td>
-                                <input type="text" value="${item.name}" 
-                                       onchange="updateItemName(${item.id}, this.value)"
-                                       class="w-full border rounded px-1 py-1 text-xs focus:ring-1 focus:ring-blue-400">
-                            </td>
-                            <td>
-                                <div class="flex items-center gap-1">
-                                    <span class="text-lg">${item.emoji || '😊'}</span>
-                                    <select onchange="updateItemTag(${item.id}, this.value)" 
-                                            class="flex-1 border rounded px-1 py-1 text-xs focus:ring-1 focus:ring-blue-400">
-                                        <option value="">--</option>
-                                        <option value="อาหาร" ${item.tag === 'อาหาร' ? 'selected' : ''}>🍽️</option>
-                                        <option value="เครื่องดื่ม" ${item.tag === 'เครื่องดื่ม' ? 'selected' : ''}>🥤</option>
-                                        <option value="ของใช้" ${item.tag === 'ของใช้' ? 'selected' : ''}>🛍️</option>
-                                        <option value="ยา" ${item.tag === 'ยา' ? 'selected' : ''}>💊</option>
-                                        <option value="ขนม" ${item.tag === 'ขนม' ? 'selected' : ''}>🍪</option>
-                                        <option value="ผลไม้" ${item.tag === 'ผลไม้' ? 'selected' : ''}>🍎</option>
-                                        <option value="ผัก" ${item.tag === 'ผัก' ? 'selected' : ''}>🥬</option>
-                                        <option value="เนื้อสัตว์" ${item.tag === 'เนื้อสัตว์' ? 'selected' : ''}>🥩</option>
-                                        <option value="นม" ${item.tag === 'นม' ? 'selected' : ''}>🥛</option>
-                                        <option value="ขนมปัง" ${item.tag === 'ขนมปัง' ? 'selected' : ''}>🍞</option>
-                                    </select>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">📊 จำนวน</label>
+                                    <div class="flex items-center gap-1">
+                                                                            <button onclick="decreaseQuantity(${item.id})" 
+                                            class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm mobile-button-touch">-</button>
+                                        <input type="number" value="${item.quantity}" min="1"
+                                               onchange="updateItemQuantity(${item.id}, this.value)"
+                                               class="flex-1 border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input-touch">
+                                        <button onclick="increaseQuantity(${item.id})" 
+                                                class="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-sm mobile-button-touch">+</button>
+                                    </div>
                                 </div>
-                            </td>
-                            <td>
-                                <div class="flex items-center gap-1">
-                                    <button onclick="decreasePrice(${item.id})" 
-                                            class="text-red-500 hover:text-red-700 text-xs px-1">-</button>
-                                    <input type="number" value="${item.price}" step="0.01" min="0"
-                                           onchange="updateItemPrice(${item.id}, this.value)"
-                                           class="w-full border rounded px-1 py-1 text-xs focus:ring-1 focus:ring-blue-400">
-                                    <button onclick="increasePrice(${item.id})" 
-                                            class="text-green-500 hover:text-green-700 text-xs px-1">+</button>
+                            </div>
+                            
+                            <!-- Tag Selection -->
+                            <div class="mb-3">
+                                <label class="block text-xs font-medium text-gray-700 mb-1">🏷️ แท็ก</label>
+                                <select onchange="updateItemTag(${item.id}, this.value)" 
+                                        class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input-touch">
+                                    <option value="">--เลือกแท็ก--</option>
+                                    <option value="อาหาร" ${item.tag === 'อาหาร' ? 'selected' : ''}>🍽️ อาหาร</option>
+                                    <option value="เครื่องดื่ม" ${item.tag === 'เครื่องดื่ม' ? 'selected' : ''}>🥤 เครื่องดื่ม</option>
+                                    <option value="ของใช้" ${item.tag === 'ของใช้' ? 'selected' : ''}>🛍️ ของใช้</option>
+                                    <option value="ยา" ${item.tag === 'ยา' ? 'selected' : ''}>💊 ยา</option>
+                                    <option value="ขนม" ${item.tag === 'ขนม' ? 'selected' : ''}>🍪 ขนม</option>
+                                    <option value="ผลไม้" ${item.tag === 'ผลไม้' ? 'selected' : ''}>🍎 ผลไม้</option>
+                                    <option value="ผัก" ${item.tag === 'ผัก' ? 'selected' : ''}>🥬 ผัก</option>
+                                    <option value="เนื้อสัตว์" ${item.tag === 'เนื้อสัตว์' ? 'selected' : ''}>🥩 เนื้อสัตว์</option>
+                                    <option value="นม" ${item.tag === 'นม' ? 'selected' : ''}>🥛 นม</option>
+                                    <option value="ขนมปัง" ${item.tag === 'ขนมปัง' ? 'selected' : ''}>🍞 ขนมปัง</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Item Total and Actions -->
+                            <div class="flex items-center justify-between pt-2 border-t">
+                                <div class="text-sm">
+                                    <span class="text-gray-600">รวม:</span>
+                                    <span class="font-bold text-green-600 ml-1">${item.total.toFixed(2)} บาท</span>
                                 </div>
-                            </td>
-                            <td>
-                                <div class="flex items-center gap-1">
-                                    <button onclick="decreaseQuantity(${item.id})" 
-                                            class="text-red-500 hover:text-red-700 text-xs px-1">-</button>
-                                    <input type="number" value="${item.quantity}" min="1"
-                                           onchange="updateItemQuantity(${item.id}, this.value)"
-                                           class="w-full border rounded px-1 py-1 text-xs focus:ring-1 focus:ring-blue-400">
-                                    <button onclick="increaseQuantity(${item.id})" 
-                                            class="text-green-500 hover:text-green-700 text-xs px-1">+</button>
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                <div class="text-xs font-medium text-green-600">${item.total.toFixed(2)}</div>
-                            </td>
-                            <td class="text-center">
-                                <div class="flex gap-1 justify-center">
+                                <div class="flex gap-2">
                                     <button onclick="duplicateItem(${item.id})" 
-                                            class="text-blue-500 hover:text-blue-700 text-xs px-1 py-1 rounded hover:bg-blue-50" title="คัดลอก">
-                                        📋
+                                            class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm mobile-button-touch" title="คัดลอก">
+                                        📋 คัดลอก
                                     </button>
                                     <button onclick="removeItem(${item.id})" 
-                                            class="text-red-500 hover:text-red-700 text-xs px-1 py-1 rounded hover:bg-red-50" title="ลบรายการ">
-                                        🗑️
+                                            class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm mobile-button-touch" title="ลบรายการ">
+                                        🗑️ ลบ
                                     </button>
                                 </div>
-                            </td>
-                        </tr>
+                            </div>
+                        </div>
                     `;
                 });
                 
-                // Add total row
+                // Add total summary
                 html += `
-                            <tr class="total-row">
-                                <td colspan="5" class="text-right text-xs">ยอดรวม:</td>
-                                <td class="text-center text-green-600 font-bold text-xs">${totalAmount.toFixed(2)}</td>
-                                <td></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold text-green-800">ยอดรวมทั้งหมด:</span>
+                            <span class="font-bold text-green-600 text-lg">${totalAmount.toFixed(2)} บาท</span>
+                        </div>
+                    </div>
+                </div>
                 `;
                 
                 selectedItemsDiv.innerHTML = html;
             } else {
                 // Desktop table view
                 let html = `
-                    <table class="items-table">
-                        <thead>
-                            <tr>
-                                <th>ลำดับ</th>
-                                <th>ชื่อสินค้า</th>
-                                <th>แท็ก</th>
-                                <th>ราคา (บาท)</th>
-                                <th>จำนวน</th>
-                                <th>รวม (บาท)</th>
-                                <th>จัดการ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <div class="overflow-x-auto">
+                        <table class="items-table w-full border-collapse border border-gray-300">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">ลำดับ</th>
+                                    <th class="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">ชื่อสินค้า</th>
+                                    <th class="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">แท็ก</th>
+                                    <th class="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">ราคา (บาท)</th>
+                                    <th class="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">จำนวน</th>
+                                    <th class="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">รวม (บาท)</th>
+                                    <th class="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">จัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                 `;
                 
                 selectedItems.forEach((item, index) => {
                     totalAmount += item.total;
                     html += `
-                        <tr>
-                            <td class="text-center">
-                                <div class="flex flex-col items-center gap-1">
-                                    <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                        <tr class="hover:bg-gray-50">
+                            <td class="border border-gray-300 px-4 py-3 text-center">
+                                <div class="flex flex-col items-center gap-2">
+                                    <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
                                         ${index + 1}
                                     </div>
                                     <div class="flex gap-1">
                                         <button onclick="moveItemUp(${item.id})" 
-                                                class="text-gray-500 hover:text-blue-600 text-xs ${index === 0 ? 'opacity-50 cursor-not-allowed' : ''}" 
+                                                class="text-gray-500 hover:text-blue-600 text-sm px-2 py-1 rounded hover:bg-blue-50 ${index === 0 ? 'opacity-50 cursor-not-allowed' : ''}" 
                                                 title="เลื่อนขึ้น" ${index === 0 ? 'disabled' : ''}>
                                             ⬆️
                                         </button>
                                         <button onclick="moveItemDown(${item.id})" 
-                                                class="text-gray-500 hover:text-blue-600 text-xs ${index === selectedItems.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}" 
+                                                class="text-gray-500 hover:text-blue-600 text-sm px-2 py-1 rounded hover:bg-blue-50 ${index === selectedItems.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}" 
                                                 title="เลื่อนลง" ${index === selectedItems.length - 1 ? 'disabled' : ''}>
                                             ⬇️
                                         </button>
                                     </div>
                                 </div>
                             </td>
-                            <td>
+                            <td class="border border-gray-300 px-4 py-3">
                                 <input type="text" value="${item.name}" 
                                        onchange="updateItemName(${item.id}, this.value)"
-                                       class="w-full border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-blue-400">
+                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             </td>
-                            <td>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xl">${item.emoji || '😊'}</span>
+                            <td class="border border-gray-300 px-4 py-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">${item.emoji || '😊'}</span>
                                     <select onchange="updateItemTag(${item.id}, this.value)" 
-                                            class="flex-1 border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-blue-400">
+                                            class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                         <option value="">--เลือกแท็ก--</option>
                                         <option value="อาหาร" ${item.tag === 'อาหาร' ? 'selected' : ''}>🍽️ อาหาร</option>
                                         <option value="เครื่องดื่ม" ${item.tag === 'เครื่องดื่ม' ? 'selected' : ''}>🥤 เครื่องดื่ม</option>
@@ -1198,40 +1371,40 @@
                                     </select>
                                 </div>
                             </td>
-                            <td>
-                                <div class="flex items-center gap-1">
+                            <td class="border border-gray-300 px-4 py-3">
+                                <div class="flex items-center gap-2">
                                     <button onclick="decreasePrice(${item.id})" 
-                                            class="text-red-500 hover:text-red-700 text-sm px-1">-</button>
+                                            class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-semibold">-</button>
                                     <input type="number" value="${item.price}" step="0.01" min="0"
                                            onchange="updateItemPrice(${item.id}, this.value)"
-                                           class="w-full border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-blue-400">
+                                           class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                     <button onclick="increasePrice(${item.id})" 
-                                            class="text-green-500 hover:text-green-700 text-sm px-1">+</button>
+                                            class="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg text-sm font-semibold">+</button>
                                 </div>
                             </td>
-                            <td>
-                                <div class="flex items-center gap-1">
+                            <td class="border border-gray-300 px-4 py-3">
+                                <div class="flex items-center gap-2">
                                     <button onclick="decreaseQuantity(${item.id})" 
-                                            class="text-red-500 hover:text-red-700 text-sm px-1">-</button>
+                                            class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-semibold">-</button>
                                     <input type="number" value="${item.quantity}" min="1"
-                                       onchange="updateItemQuantity(${item.id}, this.value)"
-                                       class="w-full border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-blue-400">
+                                           onchange="updateItemQuantity(${item.id}, this.value)"
+                                           class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                     <button onclick="increaseQuantity(${item.id})" 
-                                            class="text-green-500 hover:text-green-700 text-sm px-1">+</button>
+                                            class="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg text-sm font-semibold">+</button>
                                 </div>
                             </td>
-                            <td class="text-center">
-                                <div class="text-sm font-medium text-green-600">${item.total.toFixed(2)}</div>
+                            <td class="border border-gray-300 px-4 py-3 text-center">
+                                <div class="text-lg font-bold text-green-600">${item.total.toFixed(2)}</div>
                             </td>
-                            <td class="text-center">
-                                <div class="flex gap-1 justify-center">
+                            <td class="border border-gray-300 px-4 py-3 text-center">
+                                <div class="flex gap-2 justify-center">
                                     <button onclick="duplicateItem(${item.id})" 
-                                            class="text-blue-500 hover:text-blue-700 text-sm px-2 py-1 rounded hover:bg-blue-50" title="คัดลอก">
-                                        📋
+                                            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold" title="คัดลอก">
+                                        📋 คัดลอก
                                     </button>
                                     <button onclick="removeItem(${item.id})" 
-                                            class="text-red-500 hover:text-red-700 text-sm px-2 py-1 rounded hover:bg-red-50" title="ลบรายการ">
-                                        🗑️
+                                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold" title="ลบรายการ">
+                                        🗑️ ลบ
                                     </button>
                                 </div>
                             </td>
@@ -1241,13 +1414,14 @@
                 
                 // Add total row
                 html += `
-                            <tr class="total-row">
-                                <td colspan="5" class="text-right">ยอดรวมทั้งหมด:</td>
-                                <td class="text-center text-green-600 font-bold">${totalAmount.toFixed(2)}</td>
-                                <td></td>
+                            <tr class="bg-green-50">
+                                <td colspan="5" class="border border-gray-300 px-4 py-3 text-right font-semibold text-gray-700">ยอดรวมทั้งหมด:</td>
+                                <td class="border border-gray-300 px-4 py-3 text-center font-bold text-green-600 text-lg">${totalAmount.toFixed(2)}</td>
+                                <td class="border border-gray-300 px-4 py-3"></td>
                             </tr>
                         </tbody>
                     </table>
+                </div>
                 `;
                 
                 selectedItemsDiv.innerHTML = html;

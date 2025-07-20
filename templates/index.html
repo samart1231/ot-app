@@ -24,6 +24,7 @@
             <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">🎉 วันหยุด</a>
             <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📊 นำเข้า CSV รายรับ/รายจ่าย</a>
             <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⏰ นำเข้า CSV โอที</a>
+            <a href="/settings" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⚙️ ตั้งค่า</a>
             <div class="px-4 py-3 border-b">
                 <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
             </div>
@@ -41,6 +42,7 @@
                 <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">🎉 วันหยุด</a>
                 <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">📊 นำเข้า CSV รายรับ/รายจ่าย</a>
                 <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">⏰ นำเข้า CSV โอที</a>
+                <a href="/settings" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">⚙️ ตั้งค่า</a>
             </nav>
             <div class="mt-8 pt-6 border-t">
                 <div class="px-4 py-2">
@@ -62,7 +64,7 @@
     <div class="grid grid-cols-1 gap-4 mb-6">
       <!-- วันที่เริ่ม -->
       <div>
-        <label for="work_date" class="block mb-2 font-semibold text-gray-700 text-sm sm:text-base">📅 วันที่เริ่มทำงาน (08:00)</label>
+        <label for="work_date" class="block mb-2 font-semibold text-gray-700 text-sm sm:text-base">📅 วันที่เริ่มทำงาน ({{ work_start_time if work_start_time else '08:00' }})</label>
         <input type="date" id="work_date" name="work_date"
           class="w-full border rounded p-3 sm:p-2 text-base focus:ring-2 focus:ring-orange-400" required>
       </div>
