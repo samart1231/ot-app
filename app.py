@@ -26,25 +26,12 @@ DB_FILE = app.config['DATABASE_FILE']
 
 # Google OAuth Configuration (optional)
 try:
-    from flask_oauthlib.client import OAuth
-    oauth = OAuth(app)
-    google = oauth.remote_app(
-        'google',
-        consumer_key=app.config['GOOGLE_CLIENT_ID'],
-        consumer_secret=app.config['GOOGLE_CLIENT_SECRET'],
-        request_token_params={
-            'scope': 'email profile'
-        },
-        base_url='https://www.googleapis.com/oauth2/v1/',
-        request_token_url=None,
-        access_token_method='POST',
-        access_token_url='https://accounts.google.com/o/oauth2/token',
-        authorize_url='https://accounts.google.com/o/oauth2/auth'
-    )
+    import requests
     GOOGLE_OAUTH_AVAILABLE = True
+    print("Google OAuth enabled with requests library")
 except ImportError:
     GOOGLE_OAUTH_AVAILABLE = False
-    print("Warning: Flask-OAuthlib not installed. Google OAuth will be disabled.")
+    print("Warning: requests not installed. Google OAuth will be disabled.")
 
 def login_required(f):
     @wraps(f)
@@ -112,15 +99,15 @@ def signup():
         # ตรวจสอบความถูกต้องของข้อมูล
         if not validate_email(email):
             flash('รูปแบบ email ไม่ถูกต้อง', 'error')
-            return render_template('signup.html')
+            return render_template('signup.html', config={'GOOGLE_OAUTH_AVAILABLE': GOOGLE_OAUTH_AVAILABLE})
         
         if len(password) < 6:
             flash('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร', 'error')
-            return render_template('signup.html')
+            return render_template('signup.html', config={'GOOGLE_OAUTH_AVAILABLE': GOOGLE_OAUTH_AVAILABLE})
         
         if password != confirm_password:
             flash('รหัสผ่านไม่ตรงกัน', 'error')
-            return render_template('signup.html')
+            return render_template('signup.html', config={'GOOGLE_OAUTH_AVAILABLE': GOOGLE_OAUTH_AVAILABLE})
         
         # ตรวจสอบว่า email ซ้ำหรือไม่
         conn = get_db_connection()
@@ -131,7 +118,7 @@ def signup():
         if existing_user:
             flash('Email นี้ถูกใช้งานแล้ว', 'error')
             conn.close()
-            return render_template('signup.html')
+            return render_template('signup.html', config={'GOOGLE_OAUTH_AVAILABLE': GOOGLE_OAUTH_AVAILABLE})
         
         # สร้างผู้ใช้ใหม่
         password_hash = generate_password_hash(password)
@@ -145,7 +132,7 @@ def signup():
         flash('สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ', 'success')
         return redirect(url_for('login'))
     
-    return render_template('signup.html')
+    return render_template('signup.html', config={'GOOGLE_OAUTH_AVAILABLE': GOOGLE_OAUTH_AVAILABLE})
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -180,9 +167,23 @@ def logout():
 def google_login():
     """เริ่มต้น Google OAuth login"""
     if not GOOGLE_OAUTH_AVAILABLE:
-        flash('Google OAuth ไม่พร้อมใช้งาน กรุณาติดตั้ง Flask-OAuthlib', 'error')
+        flash('Google OAuth ไม่พร้อมใช้งาน กรุณาติดตั้ง requests', 'error')
         return redirect(url_for('login'))
-    return google.authorize(callback=url_for('google_authorized', _external=True))
+    
+    import urllib.parse
+    redirect_uri = url_for('google_authorized', _external=True)
+    params = {
+        'client_id': app.config['GOOGLE_CLIENT_ID'],
+        'redirect_uri': redirect_uri,
+        'scope': 'openid email profile',
+        'response_type': 'code',
+        'access_type': 'offline',
+        'prompt': 'consent'
+    }
+    
+    auth_url = f"https://accounts.google.com/o/oauth2/v2/auth?{urllib.parse.urlencode(params)}"
+    print(f"DEBUG: Auth URL: {auth_url}")
+    return redirect(auth_url)
 
 @app.route('/login/google/authorized')
 def google_authorized():
@@ -191,46 +192,71 @@ def google_authorized():
         flash('Google OAuth ไม่พร้อมใช้งาน', 'error')
         return redirect(url_for('login'))
     
-    resp = google.authorized_response()
-    if resp is None or resp.get('access_token') is None:
+    try:
+        import requests
+        import urllib.parse
+        
+        # รับ authorization code
+        code = request.args.get('code')
+        if not code:
+            flash('ไม่ได้รับ authorization code จาก Google', 'error')
+            return redirect(url_for('login'))
+        
+        print(f"DEBUG: Received code: {code}")
+        
+        # แลกเปลี่ยน code เป็น access token
+        token_url = 'https://oauth2.googleapis.com/token'
+        token_data = {
+            'client_id': app.config['GOOGLE_CLIENT_ID'],
+            'client_secret': app.config['GOOGLE_CLIENT_SECRET'],
+            'code': code,
+            'grant_type': 'authorization_code',
+            'redirect_uri': url_for('google_authorized', _external=True)
+        }
+        
+        token_response = requests.post(token_url, data=token_data)
+        token_response.raise_for_status()
+        token_info = token_response.json()
+        
+        print(f"DEBUG: Token response: {token_info}")
+        
+        # ดึงข้อมูลผู้ใช้
+        userinfo_url = 'https://openidconnect.googleapis.com/v1/userinfo'
+        headers = {'Authorization': f"Bearer {token_info['access_token']}"}
+        userinfo_response = requests.get(userinfo_url, headers=headers)
+        userinfo_response.raise_for_status()
+        user_info = userinfo_response.json()
+        
+        print(f"DEBUG: User info: {user_info}")
+        
+        user_info_dict = {
+            'id': user_info.get('sub'),
+            'email': user_info.get('email'),
+            'name': user_info.get('name', ''),
+            'picture': user_info.get('picture', '')
+        }
+        
+        print(f"DEBUG: Processed user info: {user_info_dict}")
+        
+        # สร้างหรือดึงข้อมูลผู้ใช้
+        user = get_or_create_user_from_google(user_info_dict)
+        
+        print(f"DEBUG: User from DB: {user}")
+        
+        if user:
+            session['user_id'] = user['id']
+            session['user_email'] = user['email']
+            session['user_name'] = user_info_dict.get('name', '')
+            session['user_picture'] = user_info_dict.get('picture', '')
+            flash('เข้าสู่ระบบด้วย Google สำเร็จ!', 'success')
+            return redirect(url_for('index'))
+        else:
+            flash('เกิดข้อผิดพลาดในการเข้าสู่ระบบ', 'error')
+            return redirect(url_for('login'))
+    except Exception as e:
+        print(f"DEBUG: Google OAuth error: {str(e)}")
         flash('การเข้าสู่ระบบด้วย Google ล้มเหลว', 'error')
         return redirect(url_for('login'))
-    
-    session['google_token'] = (resp['access_token'], '')
-    
-    # ดึงข้อมูลผู้ใช้จาก Google
-    user_info = google.get('userinfo')
-    if user_info.status != 200:
-        flash('ไม่สามารถดึงข้อมูลผู้ใช้จาก Google ได้', 'error')
-        return redirect(url_for('login'))
-    
-    google_user_data = user_info.data
-    user_info_dict = {
-        'id': google_user_data.get('id'),
-        'email': google_user_data.get('email'),
-        'name': google_user_data.get('name', ''),
-        'picture': google_user_data.get('picture', '')
-    }
-    
-    # สร้างหรือดึงข้อมูลผู้ใช้
-    user = get_or_create_user_from_google(user_info_dict)
-    
-    if user:
-        session['user_id'] = user['id']
-        session['user_email'] = user['email']
-        session['user_name'] = user_info_dict.get('name', '')
-        session['user_picture'] = user_info_dict.get('picture', '')
-        flash('เข้าสู่ระบบด้วย Google สำเร็จ!', 'success')
-        return redirect(url_for('index'))
-    else:
-        flash('เกิดข้อผิดพลาดในการเข้าสู่ระบบ', 'error')
-        return redirect(url_for('login'))
-
-if GOOGLE_OAUTH_AVAILABLE:
-    @google.tokengetter
-    def get_google_oauth_token():
-        """ฟังก์ชันสำหรับดึง Google OAuth token"""
-        return session.get('google_token')
 
 @app.route('/dashboard')
 @login_required
