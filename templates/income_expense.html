@@ -748,18 +748,26 @@
                 <!-- Vendor Section -->
                 <div id="vendor-section" class="mobile-form-section">
                     <label class="mobile-form-label">🏪 ร้านค้า</label>
-                    <div class="flex gap-2">
-                        <select id="vendor-select" name="vendor" class="mobile-form-select mobile-input-touch flex-1">
+                    <div class="space-y-3">
+                        <select id="vendor-select" name="vendor" class="mobile-form-select mobile-input-touch w-full">
                             <option value="none">ไม่เลือก</option>
                         
                         </select>
-                    </div>
-                    <button type="button" id="add-vendor-btn" onclick="testVendorButton()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium mt-2">เพิ่มร้านค้าใหม่</button>
-                    <!-- Custom vendor input -->
-                    <div id="custom-vendor-input" class="mt-2 hidden">
-                        <input type="text" id="new-vendor" placeholder="พิมพ์ชื่อร้านค้าใหม่..." class="border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white" onkeypress="if(event.key==='Enter') testAddVendor()">
-                        <div class="text-xs text-green-600 mt-1">💡 กด Enter เพื่อเพิ่มร้านค้าใหม่</div>
-                        <button type="button" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-medium mt-2">เพิ่ม</button>
+                        <button type="button" id="add-vendor-btn" onclick="testVendorButton()" 
+                                class="bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-lg text-base font-medium w-full">
+                            ➕ เพิ่มร้านค้าใหม่
+                        </button>
+                        <!-- Custom vendor input -->
+                        <div id="custom-vendor-input" class="hidden space-y-3">
+                            <input type="text" id="new-vendor" placeholder="พิมพ์ชื่อร้านค้าใหม่..." 
+                                   class="border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white w-full" 
+                                   onkeypress="if(event.key==='Enter') testAddVendor()">
+                            <div class="text-sm text-green-600">💡 กด Enter เพื่อเพิ่มร้านค้าใหม่</div>
+                            <button type="button" 
+                                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium w-full">
+                                เพิ่มร้านค้า
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
@@ -811,19 +819,19 @@
                     <label class="mobile-form-label">🛒 รายการสินค้า</label>
                     
                     <!-- Selected Items Display -->
-                    <div class="space-y-3">
-                        <div id="selected-items" class="space-y-2"></div>
+                    <div class="space-y-4">
+                        <div id="selected-items" class="space-y-3"></div>
                     </div>
                     
                     <!-- Summary -->
-                    <div class="mt-4 p-3 bg-gray-50 rounded-lg">
-                        <div class="flex justify-between items-center">
-                            <span class="font-semibold">รวมทั้งหมด:</span>
-                            <span id="total-items" class="text-gray-600">0 รายการ</span>
+                    <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-semibold text-gray-700">📊 รวมทั้งหมด:</span>
+                            <span id="total-items" class="text-gray-600 font-medium">0 รายการ</span>
                         </div>
-                        <div class="flex justify-between items-center mt-1">
-                            <span class="font-semibold">ยอดรวม:</span>
-                            <span id="total-amount" class="text-lg font-bold text-blue-600">0.00 บาท</span>
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold text-gray-700">💰 ยอดรวม:</span>
+                            <span id="total-amount" class="text-xl font-bold text-blue-600">0.00 บาท</span>
                         </div>
                     </div>
                 </div>
@@ -831,68 +839,73 @@
                 <!-- Quick Add Items -->
                 <div class="mobile-form-section">
                     <label class="mobile-form-label">⚡ เพิ่มสินค้าด่วน</label>
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                         <div id="items-data-display" class="text-sm text-gray-600">
-                            <div class="flex items-center gap-2 mb-3">
+                            <!-- Quick Add Input Row -->
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
                                 <input type="text" id="quick-item-name" placeholder="ชื่อสินค้า" 
-                                       class="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                       class="col-span-1 sm:col-span-2 border border-gray-300 rounded-lg px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white">
                                 <input type="number" id="quick-item-price" placeholder="ราคา" 
-                                       class="w-20 border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                       class="col-span-1 border border-gray-300 rounded-lg px-4 py-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white">
+                            </div>
+                            <div class="flex justify-center mb-4">
                                 <button type="button" onclick="addQuickItem()" 
-                                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium">
-                                    ➕ เพิ่ม
-                        </button>
-                    </div>
-                            <div class="flex gap-2 flex-wrap">
+                                        class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg text-base font-medium w-full sm:w-auto">
+                                    ➕ เพิ่มสินค้า
+                                </button>
+                            </div>
+                            
+                            <!-- Quick Add Buttons Grid -->
+                            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                                 <button type="button" onclick="quickAddItem('กาแฟ', 20)" 
-                                        class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs font-medium">
-                                    ☕ กาแฟ 20฿
+                                        class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-3 rounded-lg text-sm font-medium transition-colors">
+                                    ☕ กาแฟ<br><span class="text-xs">20฿</span>
                                 </button>
                                 <button type="button" onclick="quickAddItem('ข้าวผัด', 45)" 
-                                        class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs font-medium">
-                                    🍛 ข้าวผัด 45฿
+                                        class="bg-green-500 hover:bg-green-600 text-white px-3 py-3 rounded-lg text-sm font-medium transition-colors">
+                                    🍛 ข้าวผัด<br><span class="text-xs">45฿</span>
                                 </button>
                                 <button type="button" onclick="quickAddItem('น้ำส้ม', 30)" 
-                                        class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded text-xs font-medium">
-                                    🧃 น้ำส้ม 30฿
+                                        class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-3 rounded-lg text-sm font-medium transition-colors">
+                                    🧃 น้ำส้ม<br><span class="text-xs">30฿</span>
                                 </button>
                                 <button type="button" onclick="quickAddItem('ขนม', 15)" 
-                                        class="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded text-xs font-medium">
-                                    🍪 ขนม 15฿
+                                        class="bg-purple-500 hover:bg-purple-600 text-white px-3 py-3 rounded-lg text-sm font-medium transition-colors">
+                                    🍪 ขนม<br><span class="text-xs">15฿</span>
                                 </button>
                                 <button type="button" onclick="quickAddItem('น้ำเปล่า', 10)" 
-                                        class="bg-cyan-500 hover:bg-cyan-600 text-white px-3 py-1 rounded text-xs font-medium">
-                                    💧 น้ำเปล่า 10฿
+                                        class="bg-cyan-500 hover:bg-cyan-600 text-white px-3 py-3 rounded-lg text-sm font-medium transition-colors">
+                                    💧 น้ำเปล่า<br><span class="text-xs">10฿</span>
                                 </button>
                                 <button type="button" onclick="quickAddItem('ข้าวกะเพรา', 35)" 
-                                        class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs font-medium">
-                                    🍚 ข้าวกะเพรา 35฿
+                                        class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-3 rounded-lg text-sm font-medium transition-colors">
+                                    🍚 ข้าวกะเพรา<br><span class="text-xs">35฿</span>
                                 </button>
                                 <button type="button" onclick="quickAddItem('ส้มตำ', 25)" 
-                                        class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-medium">
-                                    🥗 ส้มตำ 25฿
+                                        class="bg-red-500 hover:bg-red-600 text-white px-3 py-3 rounded-lg text-sm font-medium transition-colors">
+                                    🥗 ส้มตำ<br><span class="text-xs">25฿</span>
                                 </button>
                                 <button type="button" onclick="quickAddItem('ไก่ทอด', 50)" 
-                                        class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1 rounded text-xs font-medium">
-                                    🍗 ไก่ทอด 50฿
+                                        class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-3 rounded-lg text-sm font-medium transition-colors">
+                                    🍗 ไก่ทอด<br><span class="text-xs">50฿</span>
                                 </button>
                                 <button type="button" onclick="quickAddItem('น้ำอัดลม', 25)" 
-                                        class="bg-pink-500 hover:bg-pink-600 text-white px-3 py-1 rounded text-xs font-medium">
-                                    🥤 น้ำอัดลม 25฿
+                                        class="bg-pink-500 hover:bg-pink-600 text-white px-3 py-3 rounded-lg text-sm font-medium transition-colors">
+                                    🥤 น้ำอัดลม<br><span class="text-xs">25฿</span>
                                 </button>
                                 <button type="button" onclick="quickAddItem('ไอศกรีม', 20)" 
-                                        class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1 rounded text-xs font-medium">
-                                    🍦 ไอศกรีม 20฿
+                                        class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-3 rounded-lg text-sm font-medium transition-colors">
+                                    🍦 ไอศกรีม<br><span class="text-xs">20฿</span>
                                 </button>
                                 <button type="button" onclick="quickAddItem('ข้าวมันไก่', 40)" 
-                                        class="bg-teal-500 hover:bg-teal-600 text-white px-3 py-1 rounded text-xs font-medium">
-                                    🍗 ข้าวมันไก่ 40฿
+                                        class="bg-teal-500 hover:bg-teal-600 text-white px-3 py-3 rounded-lg text-sm font-medium transition-colors">
+                                    🍗 ข้าวมันไก่<br><span class="text-xs">40฿</span>
                                 </button>
                                 <button type="button" onclick="quickAddItem('ก๋วยเตี๋ยว', 30)" 
-                                        class="bg-lime-500 hover:bg-lime-600 text-white px-3 py-1 rounded text-xs font-medium">
-                                    🍜 ก๋วยเตี๋ยว 30฿
+                                        class="bg-lime-500 hover:bg-lime-600 text-white px-3 py-3 rounded-lg text-sm font-medium transition-colors">
+                                    🍜 ก๋วยเตี๋ยว<br><span class="text-xs">30฿</span>
                                 </button>
-                    </div>
+                            </div>
                         </div>
                     </div>
                     <input type="hidden" name="description" id="description-input">
@@ -904,10 +917,10 @@
                 <input type="hidden" id="combined-category" name="combined_category">
 
                 <!-- Submit Button -->
-                <div class="pt-4">
-                    <button type="submit" class="mobile-submit-btn">
-                        <span class="text-xl mr-2">💾</span>
-                        บันทึก
+                <div class="pt-6">
+                    <button type="submit" class="mobile-submit-btn w-full py-4 text-lg font-semibold">
+                        <span class="text-2xl mr-3">💾</span>
+                        บันทึกรายการ
                     </button>
                 </div>
             </form>
