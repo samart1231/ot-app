@@ -293,7 +293,7 @@
         <div id="mobile-menu" class="hidden bg-white border-t">
             <nav class="py-2">
                 <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📅 [OT Records]</a>
-                <a href="/income-expense" class="block px-4 py-3 bg-green-100 text-green-700 font-medium border-b">💰 Income/Expense</a>
+                <a href="/income-expense" class="block px-4 py-3 bg-green-100 text-green-700 font-medium border-b">💰 รายรับ/รายจ่าย</a>
                 <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">🎉 Holidays</a>
                 <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📊 Import income_expense CSV</a>
                 <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⏰ Import OT CSV</a>
@@ -321,7 +321,7 @@
             <h1 class="text-2xl font-bold text-gray-800 mb-8">📊 ระบบจัดการ</h1>
             <nav class="space-y-2">
                 <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">📅 OT Records</a>
-                <a href="/income-expense" class="block px-4 py-3 bg-green-100 text-green-700 font-medium rounded-lg">💰 Income/Expense</a>
+                <a href="/income-expense" class="block px-4 py-3 bg-green-100 text-green-700 font-medium rounded-lg">💰 รายรับ/รายจ่าย</a>
                 <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">🎉 Holidays</a>
                 <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">📊 Import CSV</a>
                 <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">⏰ Import OT CSV</a>
@@ -646,19 +646,19 @@
             
             <!-- Export Buttons -->
             <div class="border-t pt-4">
-                <h3 class="text-md font-semibold mb-3">📊 Export ข้อมูล</h3>
+                <h3 class="text-md font-semibold mb-3">📊 ส่งออกข้อมูล</h3>
                 <div class="flex flex-wrap gap-2">
                     <button onclick="exportData('all', '{{ selected_month }}')" 
                             class="btn-animate bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">
-                        📄 Export ทั้งหมด
+                        📄 ส่งออกทั้งหมด
                     </button>
                     <button onclick="exportData('income', '{{ selected_month }}')" 
                             class="btn-animate bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm">
-                        💰 Export รายรับ
+                        💰 ส่งออกรายรับ
                     </button>
                     <button onclick="exportData('expense', '{{ selected_month }}')" 
                             class="btn-animate bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
-                        💸 Export รายจ่าย
+                        💸 ส่งออกรายจ่าย
                     </button>
                     <button onclick="showMonthlySummary()" 
                             class="btn-animate bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm">
@@ -670,7 +670,7 @@
                     </button>
                     <button onclick="exportYearData('{{ selected_month.split('-')[0] }}')" 
                             class="btn-animate bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm">
-                        📊 Export รายปี
+                        📊 ส่งออกรายปี
                     </button>
                 </div>
             </div>

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>นำเข้าข้อมูล OT CSV - ระบบจัดการ OT</title>
-    <script src="/static/js/tailwind.min.js"></script>
+    <title>นำเข้าข้อมูล CSV โอที</title>
+    <script src="{{ url_for('static', filename='js/tailwind.min.js') }}"></script>
     <style>
         .drag-area {
             border: 2px dashed #cbd5e0;
@@ -20,11 +20,11 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="p-4 sm:p-8 bg-gray-100 text-gray-800 min-h-screen">
     <!-- Mobile Menu -->
     <div class="lg:hidden fixed top-0 left-0 w-full bg-white shadow-lg z-50">
         <div class="flex items-center justify-between p-4">
-            <h1 class="text-xl font-bold text-gray-800">📊 นำเข้าข้อมูล OT CSV</h1>
+            <h1 class="text-xl font-bold text-gray-800">⏰ นำเข้า CSV โอที</h1>
             <button onclick="toggleMobileMenu()" class="text-gray-600 hover:text-gray-800">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -32,15 +32,15 @@
             </button>
         </div>
         <div id="mobile-menu" class="hidden bg-white border-t">
-            <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📅 OT Records</a>
-            <a href="/income-expense" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">💰 Income/Expense</a>
-            <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">🎉 Holidays</a>
-            <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📊 Import CSV</a>
-            <a href="/import-ot-csv" class="block px-4 py-3 bg-blue-100 text-blue-700 font-medium">📊 Import OT CSV</a>
+            <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📅 บันทึกโอที</a>
+            <a href="/income-expense" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">💰 รายรับ/รายจ่าย</a>
+            <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">🎉 วันหยุด</a>
+            <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📊 นำเข้า CSV รายรับ/รายจ่าย</a>
+            <a href="/import-ot-csv" class="block px-4 py-3 bg-orange-100 text-orange-700 font-medium">⏰ นำเข้า CSV โอที</a>
             <div class="px-4 py-3 border-b">
                 <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
             </div>
-            <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50">🚪 Logout</a>
+            <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50">🚪 ออกจากระบบ</a>
         </div>
     </div>
 
@@ -49,17 +49,17 @@
         <div class="p-6">
             <h1 class="text-2xl font-bold text-gray-800 mb-8">📊 ระบบจัดการ</h1>
             <nav class="space-y-2">
-                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">📅 OT Records</a>
-                <a href="/income-expense" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">💰 Income/Expense</a>
-                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">🎉 Holidays</a>
-                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">📊 Import CSV</a>
-                <a href="/import-ot-csv" class="block px-4 py-3 bg-blue-100 text-blue-700 font-medium rounded-lg">📊 Import OT CSV</a>
+                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">📅 บันทึกโอที</a>
+                <a href="/income-expense" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">💰 รายรับ/รายจ่าย</a>
+                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">🎉 วันหยุด</a>
+                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">📊 นำเข้า CSV รายรับ/รายจ่าย</a>
+                <a href="/import-ot-csv" class="block px-4 py-3 bg-orange-100 text-orange-700 font-medium rounded-lg">⏰ นำเข้า CSV โอที</a>
             </nav>
             <div class="mt-8 pt-6 border-t">
                 <div class="px-4 py-2">
                     <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
                 </div>
-                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors">🚪 Logout</a>
+                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors">🚪 ออกจากระบบ</a>
             </div>
         </div>
     </div>
