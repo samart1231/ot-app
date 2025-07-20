@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, send_file, flash, session
+from flask import Flask, render_template, request, redirect, url_for, send_file, flash, session, Response
 import sqlite3
 from datetime import datetime, time, timedelta
 import pandas as pd
@@ -24,6 +24,16 @@ app = Flask(__name__)
 app.config.from_object(Config)
 app.secret_key = app.config['SECRET_KEY']
 DB_FILE = app.config['DATABASE_FILE']
+
+# เพิ่ม custom filter สำหรับ JSON
+@app.template_filter('from_json')
+def from_json_filter(value):
+    if not value:
+        return None
+    try:
+        return json.loads(value)
+    except (json.JSONDecodeError, TypeError):
+        return None
 
 # Google OAuth Configuration (optional)
 try:
@@ -374,6 +384,12 @@ def init_db():
     
     try:
         conn.execute('ALTER TABLE income_expense ADD COLUMN sub_category TEXT')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    # เพิ่มคอลัมน์ items_data สำหรับเก็บข้อมูลสินค้า
+    try:
+        conn.execute('ALTER TABLE income_expense ADD COLUMN items_data TEXT')
     except sqlite3.OperationalError:
         pass  # คอลัมน์มีอยู่แล้ว
     
@@ -962,9 +978,9 @@ def income_expense():
                 description = f"รายรับ: {main_category}"
             
             conn.execute('''
-                         INSERT INTO income_expense (user_id, date, description, amount, category, vendor, main_category, sub_category)
-                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                         ''', (user_id, date, description, float(amount), 'income', vendor, main_category, sub_category))
+                         INSERT INTO income_expense (user_id, date, description, amount, category, vendor, main_category, sub_category, items_data)
+                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                         ''', (user_id, date, description, float(amount), 'income', vendor, main_category, sub_category, items_data))
         else:
             # สำหรับรายจ่าย
             if not items_data:
@@ -979,9 +995,9 @@ def income_expense():
                 return redirect('/income-expense')
 
             conn.execute('''
-                         INSERT INTO income_expense (user_id, date, description, amount, category, vendor, main_category, sub_category)
-                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                         ''', (user_id, date, description, final_amount, 'expense', vendor, main_category, sub_category))
+                         INSERT INTO income_expense (user_id, date, description, amount, category, vendor, main_category, sub_category, items_data)
+                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                         ''', (user_id, date, description, final_amount, 'expense', vendor, main_category, sub_category, items_data))
 
         conn.commit()
         flash('บันทึกข้อมูลเรียบร้อยแล้ว', 'success')
@@ -1003,6 +1019,12 @@ def income_expense():
     # ดึงข้อมูลทั้งหมดสำหรับเดือนที่เลือก (ไม่มี pagination)
     records = conn.execute(f'SELECT * FROM income_expense {month_filter} {order_sql}', 
                           (user_id, selected_month)).fetchall()
+    
+    # Debug: แสดงข้อมูลที่ดึงมา
+    print("=== DEBUG: Records Data ===")
+    for record in records:
+        items_data = record['items_data'] if 'items_data' in record.keys() else 'None'
+        print(f"ID: {record['id']}, Description: {record['description']}, Items Data: {items_data}")
     
     # คำนวณยอดรวมสำหรับเดือนที่เลือก
     monthly_total_income = conn.execute(f'SELECT SUM(amount) FROM income_expense {month_filter} AND category="income"', (user_id, selected_month)).fetchone()[0] or 0
@@ -1091,6 +1113,7 @@ def edit_income_expense(id):
         main_category = request.form.get('main_category', '')
         sub_category = request.form.get('sub_category', '')
 
+        items_data = request.form.get('items_data', '')
         conn.execute('''
                      UPDATE income_expense
                      SET date=?,
@@ -1099,9 +1122,10 @@ def edit_income_expense(id):
                          category=?,
                          vendor=?,
                          main_category=?,
-                         sub_category=?
+                         sub_category=?,
+                         items_data=?
                      WHERE id = ? AND user_id = ?
-                     ''', (date, description, amount, category, vendor, main_category, sub_category, id, user_id))  # ✅ ครบ 9 ค่า
+                     ''', (date, description, amount, category, vendor, main_category, sub_category, items_data, id, user_id))
         conn.commit()
         conn.close()
         return redirect('/income-expense')
@@ -1132,7 +1156,7 @@ def export_income_expense_month(category, year_month):
     if len(year_month) == 4:  # Year only
         if category == 'all':
             df = pd.read_sql_query('''
-                                   SELECT *
+                                   SELECT user_id, date, amount, category, vendor, main_category, sub_category, items_data
                                    FROM income_expense
                                    WHERE user_id = ? AND strftime('%Y', date) = ?
                                    ORDER BY date ASC
@@ -1140,7 +1164,7 @@ def export_income_expense_month(category, year_month):
             filename = f"income_expense_{year_month}.csv"
         else:
             df = pd.read_sql_query('''
-                                   SELECT *
+                                   SELECT user_id, date, amount, category, vendor, main_category, sub_category, items_data
                                    FROM income_expense
                                    WHERE user_id = ? AND strftime('%Y', date) = ?
                                      AND category = ?
@@ -1150,7 +1174,7 @@ def export_income_expense_month(category, year_month):
     else:  # Year-month format
         if category == 'all':
             df = pd.read_sql_query('''
-                                   SELECT *
+                                   SELECT user_id, date, amount, category, vendor, main_category, sub_category, items_data
                                    FROM income_expense
                                    WHERE user_id = ? AND strftime('%Y-%m', date) = ?
                                    ORDER BY date ASC
@@ -1158,13 +1182,33 @@ def export_income_expense_month(category, year_month):
             filename = f"income_expense_{year_month}.csv"
         else:
             df = pd.read_sql_query('''
-                                   SELECT *
+                                   SELECT user_id, date, amount, category, vendor, main_category, sub_category, items_data
                                    FROM income_expense
                                    WHERE user_id = ? AND strftime('%Y-%m', date) = ?
                                      AND category = ?
                                    ORDER BY date ASC
                                    ''', conn, params=[user_id, year_month, category])
             filename = f"{category}_{year_month}.csv"
+    
+    # เพิ่มคอลัมน์ชื่อสินค้าในฟิลด์แรก
+    def extract_item_names(items_data):
+        if pd.isna(items_data) or items_data == '[]' or items_data == 'null':
+            return ''
+        try:
+            import json
+            items = json.loads(items_data)
+            if isinstance(items, list) and len(items) > 0:
+                names = [item.get('name', '') for item in items if isinstance(item, dict)]
+                return ', '.join(names)
+            return ''
+        except:
+            return ''
+    
+    # เพิ่มคอลัมน์ชื่อสินค้า
+    df['item_names'] = df['items_data'].apply(extract_item_names)
+    
+    # จัดเรียงคอลัมน์ใหม่: user_id, date, item_names, amount, category, vendor, main_category, sub_category
+    df = df[['user_id', 'date', 'item_names', 'amount', 'category', 'vendor', 'main_category', 'sub_category']]
     
     conn.close()
 
@@ -1848,6 +1892,71 @@ def export_all_income_expense():
             'Content-Disposition': 'attachment; filename=all_income_expense.csv',
             'Content-Type': 'text/csv; charset=utf-8-sig'
         }
+    )
+
+
+@app.route('/export-all/<year>')
+@login_required
+def export_all_year(year):
+    conn = get_db_connection()
+    user_id = session['user_id']
+    
+    # Check if year is valid (4 digits) or year-month (7 digits)
+    if len(year) == 4:  # Year only
+        if not year.isdigit():
+            flash('ปีไม่ถูกต้อง', 'error')
+            return redirect('/income-expense')
+        
+        df = pd.read_sql_query('''
+            SELECT user_id, date, amount, category, vendor, main_category, sub_category, items_data
+            FROM income_expense
+            WHERE user_id = ? AND strftime('%Y', date) = ?
+            ORDER BY date ASC
+        ''', conn, params=[user_id, year])
+        filename = f"income_expense_{year}.csv"
+    elif len(year) == 7:  # Year-month format
+        df = pd.read_sql_query('''
+            SELECT user_id, date, amount, category, vendor, main_category, sub_category, items_data
+            FROM income_expense
+            WHERE user_id = ? AND strftime('%Y-%m', date) = ?
+            ORDER BY date ASC
+        ''', conn, params=[user_id, year])
+        filename = f"income_expense_{year}.csv"
+    else:
+        flash('รูปแบบปีไม่ถูกต้อง', 'error')
+        return redirect('/income-expense')
+    
+    # เพิ่มคอลัมน์ชื่อสินค้าในฟิลด์แรก
+    def extract_item_names(items_data):
+        if pd.isna(items_data) or items_data == '[]' or items_data == 'null':
+            return ''
+        try:
+            import json
+            items = json.loads(items_data)
+            if isinstance(items, list) and len(items) > 0:
+                names = [item.get('name', '') for item in items if isinstance(item, dict)]
+                return ', '.join(names)
+            return ''
+        except:
+            return ''
+    
+    # เพิ่มคอลัมน์ชื่อสินค้า
+    df['item_names'] = df['items_data'].apply(extract_item_names)
+    
+    # จัดเรียงคอลัมน์ใหม่: user_id, date, item_names, amount, category, vendor, main_category, sub_category
+    df = df[['user_id', 'date', 'item_names', 'amount', 'category', 'vendor', 'main_category', 'sub_category']]
+    
+    conn.close()
+    
+    csv_buffer = io.StringIO()
+    df.to_csv(csv_buffer, index=False, encoding='utf-8-sig')
+    csv_buffer.seek(0)
+    
+    return send_file(
+        io.BytesIO(csv_buffer.getvalue().encode('utf-8-sig')),
+        mimetype='text/csv',
+        as_attachment=True,
+        download_name=filename
     )
 
 # Delete account
