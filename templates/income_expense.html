@@ -4,267 +4,195 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>รายรับรายจ่าย</title>
-    <script src="{{ url_for('static', filename='js/tailwind.min.js') }}"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Custom styles for mobile responsiveness */
+        /* Mobile-first design */
         @media (max-width: 768px) {
-            .mobile-responsive {
-                font-size: 14px;
-            }
-        }
-        
-        /* Animation for buttons */
-        .btn-animate {
-            transition: all 0.2s ease;
-        }
-        .btn-animate:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .btn-animate:active {
-            transform: translateY(0);
-        }
-        
-        /* Smooth transitions */
-        .smooth-transition {
-            transition: all 0.3s ease;
-        }
-        
-        /* Table styles */
-        .items-table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        
-        .items-table th {
-            background-color: #f9fafb;
-            border: 1px solid #e5e7eb;
-            padding: 8px 12px;
-            text-align: left;
-            font-size: 12px;
-            font-weight: 600;
-            color: #374151;
-        }
-        
-        .items-table td {
-            border: 1px solid #e5e7eb;
-            padding: 8px 12px;
-            vertical-align: middle;
-        }
-        
-        .items-table tr:hover {
-            background-color: #f9fafb;
-        }
-        
-        .items-table .total-row {
-            background-color: #f3f4f6;
-            font-weight: 600;
-        }
-        
-        .items-table .total-row td {
-            border-top: 2px solid #d1d5db;
-        }
-        
-        /* Mobile table styles */
-        .mobile-table {
-            font-size: 10px;
-        }
-        
-        .mobile-table th {
-            padding: 4px 6px;
-            font-size: 10px;
-            white-space: nowrap;
-        }
-        
-        .mobile-table td {
-            padding: 4px 6px;
-            font-size: 10px;
-        }
-        
-        .mobile-table input,
-        .mobile-table select {
-            font-size: 10px;
-            padding: 2px 4px;
-            min-width: 40px;
-        }
-        
-        .mobile-table button {
-            font-size: 9px;
-            padding: 1px 2px;
-        }
-        
-        .mobile-table .w-5 {
-            width: 1.25rem;
-            height: 1.25rem;
-        }
-        
-        /* Ensure table fits on mobile without horizontal scroll */
-        @media (max-width: 768px) {
-            .mobile-table {
-                table-layout: fixed;
-                width: 100%;
+            .mobile-container {
+                padding: 8px;
+                margin-top: 60px;
             }
             
-            .mobile-table th:nth-child(1) { width: 8%; }  /* # */
-            .mobile-table th:nth-child(2) { width: 20%; } /* ชื่อ */
-            .mobile-table th:nth-child(3) { width: 15%; } /* แท็ก */
-            .mobile-table th:nth-child(4) { width: 18%; } /* ราคา */
-            .mobile-table th:nth-child(5) { width: 15%; } /* จำนวน */
-            .mobile-table th:nth-child(6) { width: 12%; } /* รวม */
-            .mobile-table th:nth-child(7) { width: 12%; } /* จัดการ */
-        }
-        
-        /* Mobile responsive styles */
-        @media (max-width: 768px) {
             .mobile-card {
                 background: white;
-                border-radius: 8px;
-                padding: 12px;
-                margin-bottom: 12px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                border-radius: 16px;
+                padding: 16px;
+                margin-bottom: 16px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                border: 1px solid #e5e7eb;
             }
             
-            .mobile-item-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 8px;
+            .mobile-form-field {
+                margin-bottom: 16px;
             }
             
-            .mobile-item-number {
-                background: #3b82f6;
-                color: white;
-                width: 24px;
-                height: 24px;
-                border-radius: 50%;
+            .mobile-label {
                 display: flex;
                 align-items: center;
-                justify-content: center;
-                font-size: 12px;
-                font-weight: bold;
-            }
-            
-            .mobile-item-actions {
-                display: flex;
-                gap: 4px;
-            }
-            
-            .mobile-item-field {
-                margin-bottom: 8px;
-            }
-            
-            .mobile-item-label {
-                font-size: 11px;
-                font-weight: 600;
-                color: #6b7280;
-                margin-bottom: 4px;
-            }
-            
-            .mobile-item-input {
-                width: 100%;
-                border: 1px solid #d1d5db;
-                border-radius: 4px;
-                padding: 6px 8px;
-                font-size: 14px;
-            }
-            
-            .mobile-item-select {
-                width: 100%;
-                border: 1px solid #d1d5db;
-                border-radius: 4px;
-                padding: 6px 8px;
-                font-size: 14px;
-            }
-            
-            .mobile-controls {
-                display: flex;
-                gap: 4px;
-                align-items: center;
-            }
-            
-            .mobile-control-btn {
-                background: #f3f4f6;
-                border: 1px solid #d1d5db;
-                border-radius: 4px;
-                width: 24px;
-                height: 24px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 12px;
-                color: #6b7280;
-            }
-            
-            .mobile-control-btn:hover {
-                background: #e5e7eb;
-            }
-            
-            .mobile-total {
-                font-weight: 600;
-                color: #059669;
-                text-align: right;
-            }
-            
-            .mobile-form-grid {
-                display: grid;
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-            
-            .mobile-form-row {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
                 gap: 8px;
+                font-size: 14px;
+                font-weight: 600;
+                color: #374151;
+                margin-bottom: 8px;
             }
             
-            .mobile-form-full {
-                grid-column: 1 / -1;
+            .mobile-input {
+                width: 100%;
+                padding: 12px 16px;
+                border: 2px solid #e5e7eb;
+                border-radius: 12px;
+                font-size: 16px;
+                background: white;
+                transition: all 0.2s ease;
+                min-height: 48px;
+            }
+            
+            .mobile-input:focus {
+                outline: none;
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            }
+            
+            .mobile-select {
+                width: 100%;
+                padding: 12px 16px;
+                border: 2px solid #e5e7eb;
+                border-radius: 12px;
+                font-size: 16px;
+                background: white;
+                min-height: 48px;
+                appearance: none;
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+                background-position: right 12px center;
+                background-repeat: no-repeat;
+                background-size: 16px;
+                padding-right: 40px;
             }
             
             .mobile-button {
                 width: 100%;
-                padding: 12px;
-                border-radius: 8px;
-                font-weight: 600;
-                font-size: 14px;
+                padding: 16px;
                 border: none;
+                border-radius: 12px;
+                font-size: 16px;
+                font-weight: 600;
                 cursor: pointer;
+                transition: all 0.2s ease;
+                min-height: 48px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
             }
             
             .mobile-button-primary {
-                background: #3b82f6;
+                background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
                 color: white;
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            }
+            
+            .mobile-button-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
             }
             
             .mobile-button-secondary {
-                background: #6b7280;
-                color: white;
+                background: #f3f4f6;
+                color: #374151;
+                border: 2px solid #e5e7eb;
             }
             
             .mobile-button-success {
-                background: #059669;
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
                 color: white;
+                box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
             }
             
             .mobile-button-danger {
-                background: #dc2626;
+                background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
                 color: white;
+                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
             }
             
-            .mobile-summary-cards {
+            .mobile-item-card {
+                background: #f8fafc;
+                border: 2px solid #e2e8f0;
+                border-radius: 12px;
+                padding: 16px;
+                margin-bottom: 12px;
+            }
+            
+            .mobile-item-header {
+                display: flex;
+                justify-content: between;
+                align-items: center;
+                margin-bottom: 12px;
+            }
+            
+            .mobile-item-number {
+                width: 32px;
+                height: 32px;
+                background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 14px;
+                font-weight: bold;
+                margin-right: 12px;
+            }
+            
+            .mobile-emoji-picker {
                 display: grid;
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(8, 1fr);
                 gap: 8px;
-                margin-bottom: 16px;
+                max-height: 200px;
+                overflow-y: auto;
+                padding: 8px;
+                background: #f9fafb;
+                border-radius: 8px;
+                margin-top: 8px;
+            }
+            
+            .mobile-emoji-btn {
+                width: 40px;
+                height: 40px;
+                border: none;
+                background: white;
+                border-radius: 8px;
+                font-size: 20px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            
+            .mobile-emoji-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            }
+            
+            .mobile-summary-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                margin-bottom: 20px;
             }
             
             .mobile-summary-card {
-                padding: 12px;
-                border-radius: 8px;
+                background: white;
+                padding: 16px;
+                border-radius: 12px;
                 text-align: center;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             }
             
-            .mobile-summary-value {
+            .mobile-summary-icon {
+                font-size: 24px;
+                margin-bottom: 8px;
+            }
+            
+            .mobile-summary-amount {
                 font-size: 18px;
                 font-weight: bold;
                 margin-bottom: 4px;
@@ -272,134 +200,39 @@
             
             .mobile-summary-label {
                 font-size: 12px;
-                opacity: 0.8;
+                color: #6b7280;
             }
             
-            /* Mobile Items Display Optimization */
-            .mobile-items-container {
-                max-height: 60vh;
-                overflow-y: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-            
-            .mobile-item-card {
-                transition: all 0.2s ease;
-            }
-            
-            .mobile-item-card:focus-within {
-                box-shadow: 0 0 0 2px #3b82f6;
-            }
-            
-            .mobile-input-touch {
-                min-height: 44px; /* iOS touch target minimum */
-                font-size: 16px; /* Prevent zoom on iOS */
-            }
-            
-            .mobile-button-touch {
-                min-height: 44px;
-                min-width: 44px;
-                touch-action: manipulation;
-            }
-            
-            /* Mobile table optimization */
-            .mobile-table {
-                font-size: 12px;
-            }
-            
-            .mobile-table th,
-            .mobile-table td {
-                padding: 4px;
-                vertical-align: middle;
-            }
-            
-            .mobile-table input,
-            .mobile-table select {
-                font-size: 12px;
-                padding: 2px 4px;
-            }
-            
-            /* Desktop table optimization */
-            .items-table {
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-                border-radius: 8px;
-                overflow: hidden;
-            }
-            
-            .items-table th {
-                background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-            }
-            
-            .items-table tr:hover {
-                background-color: #f8fafc;
-                transition: background-color 0.2s ease;
-            }
-            
-            .items-table input:focus,
-            .items-table select:focus {
-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-                border-color: #3b82f6;
-            }
-            
-            .items-table button {
-                transition: all 0.2s ease;
-            }
-            
-            .items-table button:hover {
-                transform: translateY(-1px);
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-            
-            /* Mobile table responsive */
-            .mobile-table-responsive {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-                -webkit-overflow-scrolling: touch;
-            }
-            
-            .mobile-table-responsive table {
-                min-width: 800px;
-            }
-            
-            /* Mobile card view for records */
-            .mobile-records-container {
-                display: none;
-            }
-            
-            @media (max-width: 768px) {
-                .desktop-table {
-                    display: none;
-                }
-                
-                .mobile-records-container {
-                    display: block;
-                }
-            }
-            
-            /* Mobile record card */
             .mobile-record-card {
                 background: white;
                 border-radius: 12px;
                 padding: 16px;
                 margin-bottom: 12px;
                 box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                border: 1px solid #e5e7eb;
+                border-left: 4px solid transparent;
+            }
+            
+            .mobile-record-card.income {
+                border-left-color: #10b981;
+            }
+            
+            .mobile-record-card.expense {
+                border-left-color: #ef4444;
             }
             
             .mobile-record-header {
                 display: flex;
                 justify-content: space-between;
-                align-items: center;
+                align-items: flex-start;
                 margin-bottom: 12px;
             }
             
             .mobile-record-date {
-                font-size: 14px;
-                font-weight: 600;
-                color: #374151;
+                font-size: 12px;
+                color: #6b7280;
+                background: #f3f4f6;
+                padding: 4px 8px;
+                border-radius: 6px;
             }
             
             .mobile-record-amount {
@@ -408,11 +241,11 @@
             }
             
             .mobile-record-amount.income {
-                color: #059669;
+                color: #10b981;
             }
             
             .mobile-record-amount.expense {
-                color: #dc2626;
+                color: #ef4444;
             }
             
             .mobile-record-description {
@@ -422,19 +255,19 @@
                 margin-bottom: 8px;
             }
             
-            .mobile-record-details {
+            .mobile-record-meta {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 8px;
                 margin-bottom: 12px;
             }
             
-            .mobile-record-detail {
-                display: flex;
-                align-items: center;
-                gap: 4px;
+            .mobile-record-meta-item {
                 font-size: 12px;
                 color: #6b7280;
+                background: #f9fafb;
+                padding: 6px 8px;
+                border-radius: 6px;
             }
             
             .mobile-record-actions {
@@ -445,12 +278,10 @@
             .mobile-record-btn {
                 flex: 1;
                 padding: 8px 12px;
+                border: none;
                 border-radius: 8px;
                 font-size: 12px;
                 font-weight: 600;
-                text-align: center;
-                text-decoration: none;
-                border: none;
                 cursor: pointer;
                 transition: all 0.2s ease;
             }
@@ -461,132 +292,134 @@
             }
             
             .mobile-record-btn-delete {
-                background: #dc2626;
+                background: #ef4444;
                 color: white;
             }
             
-            .mobile-record-btn:hover {
-                transform: translateY(-1px);
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            .mobile-floating-menu {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                z-index: 1000;
             }
             
-            /* Mobile form improvements */
-            .mobile-form-section {
-                background: white;
-                border-radius: 12px;
-                padding: 16px;
-                margin-bottom: 16px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            }
-            
-            .mobile-form-label {
-                display: block;
-                font-size: 14px;
-                font-weight: 600;
-                color: #374151;
-                margin-bottom: 8px;
-            }
-            
-            .mobile-form-input {
-                width: 100%;
-                padding: 12px;
-                border: 2px solid #e5e7eb;
-                border-radius: 8px;
-                font-size: 16px;
-                transition: border-color 0.2s ease;
-            }
-            
-            .mobile-form-input:focus {
-                outline: none;
-                border-color: #3b82f6;
-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-            }
-            
-            .mobile-form-select {
-                width: 100%;
-                padding: 12px;
-                border: 2px solid #e5e7eb;
-                border-radius: 8px;
-                font-size: 16px;
-                background-color: white;
-                transition: border-color 0.2s ease;
-            }
-            
-            .mobile-form-select:focus {
-                outline: none;
-                border-color: #3b82f6;
-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-            }
-            
-            .mobile-button {
-                padding: 12px 16px;
-                border-radius: 8px;
-                font-size: 14px;
-                font-weight: 600;
-                border: none;
-                cursor: pointer;
-                transition: all 0.2s ease;
-            }
-            
-            .mobile-button-primary {
-                background: #3b82f6;
-                color: white;
-            }
-            
-            .mobile-button-primary:hover {
-                background: #2563eb;
-                transform: translateY(-1px);
-            }
-            
-            .mobile-button-success {
-                background: #10b981;
-                color: white;
-            }
-            
-            .mobile-button-success:hover {
-                background: #059669;
-                transform: translateY(-1px);
-            }
-            
-            .mobile-submit-btn {
-                width: 100%;
-                padding: 16px;
+            .mobile-fab {
+                width: 56px;
+                height: 56px;
                 background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
                 color: white;
                 border: none;
-                border-radius: 12px;
+                border-radius: 50%;
+                font-size: 24px;
+                cursor: pointer;
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+                transition: all 0.2s ease;
+            }
+            
+            .mobile-fab:hover {
+                transform: scale(1.1);
+                box-shadow: 0 6px 16px rgba(59, 130, 246, 0.5);
+            }
+            
+            .mobile-controls {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+            }
+            
+            .mobile-control-btn {
+                width: 36px;
+                height: 36px;
+                background: #f3f4f6;
+                border: 2px solid #e5e7eb;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 font-size: 16px;
-                font-weight: 600;
                 cursor: pointer;
                 transition: all 0.2s ease;
-                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
             }
             
-            .mobile-submit-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+            .mobile-control-btn:hover {
+                background: #e5e7eb;
+                transform: scale(1.05);
             }
             
-            .mobile-submit-btn:active {
-                transform: translateY(0);
+            .mobile-control-btn.increase {
+                background: #dcfce7;
+                border-color: #22c55e;
+                color: #16a34a;
             }
             
-            .mobile-input-touch {
-                -webkit-appearance: none;
-                -moz-appearance: none;
-                appearance: none;
+            .mobile-control-btn.decrease {
+                background: #fee2e2;
+                border-color: #ef4444;
+                color: #dc2626;
+            }
+        }
+        
+        /* Desktop styles */
+        @media (min-width: 769px) {
+            .mobile-only {
+                display: none;
+            }
+        }
+        
+        /* Mobile only */
+        @media (max-width: 768px) {
+            .desktop-only {
+                display: none;
             }
             
-            .mobile-button-touch {
-                -webkit-tap-highlight-color: transparent;
-                touch-action: manipulation;
+            .mobile-only {
+                display: block;
+            }
+        }
+        
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Custom scrollbar for mobile */
+        @media (max-width: 768px) {
+            ::-webkit-scrollbar {
+                width: 4px;
+            }
+            
+            ::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+            
+            ::-webkit-scrollbar-thumb {
+                background: #c1c1c1;
+                border-radius: 2px;
+            }
+            
+            ::-webkit-scrollbar-thumb:hover {
+                background: #a1a1a1;
             }
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 min-h-screen">
+<body class="bg-gray-100 min-h-screen">
     <!-- Mobile Header -->
-    <div class="lg:hidden fixed top-0 left-0 w-full bg-white shadow-lg z-50">
+    <div class="mobile-only fixed top-0 left-0 w-full bg-white shadow-lg z-50">
         <div class="flex items-center justify-between p-4">
             <h1 class="text-xl font-bold text-gray-800">💰 รายรับ-รายจ่าย</h1>
             <button id="mobile-menu-btn" class="text-gray-600 hover:text-gray-800 focus:outline-none">
@@ -599,580 +432,397 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden bg-white border-t">
             <nav class="py-2">
-                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📅 บันทึกโอที</a>
-                <a href="/income-expense" class="block px-4 py-3 bg-green-100 text-green-700 font-medium border-b">💰 รายรับ/รายจ่าย</a>
-                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">🎉 วันหยุด</a>
-                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📊 นำเข้า CSV รายรับ/รายจ่าย</a>
-                <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⏰ นำเข้า CSV โอที</a>
-                <a href="/settings" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⚙️ ตั้งค่า</a>
-                <div class="px-4 py-3 border-b">
-                    {% if session.user_picture %}
-                        <div class="flex items-center gap-3">
-                            <img src="{{ session.user_picture }}" alt="Profile" class="w-6 h-6 rounded-full">
-                            <div>
-                                <div class="text-sm font-medium text-gray-800">{{ session.user_name or session.user_email }}</div>
-                                <div class="text-xs text-gray-500">{{ session.user_email }}</div>
-                            </div>
-                        </div>
-                    {% else %}
-                    <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
-                    {% endif %}
-                </div>
-                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50">🚪 ออกจากระบบ</a>
+                <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📅 บันทึกโอที</a>
+                <a href="#" class="block px-4 py-3 bg-green-100 text-green-700 font-medium border-b">💰 รายรับ/รายจ่าย</a>
+                <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">🎉 วันหยุด</a>
+                <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📊 นำเข้า CSV</a>
+                <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⚙️ ตั้งค่า</a>
+                <a href="#" class="block px-4 py-3 text-red-600 hover:bg-red-50">🚪 ออกจากระบบ</a>
             </nav>
         </div>
     </div>
 
     <!-- Desktop Sidebar -->
-    <div class="hidden lg:block fixed top-0 left-0 w-64 h-full bg-white shadow-lg z-40">
+    <div class="desktop-only fixed top-0 left-0 w-64 h-full bg-white shadow-lg z-40">
         <div class="p-6">
             <h1 class="text-2xl font-bold text-gray-800 mb-8">📊 ระบบจัดการ</h1>
             <nav class="space-y-2">
-                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">📅 บันทึกโอที</a>
-                <a href="/income-expense" class="block px-4 py-3 bg-green-100 text-green-700 font-medium rounded-lg">💰 รายรับ/รายจ่าย</a>
-                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">🎉 วันหยุด</a>
-                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">📊 นำเข้า CSV รายรับ/รายจ่าย</a>
-                <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">⏰ นำเข้า CSV โอที</a>
-                <a href="/settings" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">⚙️ ตั้งค่า</a>
+                <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg">📅 บันทึกโอที</a>
+                <a href="#" class="block px-4 py-3 bg-green-100 text-green-700 font-medium rounded-lg">💰 รายรับ/รายจ่าย</a>
+                <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg">🎉 วันหยุด</a>
+                <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg">📊 นำเข้า CSV</a>
+                <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg">⚙️ ตั้งค่า</a>
             </nav>
-            <div class="mt-8 pt-6 border-t">
-                <div class="px-4 py-3">
-                    {% if session.user_picture %}
-                        <div class="flex items-center gap-3 mb-3">
-                            <img src="{{ session.user_picture }}" alt="Profile" class="w-8 h-8 rounded-full">
-                            <div>
-                                <div class="text-sm font-medium text-gray-800">{{ session.user_name or session.user_email }}</div>
-                                <div class="text-xs text-gray-500">{{ session.user_email }}</div>
-                            </div>
-                        </div>
-                    {% else %}
-                <div class="px-4 py-2">
-                    <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
-                        </div>
-                    {% endif %}
-                </div>
-                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg smooth-transition">🚪 ออกจากระบบ</a>
-            </div>
         </div>
     </div>
 
     <!-- Main Content -->
-    <div class="lg:ml-64 pt-20 lg:pt-6 p-4 lg:p-6 min-h-screen">
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="mb-4 p-4 rounded-lg {% if category == 'success' %}bg-green-100 text-green-700 border border-green-200{% elif category == 'error' %}bg-red-100 text-red-700 border border-red-200{% else %}bg-blue-100 text-blue-700 border border-blue-200{% endif %}">
-                        <div class="flex items-center">
-                            <span class="mr-2">
-                                {% if category == 'success' %}✅{% elif category == 'error' %}❌{% else %}ℹ️{% endif %}
-                            </span>
-                            {{ message }}
-                        </div>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <!-- Page Title -->
-        <div class="mb-6">
-            <h1 class="text-2xl lg:text-3xl font-bold text-center lg:text-left">📒 รายรับ - รายจ่าย</h1>
+    <div class="lg:ml-64 mobile-container lg:pt-6 lg:p-6">
+        <!-- Mobile Summary Cards -->
+        <div class="mobile-only mobile-summary-grid">
+            <div class="mobile-summary-card">
+                <div class="mobile-summary-icon">💰</div>
+                <div class="mobile-summary-amount text-green-600">15,000.00</div>
+                <div class="mobile-summary-label">รายรับ</div>
+            </div>
+            <div class="mobile-summary-card">
+                <div class="mobile-summary-icon">💸</div>
+                <div class="mobile-summary-amount text-red-600">8,500.00</div>
+                <div class="mobile-summary-label">รายจ่าย</div>
+            </div>
+            <div class="mobile-summary-card">
+                <div class="mobile-summary-icon">📊</div>
+                <div class="mobile-summary-amount text-blue-600">6,500.00</div>
+                <div class="mobile-summary-label">คงเหลือ</div>
+            </div>
+            <div class="mobile-summary-card">
+                <div class="mobile-summary-icon">📝</div>
+                <div class="mobile-summary-amount text-gray-600">24</div>
+                <div class="mobile-summary-label">รายการ</div>
+            </div>
         </div>
 
         <!-- Add Transaction Form -->
-        <div class="bg-white p-4 lg:p-6 rounded-lg shadow-md mb-6">
-            <div class="p-4 lg:p-6 border-b">
-                <h2 class="text-lg lg:text-xl font-semibold text-gray-800">➕ เพิ่มรายการใหม่</h2>
-                <p class="text-sm text-gray-600 mt-1">บันทึกรายรับหรือรายจ่ายใหม่</p>
-            </div>
+        <div class="mobile-card fade-in">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <span>➕</span>
+                <span>เพิ่มรายการใหม่</span>
+            </h2>
             
-            <form method="POST" action="/income-expense" class="p-4 lg:p-6 space-y-4 lg:space-y-6">
-                <!-- Date Input -->
-                <div class="mobile-form-section">
-                    <label class="mobile-form-label">📅 วันที่</label>
-                    <input type="date" name="date" required 
-                           class="mobile-form-input mobile-input-touch">
+            <form id="transaction-form" class="space-y-4">
+                <!-- Date -->
+                <div class="mobile-form-field">
+                    <label class="mobile-label">
+                        <span>📅</span>
+                        <span>วันที่</span>
+                    </label>
+                    <input type="date" id="date" class="mobile-input" required>
                 </div>
 
                 <!-- Transaction Type -->
-                <div class="mobile-form-section">
-                    <label class="mobile-form-label">📊 ประเภทรายการ</label>
-                    <select id="transaction-type" name="category" required 
-                            class="mobile-form-select mobile-input-touch">
+                <div class="mobile-form-field">
+                    <label class="mobile-label">
+                        <span>📊</span>
+                        <span>ประเภทรายการ</span>
+                    </label>
+                    <select id="transaction-type" class="mobile-select" required>
                         <option value="">-- เลือกประเภทรายการ --</option>
                         <option value="income">💰 รายรับ</option>
                         <option value="expense">💸 รายจ่าย</option>
                     </select>
                 </div>
 
-                <!-- Category Selection -->
-                <div class="mobile-form-section">
-                    <label class="mobile-form-label">🏷️ ประเภทหลัก</label>
-                    <select id="main-category" name="main_category" required 
-                            class="mobile-form-select mobile-input-touch">
-                        <option value="">-- เลือกประเภทหลัก --</option>
-                    </select>
-                </div>
-
-                <div class="mobile-form-section">
-                    <label class="mobile-form-label">📂 ประเภทย่อย</label>
-                    <select id="sub-category" name="sub_category" required 
-                            class="mobile-form-select mobile-input-touch">
-                        <option value="">-- เลือกประเภทย่อย --</option>
-                    </select>
-                </div>
-
-                <!-- Income Amount Section -->
-                <div id="income-amount-section" class="mobile-form-section hidden">
-                    <label class="mobile-form-label">💰 จำนวนเงิน (บาท)</label>
-                    <input type="number" step="0.01" name="amount" 
-                           class="mobile-form-input mobile-input-touch" placeholder="0.00">
-                </div>
-
-                <!-- Items Section (for expense) -->
-                <div id="items-section" class="mobile-form-section hidden">
-                    <label class="mobile-form-label">🛒 รายการสินค้า</label>
-                    <div class="space-y-3">
-                        <div id="selected-items" class="space-y-2"></div>
-                        <button type="button" onclick="addItem()" 
-                                class="mobile-button mobile-button-primary mobile-button-touch">
-                            ➕ เพิ่มรายการ
-                        </button>
+                <!-- Main Category -->
+                <div class="mobile-form-field">
+                    <label class="mobile-label">
+                        <span>🏷️</span>
+                        <span>ประเภทหลัก</span>
+                    </label>
+                    <div class="flex gap-2">
+                        <select id="main-category" class="mobile-select" required>
+                            <option value="">-- เลือกประเภทหลัก --</option>
+                        </select>
+                        <button type="button" id="add-main-category-btn" class="mobile-button-secondary" style="width: 48px; min-width: 48px;">➕</button>
                     </div>
-                    <div class="mt-4 p-3 bg-gray-50 rounded-lg">
+                </div>
+
+                <!-- Sub Category -->
+                <div class="mobile-form-field">
+                    <label class="mobile-label">
+                        <span>📂</span>
+                        <span>ประเภทย่อย</span>
+                    </label>
+                    <div class="flex gap-2">
+                        <select id="sub-category" class="mobile-select" required>
+                            <option value="">-- เลือกประเภทย่อย --</option>
+                        </select>
+                        <button type="button" id="add-sub-category-btn" class="mobile-button-secondary" style="width: 48px; min-width: 48px;">➕</button>
+                    </div>
+                </div>
+
+                <!-- Income Amount (แสดงเฉพาะรายรับ) -->
+                <div id="income-section" class="mobile-form-field hidden">
+                    <label class="mobile-label">
+                        <span>💰</span>
+                        <span>จำนวนเงิน (บาท)</span>
+                    </label>
+                    <input type="number" id="income-amount" class="mobile-input" step="0.01" min="0" placeholder="0.00">
+                </div>
+
+                <!-- Items Section (แสดงเฉพาะรายจ่าย) -->
+                <div id="items-section" class="mobile-form-field hidden">
+                    <label class="mobile-label">
+                        <span>🛒</span>
+                        <span>รายการสินค้า</span>
+                    </label>
+                    
+                    <!-- Selected Items -->
+                    <div id="selected-items-container" class="mb-4">
+                        <div id="selected-items"></div>
+                    </div>
+
+                    <!-- Add Item Form -->
+                    <div class="bg-gray-50 rounded-12 p-4 border-2 border-dashed border-gray-300">
+                        <h4 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                            <span>➕</span>
+                            <span>เพิ่มรายการใหม่</span>
+                        </h4>
+                        
+                        <div class="space-y-3">
+                            <!-- Item Name & Emoji -->
+                            <div>
+                                <label class="mobile-label">
+                                    <span id="selected-emoji">😊</span>
+                                    <span>ชื่อสินค้า</span>
+                                </label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="item-name" class="mobile-input" placeholder="ชื่อสินค้า...">
+                                    <button type="button" id="emoji-picker-btn" class="mobile-button-secondary" style="width: 48px; min-width: 48px;">
+                                        <span id="emoji-display">😊</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Price & Quantity -->
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="mobile-label">
+                                        <span>💰</span>
+                                        <span>ราคา</span>
+                                    </label>
+                                    <input type="number" id="item-price" class="mobile-input" step="0.01" min="0" placeholder="0.00">
+                                </div>
+                                <div>
+                                    <label class="mobile-label">
+                                        <span>📊</span>
+                                        <span>จำนวน</span>
+                                    </label>
+                                    <input type="number" id="item-quantity" class="mobile-input" min="1" value="1">
+                                </div>
+                            </div>
+
+                            <!-- Tag Selection -->
+                            <div>
+                                <label class="mobile-label">
+                                    <span>🏷️</span>
+                                    <span>แท็ก</span>
+                                </label>
+                                <select id="item-tag" class="mobile-select">
+                                    <option value="">เลือกแท็ก</option>
+                                    <option value="อาหาร">🍽️ อาหาร</option>
+                                    <option value="เครื่องดื่ม">🥤 เครื่องดื่ม</option>
+                                    <option value="ของใช้">🛍️ ของใช้</option>
+                                    <option value="ยา">💊 ยา</option>
+                                    <option value="ขนม">🍪 ขนม</option>
+                                    <option value="ผลไม้">🍎 ผลไม้</option>
+                                    <option value="ผัก">🥬 ผัก</option>
+                                    <option value="เนื้อสัตว์">🥩 เนื้อสัตว์</option>
+                                    <option value="นม">🥛 นม</option>
+                                    <option value="ขนมปัง">🍞 ขนมปัง</option>
+                                </select>
+                            </div>
+
+                            <!-- Emoji Picker -->
+                            <div id="emoji-picker" class="hidden">
+                                <div class="mobile-emoji-picker" id="emoji-grid"></div>
+                                <button type="button" onclick="closeEmojiPicker()" class="mobile-button-secondary mt-2">ปิด</button>
+                            </div>
+
+                            <!-- Add Item Button -->
+                            <button type="button" onclick="addItem()" class="mobile-button mobile-button-success">
+                                <span>➕</span>
+                                <span>เพิ่มรายการ</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Items Summary -->
+                    <div class="bg-blue-50 rounded-12 p-4 mt-4 border border-blue-200">
                         <div class="flex justify-between items-center">
-                            <span class="font-semibold">รวมทั้งหมด:</span>
-                            <span id="total-items" class="text-gray-600">0 รายการ</span>
+                            <span class="font-semibold text-blue-800">รวมทั้งหมด:</span>
+                            <span id="total-items" class="text-blue-600">0 รายการ</span>
                         </div>
                         <div class="flex justify-between items-center mt-1">
-                            <span class="font-semibold">ยอดรวม:</span>
+                            <span class="font-semibold text-blue-800">ยอดรวม:</span>
                             <span id="total-amount" class="text-lg font-bold text-blue-600">0.00 บาท</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Vendor Section -->
-                <div id="vendor-section" class="mobile-form-section hidden">
-                    <label class="mobile-form-label">🏪 ร้านค้า</label>
+                <!-- Vendor (แสดงเฉพาะรายจ่าย) -->
+                <div id="vendor-section" class="mobile-form-field hidden">
+                    <label class="mobile-label">
+                        <span>🏪</span>
+                        <span>ร้านค้า</span>
+                    </label>
                     <div class="flex gap-2">
-                        <select id="vendor-select" name="vendor" 
-                                class="mobile-form-select mobile-input-touch flex-1">
-                            <option value="none">ไม่เลือก</option>
+                        <select id="vendor" class="mobile-select">
+                            <option value="">-- เลือกร้านค้า --</option>
                             <option value="ร้านยายจ่อย">ร้านยายจ่อย</option>
                             <option value="ร้านผัก">ร้านผัก</option>
                             <option value="เจ้นัน">เจ้นัน</option>
                             <option value="7-Eleven">7-Eleven</option>
                             <option value="เงินสด">เงินสด</option>
                         </select>
-                        <button type="button" id="add-vendor-btn"
-                                class="mobile-button mobile-button-success mobile-button-touch">
-                            ➕
-                        </button>
-                    </div>
-                    <!-- Custom vendor input -->
-                    <div id="custom-vendor-input" class="mt-2 hidden">
-                        <input type="text" id="new-vendor" placeholder="พิมพ์ชื่อร้านค้าใหม่..."
-                               class="mobile-form-input mobile-input-touch">
-                        <div class="text-xs text-green-600 mt-1">💡 กด Enter เพื่อเพิ่มร้านค้าใหม่</div>
+                        <button type="button" id="add-vendor-btn" class="mobile-button-secondary" style="width: 48px; min-width: 48px;">➕</button>
                     </div>
                 </div>
 
                 <!-- Description -->
-                <div class="mobile-form-section">
-                    <label class="mobile-form-label">📝 รายละเอียด</label>
-                    <input type="text" name="description" 
-                           class="mobile-form-input mobile-input-touch" placeholder="รายละเอียดเพิ่มเติม...">
+                <div class="mobile-form-field">
+                    <label class="mobile-label">
+                        <span>📝</span>
+                        <span>รายละเอียด</span>
+                    </label>
+                    <input type="text" id="description" class="mobile-input" placeholder="รายละเอียดเพิ่มเติม...">
                 </div>
-
-                <!-- Hidden inputs for form submission -->
-                <input type="hidden" id="items-data" name="items_data">
-                <input type="hidden" id="calculated-total" name="calculated_amount">
-                <input type="hidden" id="combined-category" name="combined_category">
 
                 <!-- Submit Button -->
-                <div class="pt-4">
-                    <button type="submit" class="mobile-submit-btn">
-                        <span class="text-xl mr-2">💾</span>
-                        บันทึก
-                    </button>
-                </div>
+                <button type="submit" class="mobile-button mobile-button-primary">
+                    <span>💾</span>
+                    <span>บันทึกรายการ</span>
+                </button>
             </form>
         </div>
 
-        <!-- Month Selection and Export -->
-        <div class="bg-white p-4 lg:p-6 rounded-lg shadow-md mb-6">
-            <div class="p-4 lg:p-6 border-b">
-                <h2 class="text-lg lg:text-xl font-semibold text-gray-800 mb-2">📅 เลือกเดือนที่ต้องการดู</h2>
-                <p class="text-sm text-gray-600">เลือกเดือนเพื่อดูข้อมูลรายรับ-รายจ่าย</p>
+        <!-- Month Selection -->
+        <div class="mobile-card">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <span>📅</span>
+                <span>เลือกเดือน</span>
+            </h2>
+            
+            <div class="mobile-form-field">
+                <select id="month-select" class="mobile-select" onchange="changeMonth(this.value)">
+                    <option value="2025-01">มกราคม 2025</option>
+                    <option value="2024-12">ธันวาคม 2024</option>
+                    <option value="2024-11">พฤศจิกายน 2024</option>
+                </select>
             </div>
-            <div class="p-4 lg:p-6">
-                <div class="flex flex-col lg:flex-row items-start lg:items-center gap-4 mb-6">
-                    <div class="flex items-center gap-3">
-                        <label class="font-semibold text-gray-700">📅 เดือน:</label>
-                        <select id="month-select" class="border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white" onchange="changeMonth(this.value)">
-                            {% for month in available_months %}
-                                <option value="{{ month.month }}" {% if month.month == selected_month %}selected{% endif %}>
-                                    {{ month.display }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2">
-                        <div class="text-sm text-gray-700">
-                            <span class="font-medium">📊 สถานะ:</span> แสดงข้อมูล รายรับ-รายจ่าย ประจำเดือน 
-                            <span class="font-bold text-gray-900">{{ selected_month.split('-')[1] }}/{{ selected_month.split('-')[0] }}</span>
-                            <span class="text-gray-600">({{ total_records }} รายการ)</span>
-                        </div>
-                    </div>
-                </div>
             
             <!-- Export Buttons -->
-            <div class="border-t pt-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">📊 ส่งออกข้อมูล</h3>
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="exportData('all', '{{ selected_month }}')" 
-                            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                        📄 ส่งออกทั้งหมด
-                    </button>
-                    <button onclick="exportData('income', '{{ selected_month }}')" 
-                            class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                        💰 ส่งออกรายรับ
-                    </button>
-                    <button onclick="exportData('expense', '{{ selected_month }}')" 
-                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                        💸 ส่งออกรายจ่าย
-                    </button>
-                    <button onclick="showMonthlySummary()" 
-                            class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                        📋 สรุปประจำเดือน
-                    </button>
-                    <button onclick="showYearlyView()" 
-                            class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                        📅 ดูรายปี
-                    </button>
-                    <button onclick="exportYearData('{{ selected_month.split('-')[0] }}')" 
-                            class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                        📊 ส่งออกรายปี
-                    </button>
-                </div>
+            <div class="grid grid-cols-2 gap-2 mt-4">
+                <button onclick="exportData('all')" class="mobile-button-secondary text-sm">📄 ส่งออกทั้งหมด</button>
+                <button onclick="exportData('income')" class="mobile-button-secondary text-sm">💰 ส่งออกรายรับ</button>
+                <button onclick="exportData('expense')" class="mobile-button-secondary text-sm">💸 ส่งออกรายจ่าย</button>
+                <button onclick="showMonthlySummary()" class="mobile-button-secondary text-sm">📋 สรุปเดือน</button>
             </div>
         </div>
 
-        <!-- Summary Cards -->
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="text-green-600 text-xl">💰</div>
-                    <div class="text-gray-600 text-sm">รายรับ</div>
-                </div>
-                <div class="text-green-700 font-bold text-xl mb-1">{{ "%.2f"|format(monthly_total_income) }}</div>
-                <div class="text-gray-500 text-sm">บาท</div>
-            </div>
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="text-red-600 text-xl">💸</div>
-                    <div class="text-gray-600 text-sm">รายจ่าย</div>
-                </div>
-                <div class="text-red-700 font-bold text-xl mb-1">{{ "%.2f"|format(monthly_total_expense) }}</div>
-                <div class="text-gray-500 text-sm">บาท</div>
-            </div>
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="text-blue-600 text-xl">📊</div>
-                    <div class="text-gray-600 text-sm">คงเหลือ</div>
-                </div>
-                <div class="text-blue-700 font-bold text-xl mb-1">{{ "%.2f"|format(monthly_total_income - monthly_total_expense) }}</div>
-                <div class="text-gray-500 text-sm">บาท</div>
-            </div>
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="text-gray-600 text-xl">📝</div>
-                    <div class="text-gray-600 text-sm">รายการ</div>
-                </div>
-                <div class="text-gray-700 font-bold text-xl mb-1">{{ total_records }}</div>
-                <div class="text-gray-500 text-sm">รายการ</div>
-            </div>
-        </div>
-
-        <!-- Records Table -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
-            <div class="p-4 lg:p-6 border-b">
-                <h2 class="text-lg lg:text-xl font-semibold text-gray-800">📊 รายการทั้งหมด</h2>
-                <p class="text-sm text-gray-600 mt-1">แสดงรายการรายรับ-รายจ่ายทั้งหมดในเดือนที่เลือก</p>
-            </div>
+        <!-- Records List -->
+        <div class="mobile-card">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <span>📊</span>
+                <span>รายการทั้งหมด</span>
+            </h2>
             
-            <!-- Desktop Table View -->
-            <div class="desktop-table overflow-x-auto">
-                <table class="w-full border-collapse">
+            <div id="records-container">
+                <!-- Sample Records -->
+                <div class="mobile-record-card income fade-in">
+                    <div class="mobile-record-header">
+                        <div class="mobile-record-date">📅 2025-01-20</div>
+                        <div class="mobile-record-amount income">💰 15,000.00</div>
+                    </div>
+                    <div class="mobile-record-description">เงินเดือนประจำ</div>
+                    <div class="mobile-record-meta">
+                        <div class="mobile-record-meta-item">🏷️ เงินเดือน</div>
+                        <div class="mobile-record-meta-item">📂 เงินเดือนประจำ</div>
+                    </div>
+                    <div class="mobile-record-actions">
+                        <button class="mobile-record-btn mobile-record-btn-edit">✏️ แก้ไข</button>
+                        <button class="mobile-record-btn mobile-record-btn-delete" onclick="return confirm('ต้องการลบรายการนี้หรือไม่?')">🗑️ ลบ</button>
+                    </div>
+                </div>
+
+                <div class="mobile-record-card expense fade-in">
+                    <div class="mobile-record-header">
+                        <div class="mobile-record-date">📅 2025-01-19</div>
+                        <div class="mobile-record-amount expense">💸 350.00</div>
+                    </div>
+                    <div class="mobile-record-description">ข้าวผัด, น้ำส้ม, ไข่เจียว</div>
+                    <div class="mobile-record-meta">
+                        <div class="mobile-record-meta-item">🏪 ร้านยายจ่อย</div>
+                        <div class="mobile-record-meta-item">🏷️ อาหาร</div>
+                        <div class="mobile-record-meta-item">📂 อาหารกลางวัน</div>
+                        <div class="mobile-record-meta-item">📊 3 รายการ</div>
+                    </div>
+                    <div class="mobile-record-actions">
+                        <button class="mobile-record-btn mobile-record-btn-edit">✏️ แก้ไข</button>
+                        <button class="mobile-record-btn mobile-record-btn-delete" onclick="return confirm('ต้องการลบรายการนี้หรือไม่?')">🗑️ ลบ</button>
+                    </div>
+                </div>
+
+                <div class="mobile-record-card expense fade-in">
+                    <div class="mobile-record-header">
+                        <div class="mobile-record-date">📅 2025-01-18</div>
+                        <div class="mobile-record-amount expense">💸 150.00</div>
+                    </div>
+                    <div class="mobile-record-description">น้ำดื่ม, ขนมปัง</div>
+                    <div class="mobile-record-meta">
+                        <div class="mobile-record-meta-item">🏪 7-Eleven</div>
+                        <div class="mobile-record-meta-item">🏷️ ของใช้</div>
+                        <div class="mobile-record-meta-item">📂 ของใช้ทั่วไป</div>
+                        <div class="mobile-record-meta-item">📊 2 รายการ</div>
+                    </div>
+                    <div class="mobile-record-actions">
+                        <button class="mobile-record-btn mobile-record-btn-edit">✏️ แก้ไข</button>
+                        <button class="mobile-record-btn mobile-record-btn-delete" onclick="return confirm('ต้องการลบรายการนี้หรือไม่?')">🗑️ ลบ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Desktop Table (Hidden on Mobile) -->
+        <div class="desktop-only bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="p-6 border-b">
+                <h2 class="text-xl font-semibold text-gray-800">📊 รายการทั้งหมด</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200">📅 วันที่</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200">📝 รายละเอียด</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200">💰 จำนวน (บาท)</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200">🏪 ร้านค้า</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200">📊 ประเภทรายการ</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200">🏷️ ประเภทหลัก</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200">📂 ประเภทย่อย</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200">⚙️ จัดการ</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">วันที่</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">รายละเอียด</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">จำนวน</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">ประเภท</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">จัดการ</th>
                         </tr>
                     </thead>
-                    <tbody id="records-tbody">
-                        {% if records %}
-                            {% for record in records %}
-                                <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200 cursor-pointer" 
-                                    onclick="showRecordDetails({{ record.id }})">
-                                    <td class="px-4 py-4 text-sm text-gray-700 font-medium">
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-gray-400">📅</span>
-                                            {{ record.date }}
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-4 text-sm text-gray-800">
-                                        <div class="max-w-xs truncate" title="{{ record.description }}">
-                                            {{ record.description }}
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-4 text-sm font-bold {% if record.category == 'income' %}text-green-600{% else %}text-red-600{% endif %}">
-                                        <div class="flex items-center gap-1">
-                                            <span>{% if record.category == 'income' %}💰{% else %}💸{% endif %}</span>
-                                            {{ "%.2f"|format(record.amount) }}
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-4 text-sm text-gray-600">
-                                        <div class="flex items-center gap-1">
-                                            <span class="text-gray-400">🏪</span>
-                                            {{ record.vendor or '-' }}
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-4 text-sm">
-                                        <span class="px-3 py-1 rounded-full text-xs font-medium {% if record.category == 'income' %}bg-green-100 text-green-700 border border-green-200{% else %}bg-red-100 text-red-700 border border-red-200{% endif %}">
-                                            {% if record.category == 'income' %}💰 รายรับ{% else %}💸 รายจ่าย{% endif %}
-                                        </span>
-                                    </td>
-                                    <td class="px-4 py-4 text-sm">
-                                        <span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 border border-blue-200">
-                                            {{ record.main_category or '-' }}
-                                        </span>
-                                    </td>
-                                    <td class="px-4 py-4 text-sm text-gray-600">
-                                        <div class="flex items-center gap-1">
-                                            <span class="text-gray-400">📂</span>
-                                            {{ record.sub_category or '-' }}
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-4 text-sm">
-                                        <div class="flex gap-2" onclick="event.stopPropagation()">
-                                            <a href="/edit-income-expense/{{ record.id }}" 
-                                               class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-medium transition-all duration-200 hover:shadow-md">
-                                                ✏️ แก้ไข
-                                            </a>
-                                            <form method="POST" action="/delete-income-expense/{{ record.id }}" 
-                                                  class="inline" onsubmit="return confirm('ต้องการลบรายการนี้หรือไม่?')">
-                                                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-xs font-medium transition-all duration-200 hover:shadow-md">
-                                                    🗑️ ลบ
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <!-- รายละเอียดเพิ่มเติม (ซ่อนไว้) -->
-                                <tr id="details-{{ record.id }}" class="hidden bg-gray-50 border-b border-gray-100">
-                                    <td colspan="8" class="px-4 py-4">
-                                        <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-                                            <h4 class="font-semibold text-gray-800 mb-3">📋 รายละเอียดเพิ่มเติม</h4>
-                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-700 mb-1">📝 รายละเอียด:</label>
-                                                    <p class="text-sm text-gray-800">{{ record.description }}</p>
-                                                </div>
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-700 mb-1">🏪 ร้านค้า:</label>
-                                                    <p class="text-sm text-gray-800">{{ record.vendor or 'ไม่ระบุ' }}</p>
-                                                </div>
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-700 mb-1">📊 ประเภทรายการ:</label>
-                                                    <p class="text-sm text-gray-800">{% if record.category == 'income' %}💰 รายรับ{% else %}💸 รายจ่าย{% endif %}</p>
-                                                </div>
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-700 mb-1">🏷️ ประเภทหลัก:</label>
-                                                    <p class="text-sm text-gray-800">{{ record.main_category or 'ไม่ระบุ' }}</p>
-                                                </div>
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-700 mb-1">📂 ประเภทย่อย:</label>
-                                                    <p class="text-sm text-gray-800">{{ record.sub_category or 'ไม่ระบุ' }}</p>
-                                                </div>
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-700 mb-1">💰 จำนวน:</label>
-                                                    <p class="text-sm font-bold {% if record.category == 'income' %}text-green-600{% else %}text-red-600{% endif %}">
-                                                        {{ "%.2f"|format(record.amount) }} บาท
-                                                    </p>
-                                                </div>
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-700 mb-1">📅 วันที่:</label>
-                                                    <p class="text-sm text-gray-800">{{ record.date }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="mt-4 flex gap-2">
-                                                <a href="/edit-income-expense/{{ record.id }}" 
-                                                   class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">
-                                                    ✏️ แก้ไขรายการ
-                                                </a>
-                                                <button onclick="hideRecordDetails({{ record.id }})" 
-                                                        class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">
-                                                    ❌ ปิด
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="8" class="px-4 py-12 text-center">
-                                    <div class="flex flex-col items-center justify-center">
-                                        <div class="text-6xl mb-4 text-gray-300">📭</div>
-                                        <div class="text-lg font-medium text-gray-500 mb-2">ไม่มีข้อมูลในเดือนนี้</div>
-                                        <div class="text-sm text-gray-400">ลองเพิ่มรายการใหม่หรือเลือกเดือนอื่น</div>
-                                        <div class="mt-4 flex gap-2">
-                                            <button onclick="document.getElementById('transaction-type').focus()" 
-                                                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">
-                                                ➕ เพิ่มรายการใหม่
-                                            </button>
-                                            <button onclick="document.getElementById('month-select').focus()" 
-                                                    class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">
-                                                📅 เลือกเดือนอื่น
-                                            </button>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endif %}
+                    <tbody>
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="px-6 py-4">2025-01-20</td>
+                            <td class="px-6 py-4">เงินเดือนประจำ</td>
+                            <td class="px-6 py-4 text-green-600 font-bold">15,000.00</td>
+                            <td class="px-6 py-4">
+                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">รายรับ</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex gap-2">
+                                    <button class="bg-blue-500 text-white px-3 py-1 rounded text-sm">แก้ไข</button>
+                                    <button class="bg-red-500 text-white px-3 py-1 rounded text-sm">ลบ</button>
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
-            
-            <!-- Mobile Card View -->
-            <div class="mobile-records-container p-4">
-                {% if records %}
-                    {% for record in records %}
-                        <div class="mobile-record-card" onclick="showMobileRecordDetails({{ record.id }})">
-                            <div class="mobile-record-header">
-                                <div class="mobile-record-date">📅 {{ record.date }}</div>
-                                <div class="mobile-record-amount {% if record.category == 'income' %}income{% else %}expense{% endif %}">
-                                    {% if record.category == 'income' %}💰{% else %}💸{% endif %} {{ "%.2f"|format(record.amount) }}
-                                </div>
-                            </div>
-                            <div class="mobile-record-description">{{ record.description }}</div>
-                            <div class="mobile-record-details">
-                                <div class="mobile-record-detail">
-                                    <span>🏪</span>
-                                    <span>{{ record.vendor or 'ไม่ระบุ' }}</span>
-                                </div>
-                                <div class="mobile-record-detail">
-                                    <span>📊</span>
-                                    <span>{% if record.category == 'income' %}รายรับ{% else %}รายจ่าย{% endif %}</span>
-                                </div>
-                                <div class="mobile-record-detail">
-                                    <span>🏷️</span>
-                                    <span>{{ record.main_category or 'ไม่ระบุ' }}</span>
-                                </div>
-                                <div class="mobile-record-detail">
-                                    <span>📂</span>
-                                    <span>{{ record.sub_category or 'ไม่ระบุ' }}</span>
-                                </div>
-                            </div>
-                            <div class="mobile-record-actions" onclick="event.stopPropagation()">
-                                <a href="/edit-income-expense/{{ record.id }}" class="mobile-record-btn mobile-record-btn-edit">
-                                    ✏️ แก้ไข
-                                </a>
-                                <form method="POST" action="/delete-income-expense/{{ record.id }}" class="inline" onsubmit="return confirm('ต้องการลบรายการนี้หรือไม่?')">
-                                    <button type="submit" class="mobile-record-btn mobile-record-btn-delete">
-                                        🗑️ ลบ
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="text-center py-12">
-                        <div class="text-6xl mb-4 text-gray-300">📭</div>
-                        <div class="text-lg font-medium text-gray-500 mb-2">ไม่มีข้อมูลในเดือนนี้</div>
-                        <div class="text-sm text-gray-400 mb-4">ลองเพิ่มรายการใหม่หรือเลือกเดือนอื่น</div>
-                        <div class="flex flex-col gap-2">
-                            <button onclick="document.getElementById('transaction-type').focus()" 
-                                    class="mobile-submit-btn">
-                                ➕ เพิ่มรายการใหม่
-                            </button>
-                            <button onclick="document.getElementById('month-select').focus()" 
-                                    class="mobile-button mobile-button-secondary">
-                                📅 เลือกเดือนอื่น
-                            </button>
-                        </div>
-                    </div>
-                {% endif %}
-            </div>
-            
-            <!-- Table Footer -->
-            {% if records %}
-            <div class="p-4 lg:p-6 border-t bg-gray-50">
-                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-                    <div class="text-sm text-gray-600">
-                        แสดง {{ records|length }} รายการ จากทั้งหมด {{ total_records }} รายการ
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="exportData('all', '{{ selected_month }}')" 
-                                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                            📄 ส่งออกทั้งหมด
-                        </button>
-                        <button onclick="showMonthlySummary()" 
-                                class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                            📋 สรุปข้อมูล
-                        </button>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
         </div>
     </div>
 
+    <!-- Floating Action Button (Mobile Only) -->
+    <div class="mobile-only mobile-floating-menu">
+        <button class="mobile-fab" onclick="scrollToTop()">
+            ⬆️
+        </button>
+    </div>
+
     <script>
-        // Application State
+        // Global Variables
         let selectedItems = [];
         let itemCounter = 0;
-        let availableTags = [
-            'อาหาร', 'เครื่องดื่ม', 'ของใช้', 'ยา', 'ขนม', 
-            'ผลไม้', 'ผัก', 'เนื้อสัตว์', 'นม', 'ขนมปัง'
-        ];
+        let currentEmoji = '😊';
         
-        // Emoji data
-        const emojiData = {
-            'อาหาร': ['🍽️', '🍜', '🍕', '🍔', '🍟', '🌮', '🌯', '🥪', '🍱', '🍛'],
-            'เครื่องดื่ม': ['🥤', '☕', '🧃', '🍺', '🍷', '🥛', '🧋', '🍹', '🥤', '💧'],
-            'ของใช้': ['🛍️', '🧴', '🧻', '🧽', '👕', '👖', '👟', '👜', '💄', '🪞'],
-            'ยา': ['💊', '🏥', '🩺', '🩹', '🩻', '💉', '🩸', '🧬', '🔬', '📋'],
-            'ขนม': ['🍪', '🍩', '🍰', '🧁', '🍦', '🍨', '🍭', '🍫', '🍬', '🍡'],
-            'ผลไม้': ['🍎', '🍌', '🍊', '🍇', '🍓', '🍑', '🥭', '🍍', '🥥', '🥝'],
-            'ผัก': ['🥬', '🥕', '🥦', '🥒', '🍅', '🌽', '🥑', '🥒', '🧅', '🧄'],
-            'เนื้อสัตว์': ['🥩', '🍗', '🍖', '🥓', '🍖', '🐟', '🦐', '🦑', '🦞', '🦀'],
-            'นม': ['🥛', '🧀', '🍦', '🍨', '🥛', '🧈', '🥛', '🍼', '🥛', '🥛'],
-            'ขนมปัง': ['🍞', '🥖', '🥨', '🥯', '🥐', '🥪', '🍞', '🥖', '🥨', '🥯']
-        };
-        
-        // Default emoji for each tag
-        const defaultEmojis = {
-            'อาหาร': '🍽️',
-            'เครื่องดื่ม': '🥤',
-            'ของใช้': '🛍️',
-            'ยา': '💊',
-            'ขนม': '🍪',
-            'ผลไม้': '🍎',
-            'ผัก': '🥬',
-            'เนื้อสัตว์': '🥩',
-            'นม': '🥛',
-            'ขนมปัง': '🍞'
-        };
-        
-        // Category data structure
+        // Category Data
         const categoryData = {
             income: {
                 'เงินเดือน': ['เงินเดือนประจำ', 'โบนัส', 'ค่าล่วงเวลา', 'ค่าคอมมิชชั่น'],
@@ -1193,520 +843,384 @@
             }
         };
         
+        // Emoji Data by Tag
+        const emojiData = {
+            'อาหาร': ['🍽️', '🍜', '🍕', '🍔', '🍟', '🌮', '🌯', '🥪', '🍱', '🍛', '🍝', '🍲', '🥗', '🍣', '🍤'],
+            'เครื่องดื่ม': ['🥤', '☕', '🧃', '🍺', '🍷', '🥛', '🧋', '🍹', '💧', '🥃', '🍵', '🧊', '🥤', '🍶', '🧉'],
+            'ของใช้': ['🛍️', '🧴', '🧻', '🧽', '👕', '👖', '👟', '👜', '💄', '🪞', '🧼', '🪥', '🪒', '💊', '🔋'],
+            'ยา': ['💊', '🏥', '🩺', '🩹', '🩻', '💉', '🩸', '🧬', '🔬', '📋', '🌡️', '⚕️', '🏥', '💉', '🩹'],
+            'ขนม': ['🍪', '🍩', '🍰', '🧁', '🍦', '🍨', '🍭', '🍫', '🍬', '🍡', '🥧', '🎂', '🧁', '🍮', '🍯'],
+            'ผลไม้': ['🍎', '🍌', '🍊', '🍇', '🍓', '🍑', '🥭', '🍍', '🥥', '🥝', '🫐', '🍈', '🍉', '🍋', '🫒'],
+            'ผัก': ['🥬', '🥕', '🥦', '🥒', '🍅', '🌽', '🥑', '🧅', '🧄', '🌶️', '🥔', '🍆', '🥬', '🫑', '🥒'],
+            'เนื้อสัตว์': ['🥩', '🍗', '🍖', '🥓', '🐟', '🦐', '🦑', '🦞', '🦀', '🐔', '🐷', '🐄', '🐟', '🍤', '🦆'],
+            'นม': ['🥛', '🧀', '🍦', '🍨', '🧈', '🍼', '🥛', '🧀', '🥛', '🧈', '🍦', '🍨', '🥛', '🧀', '🍼'],
+            'ขนมปัง': ['🍞', '🥖', '🥨', '🥯', '🥐', '🥪', '🥞', '🧇', '🍞', '🥖', '🥨', '🥯', '🥐', '🥪', '🧇']
+        };
+        
+        // Default emojis for tags
+        const defaultTagEmojis = {
+            'อาหาร': '🍽️',
+            'เครื่องดื่ม': '🥤',
+            'ของใช้': '🛍️',
+            'ยา': '💊',
+            'ขนม': '🍪',
+            'ผลไม้': '🍎',
+            'ผัก': '🥬',
+            'เนื้อสัตว์': '🥩',
+            'นม': '🥛',
+            'ขนมปัง': '🍞'
+        };
+
         // DOM Elements
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
-        const transactionTypeSelect = document.getElementById('transaction-type');
-        const mainCategorySelect = document.getElementById('main-category');
-        const subCategorySelect = document.getElementById('sub-category');
-        const incomeAmountSection = document.getElementById('income-amount-section');
+        const transactionType = document.getElementById('transaction-type');
+        const mainCategory = document.getElementById('main-category');
+        const subCategory = document.getElementById('sub-category');
+        const incomeSection = document.getElementById('income-section');
         const itemsSection = document.getElementById('items-section');
         const vendorSection = document.getElementById('vendor-section');
-        const selectedItemsDiv = document.getElementById('selected-items');
-        const totalItemsSpan = document.getElementById('total-items');
-        const totalAmountSpan = document.getElementById('total-amount');
 
-        // Mobile Menu Toggle
-        mobileMenuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
-                mobileMenu.classList.add('hidden');
-            }
-        });
-
-        // Transaction Type Change Handler
-        transactionTypeSelect.addEventListener('change', function() {
-            const type = this.value;
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').value = today;
             
-            // Clear category options
-            mainCategorySelect.innerHTML = '<option value="">-- เลือกประเภทหลัก --</option>';
-            subCategorySelect.innerHTML = '<option value="">-- เลือกประเภทย่อย --</option>';
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Initialize emoji picker
+            setupEmojiPicker();
+        });
+
+        function setupEventListeners() {
+            // Mobile menu toggle
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+
+            // Transaction type change
+            transactionType.addEventListener('change', handleTransactionTypeChange);
+            
+            // Category changes
+            mainCategory.addEventListener('change', handleMainCategoryChange);
+            subCategory.addEventListener('change', handleSubCategoryChange);
+            
+            // Tag change for emoji update
+            document.getElementById('item-tag').addEventListener('change', handleTagChange);
+            
+            // Emoji picker button
+            document.getElementById('emoji-picker-btn').addEventListener('click', showEmojiPicker);
+            
+            // Form submission
+            document.getElementById('transaction-form').addEventListener('submit', handleFormSubmit);
+            
+            // Item form enter key handlers
+            setupItemFormHandlers();
+        }
+
+        function setupItemFormHandlers() {
+            const itemName = document.getElementById('item-name');
+            const itemPrice = document.getElementById('item-price');
+            const itemQuantity = document.getElementById('item-quantity');
+            
+            itemName.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    itemPrice.focus();
+                }
+            });
+            
+            itemPrice.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    itemQuantity.focus();
+                }
+            });
+            
+            itemQuantity.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addItem();
+                }
+            });
+        }
+
+        function handleTransactionTypeChange() {
+            const type = transactionType.value;
+            
+            // Clear categories
+            mainCategory.innerHTML = '<option value="">-- เลือกประเภทหลัก --</option>';
+            subCategory.innerHTML = '<option value="">-- เลือกประเภทย่อย --</option>';
+            
+            // Hide all sections first
+            incomeSection.classList.add('hidden');
+            itemsSection.classList.add('hidden');
+            vendorSection.classList.add('hidden');
             
             if (type === 'income') {
-                // Show income amount section
-                incomeAmountSection.classList.remove('hidden');
-                itemsSection.classList.add('hidden');
-                vendorSection.classList.add('hidden');
-                
-                // Add income main categories
-                Object.keys(categoryData.income).forEach(category => {
-                    const option = document.createElement('option');
-                    option.value = category;
-                    option.textContent = category;
-                    mainCategorySelect.appendChild(option);
-                });
+                incomeSection.classList.remove('hidden');
+                populateCategories('income');
             } else if (type === 'expense') {
-                // Show items section
-                incomeAmountSection.classList.add('hidden');
                 itemsSection.classList.remove('hidden');
                 vendorSection.classList.remove('hidden');
-                
-                // Add expense main categories
-                Object.keys(categoryData.expense).forEach(category => {
-                    const option = document.createElement('option');
-                    option.value = category;
-                    option.textContent = category;
-                    mainCategorySelect.appendChild(option);
-                });
-            } else {
-                // Hide all conditional sections
-                incomeAmountSection.classList.add('hidden');
-                itemsSection.classList.add('hidden');
-                vendorSection.classList.add('hidden');
+                populateCategories('expense');
             }
-        });
+        }
 
-        // Main Category Change Handler
-        mainCategorySelect.addEventListener('change', function() {
-            const mainCategory = this.value;
-            const transactionType = transactionTypeSelect.value;
+        function populateCategories(type) {
+            const categories = categoryData[type];
             
-            // Clear sub category options
-            subCategorySelect.innerHTML = '<option value="">-- เลือกประเภทย่อย --</option>';
+            Object.keys(categories).forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                mainCategory.appendChild(option);
+            });
+        }
+
+        function handleMainCategoryChange() {
+            const type = transactionType.value;
+            const main = mainCategory.value;
             
-            if (mainCategory && transactionType) {
-                const subCategories = categoryData[transactionType][mainCategory] || [];
-                subCategories.forEach(subCategory => {
+            subCategory.innerHTML = '<option value="">-- เลือกประเภทย่อย --</option>';
+            
+            if (type && main && categoryData[type][main]) {
+                categoryData[type][main].forEach(sub => {
                     const option = document.createElement('option');
-                    option.value = subCategory;
-                    option.textContent = subCategory;
-                    subCategorySelect.appendChild(option);
+                    option.value = sub;
+                    option.textContent = sub;
+                    subCategory.appendChild(option);
                 });
             }
-        });
+        }
 
-        // Sub Category Change Handler
-        subCategorySelect.addEventListener('change', function() {
-            // Update hidden category field for form submission
-            const mainCategory = mainCategorySelect.value;
-            const subCategory = this.value;
-            
-            if (mainCategory && subCategory) {
-                // Create a hidden input for the combined category if it doesn't exist
-                let combinedCategoryInput = document.getElementById('combined-category');
-                if (!combinedCategoryInput) {
-                    combinedCategoryInput = document.createElement('input');
-                    combinedCategoryInput.type = 'hidden';
-                    combinedCategoryInput.id = 'combined-category';
-                    combinedCategoryInput.name = 'combined_category';
-                    document.querySelector('form').appendChild(combinedCategoryInput);
+        function handleSubCategoryChange() {
+            // Auto-generate description for income
+            if (transactionType.value === 'income') {
+                const main = mainCategory.value;
+                const sub = subCategory.value;
+                if (main && sub) {
+                    document.getElementById('description').value = `${main}: ${sub}`;
                 }
-                combinedCategoryInput.value = `${mainCategory} > ${subCategory}`;
             }
-        });
+        }
 
-        // Add Item Function
+        function handleTagChange() {
+            const tag = document.getElementById('item-tag').value;
+            if (tag && defaultTagEmojis[tag]) {
+                currentEmoji = defaultTagEmojis[tag];
+                updateEmojiDisplay();
+            }
+        }
+
+        function setupEmojiPicker() {
+            // Initialize with default emoji
+            updateEmojiDisplay();
+        }
+
+        function showEmojiPicker() {
+            const picker = document.getElementById('emoji-picker');
+            const grid = document.getElementById('emoji-grid');
+            const selectedTag = document.getElementById('item-tag').value;
+            
+            // Clear previous emojis
+            grid.innerHTML = '';
+            
+            let emojisToShow = [];
+            
+            if (selectedTag && emojiData[selectedTag]) {
+                emojisToShow = emojiData[selectedTag];
+            } else {
+                // Show all emojis
+                emojisToShow = [
+                    '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇',
+                    '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚',
+                    '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩',
+                    '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣',
+                    '🍽️', '🍜', '🍕', '🍔', '🍟', '🌮', '🌯', '🥪', '🍱', '🍛',
+                    '🥤', '☕', '🧃', '🍺', '🍷', '🥛', '🧋', '🍹', '💧', '🥃',
+                    '🛍️', '🧴', '🧻', '🧽', '👕', '👖', '👟', '👜', '💄', '🪞',
+                    '💊', '🏥', '🩺', '🩹', '🩻', '💉', '🩸', '🧬', '🔬', '📋',
+                    '🍪', '🍩', '🍰', '🧁', '🍦', '🍨', '🍭', '🍫', '🍬', '🍡',
+                    '🍎', '🍌', '🍊', '🍇', '🍓', '🍑', '🥭', '🍍', '🥥', '🥝',
+                    '🥬', '🥕', '🥦', '🥒', '🍅', '🌽', '🥑', '🧅', '🧄', '🌶️',
+                    '🥩', '🍗', '🍖', '🥓', '🐟', '🦐', '🦑', '🦞', '🦀', '🐔',
+                    '🥛', '🧀', '🍦', '🍨', '🧈', '🍼', '🥛', '🧀', '🥛', '🧈',
+                    '🍞', '🥖', '🥨', '🥯', '🥐', '🥪', '🥞', '🧇', '🍞', '🥖'
+                ];
+            }
+            
+            emojisToShow.forEach(emoji => {
+                const button = document.createElement('button');
+                button.className = 'mobile-emoji-btn';
+                button.textContent = emoji;
+                button.type = 'button';
+                button.onclick = () => selectEmoji(emoji);
+                grid.appendChild(button);
+            });
+            
+            picker.classList.remove('hidden');
+        }
+
+        function selectEmoji(emoji) {
+            currentEmoji = emoji;
+            updateEmojiDisplay();
+            closeEmojiPicker();
+        }
+
+        function updateEmojiDisplay() {
+            document.getElementById('emoji-display').textContent = currentEmoji;
+            document.getElementById('selected-emoji').textContent = currentEmoji;
+        }
+
+        function closeEmojiPicker() {
+            document.getElementById('emoji-picker').classList.add('hidden');
+        }
+
         function addItem() {
-            // สร้าง modal หรือ form สำหรับเพิ่มรายการสินค้า
-            const itemName = prompt('📝 ชื่อสินค้า:');
-            if (!itemName) return;
+            const name = document.getElementById('item-name').value.trim();
+            const price = parseFloat(document.getElementById('item-price').value) || 0;
+            const quantity = parseInt(document.getElementById('item-quantity').value) || 1;
+            const tag = document.getElementById('item-tag').value;
             
-            const itemPrice = prompt('💰 ราคา (บาท):');
-            if (!itemPrice || isNaN(itemPrice) || parseFloat(itemPrice) <= 0) {
-                alert('กรุณากรอกราคาที่ถูกต้อง');
+            if (!name) {
+                alert('กรุณากรอกชื่อสินค้า');
+                document.getElementById('item-name').focus();
                 return;
             }
             
-            const itemQuantity = prompt('📊 จำนวน (ค่าเริ่มต้น: 1):', '1');
-            if (!itemQuantity || isNaN(itemQuantity) || parseInt(itemQuantity) <= 0) {
-                alert('กรุณากรอกจำนวนที่ถูกต้อง');
+            if (price <= 0) {
+                alert('กรุณากรอกราคาที่มากกว่า 0');
+                document.getElementById('item-price').focus();
                 return;
             }
-            
-            const itemTag = prompt('🏷️ แท็ก (เช่น: อาหาร, เครื่องดื่ม):', 'ของใช้');
             
             const item = {
                 id: ++itemCounter,
-                name: itemName,
-                tag: itemTag,
-                emoji: '😊',
-                price: parseFloat(itemPrice),
-                quantity: parseInt(itemQuantity),
-                total: parseFloat(itemPrice) * parseInt(itemQuantity)
+                name: name,
+                emoji: currentEmoji,
+                tag: tag,
+                price: price,
+                quantity: quantity,
+                total: price * quantity
             };
             
             selectedItems.push(item);
             updateItemsDisplay();
+            clearItemForm();
             
-            // Update form data
-            updateFormData();
+            // Show success animation
+            const addBtn = document.querySelector('button[onclick="addItem()"]');
+            addBtn.style.transform = 'scale(1.05)';
+            addBtn.innerHTML = '<span>✅</span><span>เพิ่มแล้ว</span>';
+            
+            setTimeout(() => {
+                addBtn.style.transform = 'scale(1)';
+                addBtn.innerHTML = '<span>➕</span><span>เพิ่มรายการ</span>';
+                document.getElementById('item-name').focus();
+            }, 1000);
         }
 
-        // Update Items Display
+        function clearItemForm() {
+            document.getElementById('item-name').value = '';
+            document.getElementById('item-price').value = '';
+            document.getElementById('item-quantity').value = '1';
+            document.getElementById('item-tag').value = '';
+            currentEmoji = '😊';
+            updateEmojiDisplay();
+        }
+
         function updateItemsDisplay() {
-            const selectedItemsDiv = document.getElementById('selected-items');
-            const totalItemsSpan = document.getElementById('total-items');
-            const totalAmountSpan = document.getElementById('total-amount');
+            const container = document.getElementById('selected-items');
+            const totalItems = document.getElementById('total-items');
+            const totalAmount = document.getElementById('total-amount');
             
             if (selectedItems.length === 0) {
-                selectedItemsDiv.innerHTML = '<div class="text-gray-500 text-center py-4">ยังไม่มีรายการสินค้า</div>';
-                totalItemsSpan.textContent = '0';
-                totalAmountSpan.textContent = '0.00';
+                container.innerHTML = '<div class="text-center text-gray-500 py-4">ยังไม่มีรายการสินค้า</div>';
+                totalItems.textContent = '0 รายการ';
+                totalAmount.textContent = '0.00 บาท';
                 return;
             }
             
-            let totalAmount = 0;
-            let html = '<div class="space-y-2">';
+            let total = 0;
+            let html = '<div class="space-y-3">';
             
             selectedItems.forEach((item, index) => {
-                totalAmount += item.total;
+                total += item.total;
                 html += `
-                    <div class="bg-gray-50 border rounded-lg p-3">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <span class="text-lg">${item.emoji}</span>
+                    <div class="mobile-item-card fade-in">
+                        <div class="mobile-item-header">
+                            <div class="flex items-center">
+                                <div class="mobile-item-number">${index + 1}</div>
+                                <span class="text-xl mr-2">${item.emoji}</span>
                                 <span class="font-medium">${item.name}</span>
-                                <span class="text-sm text-gray-600">x${item.quantity}</span>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <span class="font-bold text-blue-600">${item.total.toFixed(2)}</span>
-                                <button onclick="removeItem(${item.id})" class="text-red-500 hover:text-red-700">
-                                    🗑️
-                                </button>
+                            <button onclick="removeItem(${item.id})" class="text-red-500 hover:text-red-700 p-2">
+                                🗑️
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <label class="mobile-label">💰 ราคา</label>
+                                <div class="mobile-controls">
+                                    <button onclick="decreasePrice(${item.id})" class="mobile-control-btn decrease">−</button>
+                                    <input type="number" value="${item.price}" step="0.01" min="0"
+                                           onchange="updateItemPrice(${item.id}, this.value)"
+                                           class="mobile-input text-center" style="padding: 8px;">
+                                    <button onclick="increasePrice(${item.id})" class="mobile-control-btn increase">+</button>
+                                </div>
                             </div>
+                            <div>
+                                <label class="mobile-label">📊 จำนวน</label>
+                                <div class="mobile-controls">
+                                    <button onclick="decreaseQuantity(${item.id})" class="mobile-control-btn decrease">−</button>
+                                    <input type="number" value="${item.quantity}" min="1"
+                                           onchange="updateItemQuantity(${item.id}, this.value)"
+                                           class="mobile-input text-center" style="padding: 8px;">
+                                    <button onclick="increaseQuantity(${item.id})" class="mobile-control-btn increase">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        ${item.tag ? `<div class="text-sm text-gray-600 mb-2">🏷️ ${item.tag}</div>` : ''}
+                        
+                        <div class="flex justify-between items-center pt-2 border-t">
+                            <span class="text-sm text-gray-600">รวม:</span>
+                            <span class="font-bold text-green-600">${item.total.toFixed(2)} บาท</span>
                         </div>
                     </div>
                 `;
             });
             
             html += '</div>';
-            selectedItemsDiv.innerHTML = html;
-            totalItemsSpan.textContent = selectedItems.length;
-            totalAmountSpan.textContent = totalAmount.toFixed(2);
+            container.innerHTML = html;
+            totalItems.textContent = `${selectedItems.length} รายการ`;
+            totalAmount.textContent = `${total.toFixed(2)} บาท`;
             
-            // Update form data
-            updateFormData();
+            // Update description
+            updateDescription();
         }
 
-        // Remove Item Function
+        function updateDescription() {
+            const descriptions = selectedItems.map(item => `${item.name} x${item.quantity}`);
+            document.getElementById('description').value = descriptions.join(', ');
+        }
+
         function removeItem(itemId) {
             selectedItems = selectedItems.filter(item => item.id !== itemId);
             updateItemsDisplay();
         }
 
-        // Update Form Data Function
-        function updateFormData() {
-            const itemsDataInput = document.getElementById('items-data');
-            const calculatedTotalInput = document.getElementById('calculated-total');
-            const descriptionInput = document.getElementById('description');
-            
-            // Update items data
-            itemsDataInput.value = JSON.stringify(selectedItems);
-            
-            // Calculate total
-            const total = selectedItems.reduce((sum, item) => sum + item.total, 0);
-            calculatedTotalInput.value = total.toFixed(2);
-            
-            // Create description
-            const description = selectedItems.map(item => `${item.name} x${item.quantity}`).join(', ');
-            descriptionInput.value = description;
-        }
-
-        // Enter key handler for item inputs
-        document.getElementById('item-name').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                document.getElementById('item-price').focus();
-            }
-        });
-
-        document.getElementById('item-price').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                document.getElementById('item-quantity').focus();
-            }
-        });
-
-        document.getElementById('item-quantity').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                addNewItem();
-            }
-        });
-
-        // Update Items Display
-        function updateItemsDisplay() {
-            if (selectedItems.length === 0) {
-                selectedItemsDiv.innerHTML = '<div class="text-gray-500 text-center py-4">ยังไม่มีรายการสินค้า</div>';
-                totalItemsSpan.textContent = '0';
-                totalAmountSpan.textContent = '0.00';
-                return;
-            }
-            
-            let totalAmount = 0;
-            
-            // Check if mobile view
-            const isMobile = window.innerWidth <= 768;
-            
-            if (isMobile) {
-                // Mobile card view - easier to edit on mobile
-                let html = '<div class="space-y-3">';
-                
-                selectedItems.forEach((item, index) => {
-                    totalAmount += item.total;
-                    html += `
-                        <div class="bg-white border rounded-lg p-4 shadow-sm">
-                            <!-- Item Header -->
-                            <div class="flex items-center justify-between mb-3">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
-                                        ${index + 1}
-                                    </div>
-                                    <span class="text-lg">${item.emoji || '😊'}</span>
-                                    <span class="font-medium text-gray-800">${item.name}</span>
-                                </div>
-                                <div class="flex gap-1">
-                                    <button onclick="moveItemUp(${item.id})" 
-                                            class="text-gray-500 hover:text-blue-600 p-1 ${index === 0 ? 'opacity-50 cursor-not-allowed' : ''}" 
-                                            title="เลื่อนขึ้น" ${index === 0 ? 'disabled' : ''}>
-                                        ⬆️
-                                    </button>
-                                    <button onclick="moveItemDown(${item.id})" 
-                                            class="text-gray-500 hover:text-blue-600 p-1 ${index === selectedItems.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}" 
-                                            title="เลื่อนลง" ${index === selectedItems.length - 1 ? 'disabled' : ''}>
-                                        ⬇️
-                                    </button>
-                                </div>
-                            </div>
-                            
-                                                            <!-- Item Name -->
-                                <div class="mb-3">
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">📝 ชื่อสินค้า</label>
-                                    <input type="text" value="${item.name}" 
-                                           onchange="updateItemName(${item.id}, this.value)"
-                                           class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input-touch">
-                                </div>
-                            
-                            <!-- Price and Quantity Row -->
-                            <div class="grid grid-cols-2 gap-3 mb-3">
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">💰 ราคา (บาท)</label>
-                                    <div class="flex items-center gap-1">
-                                                                            <button onclick="decreasePrice(${item.id})" 
-                                            class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm mobile-button-touch">-</button>
-                                        <input type="number" value="${item.price}" step="0.01" min="0"
-                                               onchange="updateItemPrice(${item.id}, this.value)"
-                                               class="flex-1 border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input-touch">
-                                        <button onclick="increasePrice(${item.id})" 
-                                                class="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-sm mobile-button-touch">+</button>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">📊 จำนวน</label>
-                                    <div class="flex items-center gap-1">
-                                                                            <button onclick="decreaseQuantity(${item.id})" 
-                                            class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm mobile-button-touch">-</button>
-                                        <input type="number" value="${item.quantity}" min="1"
-                                               onchange="updateItemQuantity(${item.id}, this.value)"
-                                               class="flex-1 border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input-touch">
-                                        <button onclick="increaseQuantity(${item.id})" 
-                                                class="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-sm mobile-button-touch">+</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Tag Selection -->
-                            <div class="mb-3">
-                                <label class="block text-xs font-medium text-gray-700 mb-1">🏷️ แท็ก</label>
-                                <select onchange="updateItemTag(${item.id}, this.value)" 
-                                        class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input-touch">
-                                    <option value="">--เลือกแท็ก--</option>
-                                    <option value="อาหาร" ${item.tag === 'อาหาร' ? 'selected' : ''}>🍽️ อาหาร</option>
-                                    <option value="เครื่องดื่ม" ${item.tag === 'เครื่องดื่ม' ? 'selected' : ''}>🥤 เครื่องดื่ม</option>
-                                    <option value="ของใช้" ${item.tag === 'ของใช้' ? 'selected' : ''}>🛍️ ของใช้</option>
-                                    <option value="ยา" ${item.tag === 'ยา' ? 'selected' : ''}>💊 ยา</option>
-                                    <option value="ขนม" ${item.tag === 'ขนม' ? 'selected' : ''}>🍪 ขนม</option>
-                                    <option value="ผลไม้" ${item.tag === 'ผลไม้' ? 'selected' : ''}>🍎 ผลไม้</option>
-                                    <option value="ผัก" ${item.tag === 'ผัก' ? 'selected' : ''}>🥬 ผัก</option>
-                                    <option value="เนื้อสัตว์" ${item.tag === 'เนื้อสัตว์' ? 'selected' : ''}>🥩 เนื้อสัตว์</option>
-                                    <option value="นม" ${item.tag === 'นม' ? 'selected' : ''}>🥛 นม</option>
-                                    <option value="ขนมปัง" ${item.tag === 'ขนมปัง' ? 'selected' : ''}>🍞 ขนมปัง</option>
-                                </select>
-                            </div>
-                            
-                            <!-- Item Total and Actions -->
-                            <div class="flex items-center justify-between pt-2 border-t">
-                                <div class="text-sm">
-                                    <span class="text-gray-600">รวม:</span>
-                                    <span class="font-bold text-green-600 ml-1">${item.total.toFixed(2)} บาท</span>
-                                </div>
-                                <div class="flex gap-2">
-                                    <button onclick="duplicateItem(${item.id})" 
-                                            class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm mobile-button-touch" title="คัดลอก">
-                                        📋 คัดลอก
-                                    </button>
-                                    <button onclick="removeItem(${item.id})" 
-                                            class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm mobile-button-touch" title="ลบรายการ">
-                                        🗑️ ลบ
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                // Add total summary
-                html += `
-                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                        <div class="flex justify-between items-center">
-                            <span class="font-semibold text-green-800">ยอดรวมทั้งหมด:</span>
-                            <span class="font-bold text-green-600 text-lg">${totalAmount.toFixed(2)} บาท</span>
-                        </div>
-                    </div>
-                </div>
-                `;
-                
-                selectedItemsDiv.innerHTML = html;
-            } else {
-                // Desktop table view
-                let html = `
-                    <div class="overflow-x-auto">
-                        <table class="items-table w-full border-collapse border border-gray-300">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">ลำดับ</th>
-                                    <th class="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">ชื่อสินค้า</th>
-                                    <th class="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">แท็ก</th>
-                                    <th class="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">ราคา (บาท)</th>
-                                    <th class="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">จำนวน</th>
-                                    <th class="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">รวม (บาท)</th>
-                                    <th class="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">จัดการ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
-                
-                selectedItems.forEach((item, index) => {
-                    totalAmount += item.total;
-                    html += `
-                        <tr class="hover:bg-gray-50">
-                            <td class="border border-gray-300 px-4 py-3 text-center">
-                                <div class="flex flex-col items-center gap-2">
-                                    <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                        ${index + 1}
-                                    </div>
-                                    <div class="flex gap-1">
-                                        <button onclick="moveItemUp(${item.id})" 
-                                                class="text-gray-500 hover:text-blue-600 text-sm px-2 py-1 rounded hover:bg-blue-50 ${index === 0 ? 'opacity-50 cursor-not-allowed' : ''}" 
-                                                title="เลื่อนขึ้น" ${index === 0 ? 'disabled' : ''}>
-                                            ⬆️
-                                        </button>
-                                        <button onclick="moveItemDown(${item.id})" 
-                                                class="text-gray-500 hover:text-blue-600 text-sm px-2 py-1 rounded hover:bg-blue-50 ${index === selectedItems.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}" 
-                                                title="เลื่อนลง" ${index === selectedItems.length - 1 ? 'disabled' : ''}>
-                                            ⬇️
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="border border-gray-300 px-4 py-3">
-                                <input type="text" value="${item.name}" 
-                                       onchange="updateItemName(${item.id}, this.value)"
-                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            </td>
-                            <td class="border border-gray-300 px-4 py-3">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-2xl">${item.emoji || '😊'}</span>
-                                    <select onchange="updateItemTag(${item.id}, this.value)" 
-                                            class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="">--เลือกแท็ก--</option>
-                                        <option value="อาหาร" ${item.tag === 'อาหาร' ? 'selected' : ''}>🍽️ อาหาร</option>
-                                        <option value="เครื่องดื่ม" ${item.tag === 'เครื่องดื่ม' ? 'selected' : ''}>🥤 เครื่องดื่ม</option>
-                                        <option value="ของใช้" ${item.tag === 'ของใช้' ? 'selected' : ''}>🛍️ ของใช้</option>
-                                        <option value="ยา" ${item.tag === 'ยา' ? 'selected' : ''}>💊 ยา</option>
-                                        <option value="ขนม" ${item.tag === 'ขนม' ? 'selected' : ''}>🍪 ขนม</option>
-                                        <option value="ผลไม้" ${item.tag === 'ผลไม้' ? 'selected' : ''}>🍎 ผลไม้</option>
-                                        <option value="ผัก" ${item.tag === 'ผัก' ? 'selected' : ''}>🥬 ผัก</option>
-                                        <option value="เนื้อสัตว์" ${item.tag === 'เนื้อสัตว์' ? 'selected' : ''}>🥩 เนื้อสัตว์</option>
-                                        <option value="นม" ${item.tag === 'นม' ? 'selected' : ''}>🥛 นม</option>
-                                        <option value="ขนมปัง" ${item.tag === 'ขนมปัง' ? 'selected' : ''}>🍞 ขนมปัง</option>
-                                    </select>
-                                </div>
-                            </td>
-                            <td class="border border-gray-300 px-4 py-3">
-                                <div class="flex items-center gap-2">
-                                    <button onclick="decreasePrice(${item.id})" 
-                                            class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-semibold">-</button>
-                                    <input type="number" value="${item.price}" step="0.01" min="0"
-                                           onchange="updateItemPrice(${item.id}, this.value)"
-                                           class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                    <button onclick="increasePrice(${item.id})" 
-                                            class="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg text-sm font-semibold">+</button>
-                                </div>
-                            </td>
-                            <td class="border border-gray-300 px-4 py-3">
-                                <div class="flex items-center gap-2">
-                                    <button onclick="decreaseQuantity(${item.id})" 
-                                            class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-semibold">-</button>
-                                    <input type="number" value="${item.quantity}" min="1"
-                                           onchange="updateItemQuantity(${item.id}, this.value)"
-                                           class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                    <button onclick="increaseQuantity(${item.id})" 
-                                            class="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg text-sm font-semibold">+</button>
-                                </div>
-                            </td>
-                            <td class="border border-gray-300 px-4 py-3 text-center">
-                                <div class="text-lg font-bold text-green-600">${item.total.toFixed(2)}</div>
-                            </td>
-                            <td class="border border-gray-300 px-4 py-3 text-center">
-                                <div class="flex gap-2 justify-center">
-                                    <button onclick="duplicateItem(${item.id})" 
-                                            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold" title="คัดลอก">
-                                        📋 คัดลอก
-                                    </button>
-                                    <button onclick="removeItem(${item.id})" 
-                                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold" title="ลบรายการ">
-                                        🗑️ ลบ
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                });
-                
-                // Add total row
-                html += `
-                            <tr class="bg-green-50">
-                                <td colspan="5" class="border border-gray-300 px-4 py-3 text-right font-semibold text-gray-700">ยอดรวมทั้งหมด:</td>
-                                <td class="border border-gray-300 px-4 py-3 text-center font-bold text-green-600 text-lg">${totalAmount.toFixed(2)}</td>
-                                <td class="border border-gray-300 px-4 py-3"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                `;
-                
-                selectedItemsDiv.innerHTML = html;
-            }
-            
-            totalItemsSpan.textContent = selectedItems.length.toString();
-            totalAmountSpan.textContent = totalAmount.toFixed(2);
-            
-            // Update hidden inputs
-            document.getElementById('items-data').value = JSON.stringify(selectedItems);
-            document.getElementById('calculated-total').value = totalAmount.toFixed(2);
-            
-            // Create description
-            const descriptions = selectedItems.map(item => 
-                `${item.name} x${item.quantity}`
-            );
-            document.getElementById('description').value = descriptions.join(', ');
-        }
-
-        // Update Item Name Function
-        function updateItemName(itemId, newName) {
-            const item = selectedItems.find(item => item.id === itemId);
-            if (item && newName.trim()) {
-                item.name = newName.trim();
-                updateItemsDisplay();
-            }
-        }
-
-        // Update Item Price Function
         function updateItemPrice(itemId, newPrice) {
             const item = selectedItems.find(item => item.id === itemId);
             const price = parseFloat(newPrice);
@@ -1717,7 +1231,6 @@
             }
         }
 
-        // Update Item Quantity Function
         function updateItemQuantity(itemId, newQuantity) {
             const item = selectedItems.find(item => item.id === itemId);
             const quantity = parseInt(newQuantity);
@@ -1728,7 +1241,6 @@
             }
         }
 
-        // Increase/Decrease Price Functions
         function increasePrice(itemId) {
             const item = selectedItems.find(item => item.id === itemId);
             if (item) {
@@ -1747,7 +1259,6 @@
             }
         }
 
-        // Increase/Decrease Quantity Functions
         function increaseQuantity(itemId) {
             const item = selectedItems.find(item => item.id === itemId);
             if (item) {
@@ -1766,710 +1277,302 @@
             }
         }
 
-        // Duplicate Item Function
-        function duplicateItem(itemId) {
-            const originalItem = selectedItems.find(item => item.id === itemId);
-            if (originalItem) {
-                const newItem = {
-                    id: ++itemCounter,
-                    name: originalItem.name + ' (คัดลอก)',
-                    tag: originalItem.tag,
-                    emoji: originalItem.emoji,
-                    price: originalItem.price,
-                    quantity: originalItem.quantity,
-                    total: originalItem.price * originalItem.quantity
-                };
-                
-                selectedItems.push(newItem);
-                updateItemsDisplay();
-                
-                // Show feedback
-                const duplicateBtn = document.querySelector(`[onclick="duplicateItem(${itemId})"]`);
-                if (duplicateBtn) {
-                    duplicateBtn.style.transform = 'scale(1.2)';
-                    setTimeout(() => {
-                        duplicateBtn.style.transform = 'scale(1)';
-                    }, 200);
-                }
-            }
-        }
-
-        // Move Item Up Function
-        function moveItemUp(itemId) {
-            const index = selectedItems.findIndex(item => item.id === itemId);
-            if (index > 0) {
-                const temp = selectedItems[index];
-                selectedItems[index] = selectedItems[index - 1];
-                selectedItems[index - 1] = temp;
-                updateItemsDisplay();
-            }
-        }
-
-        // Move Item Down Function
-        function moveItemDown(itemId) {
-            const index = selectedItems.findIndex(item => item.id === itemId);
-            if (index < selectedItems.length - 1) {
-                const temp = selectedItems[index];
-                selectedItems[index] = selectedItems[index + 1];
-                selectedItems[index + 1] = temp;
-                updateItemsDisplay();
-            }
-        }
-
-        // Show Items Summary Function
-        function showItemsSummary() {
-            if (selectedItems.length === 0) {
-                alert('ไม่มีรายการสินค้าให้แสดงสรุป');
-                return;
-            }
-
-            let summary = '📋 สรุปรายการสินค้า\n\n';
-            let totalAmount = 0;
-
-            selectedItems.forEach((item, index) => {
-                summary += `${index + 1}. ${item.emoji || '😊'} ${item.name}`;
-                if (item.tag) {
-                    summary += ` [${item.tag}]`;
-                }
-                summary += `\n`;
-                summary += `   ราคา: ${item.price.toFixed(2)} บาท × ${item.quantity} = ${item.total.toFixed(2)} บาท\n\n`;
-                totalAmount += item.total;
-            });
-
-            summary += `💰 ยอดรวมทั้งหมด: ${totalAmount.toFixed(2)} บาท`;
-            summary += `\n📊 จำนวนรายการ: ${selectedItems.length} รายการ`;
-
-            alert(summary);
-        }
-
-        // Add Tag Button Handler
-        document.getElementById('add-tag-btn').addEventListener('click', function() {
-            const customInput = document.getElementById('custom-tag-input');
-            const newTagInput = document.getElementById('new-tag');
+        function handleFormSubmit(e) {
+            e.preventDefault();
             
-            if (customInput.classList.contains('hidden')) {
-                customInput.classList.remove('hidden');
-                newTagInput.focus();
-            } else {
-                addCustomTag();
-            }
-        });
-
-        // Add Custom Tag Function
-        function addCustomTag() {
-            const newTagInput = document.getElementById('new-tag');
-            const tagName = newTagInput.value.trim();
+            const type = transactionType.value;
+            const main = mainCategory.value;
+            const sub = subCategory.value;
             
-            if (!tagName) {
-                alert('กรุณาใส่ชื่อแท็ก');
+            if (!type || !main || !sub) {
+                alert('กรุณากรอกข้อมูลให้ครบถ้วน');
                 return;
             }
             
-            if (availableTags.includes(tagName)) {
-                alert('แท็กนี้มีอยู่แล้ว');
-                return;
-            }
-            
-            // Add to available tags
-            availableTags.push(tagName);
-            
-            // Add to select options
-            const tagSelect = document.getElementById('item-tag');
-            const option = document.createElement('option');
-            option.value = tagName;
-            option.textContent = tagName;
-            tagSelect.appendChild(option);
-            
-            // Select the new tag
-            tagSelect.value = tagName;
-            
-            // Hide input and clear
-            document.getElementById('custom-tag-input').classList.add('hidden');
-            newTagInput.value = '';
-            
-            alert(`เพิ่มแท็ก "${tagName}" เรียบร้อยแล้ว`);
-        }
-
-        // Cancel Add Tag Function
-        function cancelAddTag() {
-            document.getElementById('custom-tag-input').classList.add('hidden');
-            document.getElementById('new-tag').value = '';
-        }
-
-        // Update Item Tag Function
-        function updateItemTag(itemId, newTag) {
-            const item = selectedItems.find(item => item.id === itemId);
-            if (item) {
-                item.tag = newTag;
-                updateItemsDisplay();
-            }
-        }
-
-        // Enter key handler for custom tag
-        document.getElementById('new-tag').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                addCustomTag();
-            }
-        });
-
-        // Show Emoji Picker Function
-        function showEmojiPicker() {
-            const modal = document.getElementById('emoji-picker-modal');
-            const grid = document.getElementById('emoji-grid');
-            const selectedTag = document.getElementById('item-tag').value;
-            
-            // Clear previous emojis
-            grid.innerHTML = '';
-            
-            if (selectedTag && emojiData[selectedTag]) {
-                // Show emojis for selected tag
-                emojiData[selectedTag].forEach(emoji => {
-                    const button = document.createElement('button');
-                    button.className = 'text-2xl p-2 hover:bg-gray-100 rounded';
-                    button.textContent = emoji;
-                    button.onclick = () => selectEmoji(emoji);
-                    grid.appendChild(button);
-                });
-            } else {
-                // Show all emojis
-                const allEmojis = [
-                    '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇',
-                    '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚',
-                    '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩',
-                    '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣',
-                    '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬',
-                    '🤯', '😳', '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗',
-                    '🤔', '🤭', '🤫', '🤥', '😶', '😐', '😑', '😯', '😦', '😧',
-                    '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴', '🤢',
-                    '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '💩', '🤡', '👹',
-                    '👺', '👻', '👽', '👾', '🤖', '😺', '😸', '😹', '😻', '😼',
-                    '😽', '🙀', '😿', '😾', '🙈', '🙉', '🙊', '💌', '💘', '💝',
-                    '💖', '💗', '💓', '💞', '💕', '💟', '❣️', '💔', '❤️', '🧡',
-                    '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💯', '💢', '💥',
-                    '💫', '💦', '💨', '🕳️', '💬', '🗨️', '🗯️', '💭', '💤', '👋',
-                    '🤚', '🖐️', '✋', '🖖', '👌', '🤌', '🤏', '✌️', '🤞', '🤟',
-                    '🤘', '🤙', '👈', '👉', '👆', '🖕', '👇', '☝️', '👍', '👎',
-                    '✊', '👊', '🤛', '🤜', '👏', '🙌', '👐', '🤲', '🤝', '🙏',
-                    '✍️', '💪', '🦾', '🦿', '🦵', '🦶', '👂', '🦻', '👃', '🧠',
-                    '🫀', '🫁', '🦷', '🦴', '👀', '👁️', '👅', '👄', '💋', '🩸',
-                    '🍽️', '🍜', '🍕', '🍔', '🍟', '🌮', '🌯', '🥪', '🍱', '🍛',
-                    '🥤', '☕', '🧃', '🍺', '🍷', '🥛', '🧋', '🍹', '🥤', '💧',
-                    '🛍️', '🧴', '🧻', '🧽', '👕', '👖', '👟', '👜', '💄', '🪞',
-                    '💊', '🏥', '🩺', '🩹', '🩻', '💉', '🩸', '🧬', '🔬', '📋',
-                    '🍪', '🍩', '🍰', '🧁', '🍦', '🍨', '🍭', '🍫', '🍬', '🍡',
-                    '🍎', '🍌', '🍊', '🍇', '🍓', '🍑', '🥭', '🍍', '🥥', '🥝',
-                    '🥬', '🥕', '🥦', '🥒', '🍅', '🌽', '🥑', '🥒', '🧅', '🧄',
-                    '🥩', '🍗', '🍖', '🥓', '🍖', '🐟', '🦐', '🦑', '🦞', '🦀',
-                    '🥛', '🧀', '🍦', '🍨', '🥛', '🧈', '🥛', '🍼', '🥛', '🥛',
-                    '🍞', '🥖', '🥨', '🥯', '🥐', '🥪', '🍞', '🥖', '🥨', '🥯'
-                ];
-                
-                allEmojis.forEach(emoji => {
-                    const button = document.createElement('button');
-                    button.className = 'text-2xl p-2 hover:bg-gray-100 rounded';
-                    button.textContent = emoji;
-                    button.onclick = () => selectEmoji(emoji);
-                    grid.appendChild(button);
-                });
-            }
-            
-            modal.classList.remove('hidden');
-        }
-
-        // Close Emoji Picker Function
-        function closeEmojiPicker() {
-            document.getElementById('emoji-picker-modal').classList.add('hidden');
-        }
-
-        // Select Emoji Function
-        function selectEmoji(emoji) {
-            const selectedTag = document.getElementById('item-tag').value;
-            const emojiBtn = document.getElementById('emoji-picker-btn');
-            
-            // Update emoji button
-            emojiBtn.textContent = emoji;
-            
-            // Store selected emoji for the current tag
-            if (selectedTag) {
-                if (!window.selectedEmojis) {
-                    window.selectedEmojis = {};
-                }
-                window.selectedEmojis[selectedTag] = emoji;
-            }
-            
-            closeEmojiPicker();
-        }
-
-        // Update Tag Emoji Function
-        function updateTagEmoji() {
-            const selectedTag = document.getElementById('item-tag').value;
-            const emojiBtn = document.getElementById('emoji-picker-btn');
-            
-            if (selectedTag) {
-                // Use stored emoji or default
-                const storedEmoji = window.selectedEmojis && window.selectedEmojis[selectedTag];
-                const defaultEmoji = defaultEmojis[selectedTag];
-                emojiBtn.textContent = storedEmoji || defaultEmoji || '😊';
-            } else {
-                emojiBtn.textContent = '😊';
-            }
-        }
-
-        // Show Tag Filter Function
-        function showTagFilter() {
-            if (selectedItems.length === 0) {
-                alert('ไม่มีรายการสินค้าให้กรอง');
-                return;
-            }
-
-            // Get unique tags from items
-            const itemTags = selectedItems.map(item => item.tag).filter(tag => tag);
-            const uniqueTags = [...new Set(itemTags)];
-
-            if (uniqueTags.length === 0) {
-                alert('ไม่มีแท็กในรายการสินค้า');
-                return;
-            }
-
-            let filterOptions = '🏷️ เลือกแท็กที่ต้องการกรอง:\n\n';
-            uniqueTags.forEach((tag, index) => {
-                const count = selectedItems.filter(item => item.tag === tag).length;
-                filterOptions += `${index + 1}. ${tag} (${count} รายการ)\n`;
-            });
-            filterOptions += '\n0. แสดงทั้งหมด';
-
-            const choice = prompt(filterOptions + '\n\nกรุณาใส่หมายเลขที่ต้องการ:');
-            
-            if (choice === null) return; // User cancelled
-            
-            const choiceNum = parseInt(choice);
-            if (choiceNum === 0) {
-                // Show all items
-                updateItemsDisplay();
-                alert('แสดงรายการทั้งหมด');
-            } else if (choiceNum >= 1 && choiceNum <= uniqueTags.length) {
-                // Filter by selected tag
-                const selectedTag = uniqueTags[choiceNum - 1];
-                const filteredItems = selectedItems.filter(item => item.tag === selectedTag);
-                
-                if (filteredItems.length > 0) {
-                    let summary = `🏷️ รายการสินค้าที่มีแท็ก "${selectedTag}":\n\n`;
-                    let totalAmount = 0;
-
-                    filteredItems.forEach((item, index) => {
-                        summary += `${index + 1}. ${item.emoji || '😊'} ${item.name}\n`;
-                        summary += `   ราคา: ${item.price.toFixed(2)} บาท × ${item.quantity} = ${item.total.toFixed(2)} บาท\n\n`;
-                        totalAmount += item.total;
-                    });
-
-                    summary += `💰 ยอดรวม: ${totalAmount.toFixed(2)} บาท`;
-                    summary += `\n📊 จำนวนรายการ: ${filteredItems.length} รายการ`;
-
-                    alert(summary);
-                }
-            } else {
-                alert('กรุณาเลือกหมายเลขที่ถูกต้อง');
-            }
-        }
-
-        // Form Submit Handler
-        document.getElementById('transaction-form').addEventListener('submit', function(e) {
-            const transactionType = transactionTypeSelect.value;
-            const mainCategory = mainCategorySelect.value;
-            const subCategory = subCategorySelect.value;
-            
-            if (!transactionType) {
-                e.preventDefault();
-                alert('กรุณาเลือกประเภทรายการ');
-                return;
-            }
-            
-            if (!mainCategory) {
-                e.preventDefault();
-                alert('กรุณาเลือกประเภทหลัก');
-                return;
-            }
-            
-            if (!subCategory) {
-                e.preventDefault();
-                alert('กรุณาเลือกประเภทย่อย');
-                return;
-            }
-            
-            if (transactionType === 'income') {
-                const incomeAmount = parseFloat(document.getElementById('income-amount').value) || 0;
-                if (incomeAmount <= 0) {
-                    e.preventDefault();
+            if (type === 'income') {
+                const amount = parseFloat(document.getElementById('income-amount').value);
+                if (!amount || amount <= 0) {
                     alert('กรุณากรอกจำนวนเงินสำหรับรายรับ');
                     return;
                 }
-                
-                // Set values for income
-                document.getElementById('calculated-total').value = incomeAmount.toFixed(2);
-                document.getElementById('description').value = `รายรับ: ${mainCategory} > ${subCategory}`;
-                document.getElementById('items-data').value = '';
-                
-            } else if (transactionType === 'expense') {
+                submitIncomeTransaction(amount);
+            } else if (type === 'expense') {
                 if (selectedItems.length === 0) {
-                    e.preventDefault();
                     alert('กรุณาเพิ่มรายการสินค้าอย่างน้อย 1 รายการ');
                     return;
                 }
-                
-                const vendor = document.getElementById('vendor-select').value;
+                const vendor = document.getElementById('vendor').value;
                 if (!vendor) {
-                    e.preventDefault();
                     alert('กรุณาเลือกร้านค้า');
                     return;
                 }
+                submitExpenseTransaction();
             }
-        });
-
-        // Add Main Category Button Handler
-        document.getElementById('add-main-category-btn').addEventListener('click', function() {
-            const customInput = document.getElementById('custom-main-category-input');
-            const newCategoryInput = document.getElementById('new-main-category');
-            
-            if (customInput.classList.contains('hidden')) {
-                customInput.classList.remove('hidden');
-                newCategoryInput.focus();
-            } else {
-                addCustomMainCategory();
-            }
-        });
-
-        // Add Custom Main Category Function
-        function addCustomMainCategory() {
-            const newCategoryInput = document.getElementById('new-main-category');
-            const categoryName = newCategoryInput.value.trim();
-            const transactionType = transactionTypeSelect.value;
-            
-            if (!categoryName) {
-                alert('กรุณาใส่ชื่อประเภทหลัก');
-                return;
-            }
-            
-            if (!transactionType) {
-                alert('กรุณาเลือกประเภทรายการก่อน');
-                return;
-            }
-            
-            // Add to category data structure
-            if (!categoryData[transactionType][categoryName]) {
-                categoryData[transactionType][categoryName] = [];
-            }
-            
-            // Add to select options
-            const option = document.createElement('option');
-            option.value = categoryName;
-            option.textContent = categoryName;
-            mainCategorySelect.appendChild(option);
-            
-            // Select the new category
-            mainCategorySelect.value = categoryName;
-            
-            // Hide input and clear
-            document.getElementById('custom-main-category-input').classList.add('hidden');
-            newCategoryInput.value = '';
-            
-            // Clear sub categories
-            subCategorySelect.innerHTML = '<option value="">--เลือกประเภทย่อย--</option>';
-            updateCategoryDisplay();
-            
-            alert(`เพิ่มประเภทหลัก "${categoryName}" เรียบร้อยแล้ว`);
         }
 
-        // Enter key handler for custom main category
-        document.getElementById('new-main-category').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                addCustomMainCategory();
+        function submitIncomeTransaction(amount) {
+            const data = {
+                date: document.getElementById('date').value,
+                type: 'income',
+                mainCategory: mainCategory.value,
+                subCategory: subCategory.value,
+                amount: amount,
+                description: document.getElementById('description').value
+            };
+            
+            console.log('Submitting income:', data);
+            
+            // Show success message
+            showSuccessMessage('บันทึกรายรับเรียบร้อยแล้ว');
+            
+            // Reset form
+            resetForm();
+        }
+
+        function submitExpenseTransaction() {
+            const total = selectedItems.reduce((sum, item) => sum + item.total, 0);
+            
+            const data = {
+                date: document.getElementById('date').value,
+                type: 'expense',
+                mainCategory: mainCategory.value,
+                subCategory: subCategory.value,
+                vendor: document.getElementById('vendor').value,
+                amount: total,
+                items: selectedItems,
+                description: document.getElementById('description').value
+            };
+            
+            console.log('Submitting expense:', data);
+            
+            // Show success message
+            showSuccessMessage(`บันทึกรายจ่าย ${selectedItems.length} รายการ เรียบร้อยแล้ว`);
+            
+            // Reset form
+            resetForm();
+        }
+
+        function showSuccessMessage(message) {
+            // Create success notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 fade-in';
+            notification.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <span>✅</span>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function resetForm() {
+            // Reset form fields
+            document.getElementById('transaction-form').reset();
+            
+            // Set today's date again
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').value = today;
+            
+            // Clear categories
+            mainCategory.innerHTML = '<option value="">-- เลือกประเภทหลัก --</option>';
+            subCategory.innerHTML = '<option value="">-- เลือกประเภทย่อย --</option>';
+            
+            // Hide conditional sections
+            incomeSection.classList.add('hidden');
+            itemsSection.classList.add('hidden');
+            vendorSection.classList.add('hidden');
+            
+            // Clear items
+            selectedItems = [];
+            updateItemsDisplay();
+            
+            // Reset emoji
+            currentEmoji = '😊';
+            updateEmojiDisplay();
+        }
+
+        // Utility Functions
+        function changeMonth(month) {
+            console.log('Changing month to:', month);
+            // Here you would typically reload the page with new month data
+        }
+
+        function exportData(type) {
+            console.log('Exporting data:', type);
+            alert(`ส่งออกข้อมูล${type === 'all' ? 'ทั้งหมด' : type === 'income' ? 'รายรับ' : 'รายจ่าย'}`);
+        }
+
+        function showMonthlySummary() {
+            const summary = `📋 สรุปประจำเดือน มกราคม 2025
+            
+💰 รายรับรวม: 15,000.00 บาท
+💸 รายจ่ายรวม: 8,500.00 บาท
+📊 ยอดคงเหลือ: 6,500.00 บาท
+📝 จำนวนรายการ: 24 รายการ
+
+✅ สถานะ: มีเงินเหลือ (กำไร)
+📈 อัตราส่วนรายจ่ายต่อรายรับ: 56.7%`;
+            
+            alert(summary);
+        }
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Add custom category functions
+        document.getElementById('add-main-category-btn').addEventListener('click', function() {
+            const categoryName = prompt('กรุณาใส่ชื่อประเภทหลักใหม่:');
+            if (categoryName && categoryName.trim()) {
+                const type = transactionType.value;
+                if (!type) {
+                    alert('กรุณาเลือกประเภทรายการก่อน');
+                    return;
+                }
+                
+                // Add to category data
+                if (!categoryData[type][categoryName]) {
+                    categoryData[type][categoryName] = [];
+                }
+                
+                // Add to select
+                const option = document.createElement('option');
+                option.value = categoryName;
+                option.textContent = categoryName;
+                mainCategory.appendChild(option);
+                mainCategory.value = categoryName;
+                
+                alert(`เพิ่มประเภทหลัก "${categoryName}" เรียบร้อยแล้ว`);
             }
         });
 
-        // Add Sub Category Button Handler
         document.getElementById('add-sub-category-btn').addEventListener('click', function() {
-            const customInput = document.getElementById('custom-sub-category-input');
-            const newCategoryInput = document.getElementById('new-sub-category');
-            
-            if (customInput.classList.contains('hidden')) {
-                customInput.classList.remove('hidden');
-                newCategoryInput.focus();
-            } else {
-                addCustomSubCategory();
-            }
-        });
-
-        // Add Custom Sub Category Function
-        function addCustomSubCategory() {
-            const newCategoryInput = document.getElementById('new-sub-category');
-            const subCategoryName = newCategoryInput.value.trim();
-            const mainCategory = mainCategorySelect.value;
-            const transactionType = transactionTypeSelect.value;
-            
-            if (!subCategoryName) {
-                alert('กรุณาใส่ชื่อประเภทย่อย');
-                return;
-            }
-            
-            if (!mainCategory) {
+            const main = mainCategory.value;
+            if (!main) {
                 alert('กรุณาเลือกประเภทหลักก่อน');
                 return;
             }
             
-            // Add to category data structure
-            if (!categoryData[transactionType][mainCategory]) {
-                categoryData[transactionType][mainCategory] = [];
-            }
-            
-            if (categoryData[transactionType][mainCategory].includes(subCategoryName)) {
-                alert('ประเภทย่อยนี้มีอยู่แล้ว');
-                return;
-            }
-            
-            categoryData[transactionType][mainCategory].push(subCategoryName);
-            
-            // Add to select options
-            const option = document.createElement('option');
-            option.value = subCategoryName;
-            option.textContent = subCategoryName;
-            subCategorySelect.appendChild(option);
-            
-            // Select the new sub category
-            subCategorySelect.value = subCategoryName;
-            
-            // Hide input and clear
-            document.getElementById('custom-sub-category-input').classList.add('hidden');
-            newCategoryInput.value = '';
-            
-            updateCategoryDisplay();
-            
-            alert(`เพิ่มประเภทย่อย "${subCategoryName}" เรียบร้อยแล้ว`);
-        }
-
-        // Enter key handler for custom sub category
-        document.getElementById('new-sub-category').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                addCustomSubCategory();
+            const categoryName = prompt('กรุณาใส่ชื่อประเภทย่อยใหม่:');
+            if (categoryName && categoryName.trim()) {
+                const type = transactionType.value;
+                
+                // Add to category data
+                categoryData[type][main].push(categoryName);
+                
+                // Add to select
+                const option = document.createElement('option');
+                option.value = categoryName;
+                option.textContent = categoryName;
+                subCategory.appendChild(option);
+                subCategory.value = categoryName;
+                
+                alert(`เพิ่มประเภทย่อย "${categoryName}" เรียบร้อยแล้ว`);
             }
         });
 
-        // Add Vendor Button Handler
         document.getElementById('add-vendor-btn').addEventListener('click', function() {
-            const customInput = document.getElementById('custom-vendor-input');
-            const newVendorInput = document.getElementById('new-vendor');
-            
-            if (customInput.classList.contains('hidden')) {
-                customInput.classList.remove('hidden');
-                newVendorInput.focus();
-            } else {
-                addCustomVendor();
+            const vendorName = prompt('กรุณาใส่ชื่อร้านค้าใหม่:');
+            if (vendorName && vendorName.trim()) {
+                const vendorSelect = document.getElementById('vendor');
+                
+                // Check if vendor already exists
+                const existingOptions = Array.from(vendorSelect.options);
+                const exists = existingOptions.some(option => option.value === vendorName);
+                
+                if (exists) {
+                    alert('ร้านค้านี้มีอยู่แล้ว');
+                    return;
+                }
+                
+                // Add new option
+                const option = document.createElement('option');
+                option.value = vendorName;
+                option.textContent = vendorName;
+                vendorSelect.appendChild(option);
+                vendorSelect.value = vendorName;
+                
+                alert(`เพิ่มร้านค้า "${vendorName}" เรียบร้อยแล้ว`);
             }
         });
 
-        // Add Custom Vendor Function
-        function addCustomVendor() {
-            const newVendorInput = document.getElementById('new-vendor');
-            const vendorName = newVendorInput.value.trim();
-            
-            if (!vendorName) {
-                alert('กรุณาใส่ชื่อร้านค้า');
-                return;
+        // Responsive handling
+        window.addEventListener('resize', function() {
+            if (selectedItems.length > 0) {
+                updateItemsDisplay();
             }
-            
-            const vendorSelect = document.getElementById('vendor-select');
-            
-            // Check if vendor already exists
-            const existingOptions = Array.from(vendorSelect.options);
-            const exists = existingOptions.some(option => option.value === vendorName);
-            
-            if (exists) {
-                alert('ร้านค้านี้มีอยู่แล้ว');
-                return;
-            }
-            
-            // Add new option
-            const option = document.createElement('option');
-            option.value = vendorName;
-            option.textContent = vendorName;
-            vendorSelect.appendChild(option);
-            
-            // Select the new vendor
-            vendorSelect.value = vendorName;
-            
-            // Hide input and clear
-            document.getElementById('custom-vendor-input').classList.add('hidden');
-            newVendorInput.value = '';
-            
-            alert(`เพิ่มร้านค้า "${vendorName}" เรียบร้อยแล้ว`);
-        }
+        });
 
-        // Enter key handler for custom vendor
-        document.getElementById('new-vendor').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
+        // Prevent zoom on iOS
+        document.addEventListener('touchstart', function(e) {
+            if (e.touches.length > 1) {
                 e.preventDefault();
-                addCustomVendor();
             }
         });
 
-        // Change Month Function
-        function changeMonth(month) {
-            window.location.href = `/income-expense?month=${month}`;
-        }
+        // Smooth scroll behavior
+        document.documentElement.style.scrollBehavior = 'smooth';
 
-        // Export Data Function
-        function exportData(category, yearMonth) {
-            const url = `/export-${category}/${yearMonth}`;
-            window.open(url, '_blank');
-        }
-
-        // Export Year Data Function
-        function exportYearData(year) {
-            const url = `/export-all/${year}`;
-            window.open(url, '_blank');
-        }
-
-        // Show Monthly Summary Function
-        function showMonthlySummary() {
-            const selectedMonth = document.getElementById('month-select').value;
-            const monthDisplay = document.getElementById('month-select').options[document.getElementById('month-select').selectedIndex].text;
+        // Auto-save to localStorage (optional)
+        function saveFormData() {
+            const formData = {
+                selectedItems: selectedItems,
+                transactionType: transactionType.value,
+                mainCategory: mainCategory.value,
+                subCategory: subCategory.value,
+                date: document.getElementById('date').value
+            };
             
-            // Get summary data from the page
-            const totalIncome = parseFloat('{{ monthly_total_income }}') || 0;
-            const totalExpense = parseFloat('{{ monthly_total_expense }}') || 0;
-            const balance = totalIncome - totalExpense;
-            const totalRecords = parseInt('{{ total_records }}') || 0;
-            
-            let summary = `📋 สรุปประจำเดือน: ${monthDisplay}\n\n`;
-            summary += `💰 รายรับรวม: ${totalIncome.toFixed(2)} บาท\n`;
-            summary += `💸 รายจ่ายรวม: ${totalExpense.toFixed(2)} บาท\n`;
-            summary += `📊 ยอดคงเหลือ: ${balance.toFixed(2)} บาท\n`;
-            summary += `📝 จำนวนรายการ: ${totalRecords} รายการ\n\n`;
-            
-            if (balance > 0) {
-                summary += `✅ สถานะ: มีเงินเหลือ (กำไร)\n`;
-            } else if (balance < 0) {
-                summary += `⚠️ สถานะ: ใช้เงินเกิน (ขาดทุน)\n`;
-            } else {
-                summary += `⚖️ สถานะ: เงินเท่ากับรายจ่าย\n`;
+            try {
+                localStorage.setItem('incomeExpenseForm', JSON.stringify(formData));
+            } catch (e) {
+                console.log('localStorage not available');
             }
-            
-            // Add percentage analysis
-            if (totalIncome > 0) {
-                const expensePercentage = ((totalExpense / totalIncome) * 100).toFixed(1);
-                summary += `📈 อัตราส่วนรายจ่ายต่อรายรับ: ${expensePercentage}%\n`;
-            }
-            
-            alert(summary);
         }
 
-        // Show Yearly View Function
-        function showYearlyView() {
-            const currentYear = new Date().getFullYear();
-            const selectedMonth = document.getElementById('month-select').value;
-            const year = selectedMonth.split('-')[0];
-            
-            // Redirect to yearly view or show year selection
-            const choice = confirm(`ต้องการดูข้อมูลรายปี ${year} หรือไม่?\n\nกด "ตกลง" เพื่อดูข้อมูลรายปี\nกด "ยกเลิก" เพื่อเลือกปีอื่น`);
-            
-            if (choice) {
-                // Redirect to yearly view (you can create this route)
-                window.location.href = `/income-expense/year/${year}`;
-            } else {
-                // Show year selection
-                const newYear = prompt('กรุณาใส่ปีที่ต้องการดู (เช่น 2025):', year);
-                if (newYear && /^\d{4}$/.test(newYear)) {
-                    window.location.href = `/income-expense/year/${newYear}`;
+        function loadFormData() {
+            try {
+                const saved = localStorage.getItem('incomeExpenseForm');
+                if (saved) {
+                    const formData = JSON.parse(saved);
+                    
+                    // Restore form state if needed
+                    if (formData.selectedItems && formData.selectedItems.length > 0) {
+                        const restore = confirm('พบข้อมูลฟอร์มที่บันทึกไว้ ต้องการเรียกคืนหรือไม่?');
+                        if (restore) {
+                            selectedItems = formData.selectedItems;
+                            updateItemsDisplay();
+                            
+                            if (formData.transactionType) {
+                                transactionType.value = formData.transactionType;
+                                handleTransactionTypeChange();
+                            }
+                        } else {
+                            localStorage.removeItem('incomeExpenseForm');
+                        }
+                    }
                 }
+            } catch (e) {
+                console.log('localStorage not available');
             }
         }
 
-        // Show Record Details Function
-        function showRecordDetails(recordId) {
-            // ซ่อนรายละเอียดอื่นๆ ที่เปิดอยู่
-            const allDetails = document.querySelectorAll('[id^="details-"]');
-            allDetails.forEach(detail => {
-                detail.classList.add('hidden');
-            });
-            
-            // แสดงรายละเอียดของรายการที่เลือก
-            const detailsElement = document.getElementById(`details-${recordId}`);
-            if (detailsElement) {
-                detailsElement.classList.remove('hidden');
-                
-                // เลื่อนไปยังรายละเอียดที่แสดง
-                detailsElement.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'nearest' 
-                });
-            }
-        }
+        // Load saved form data on page load
+        // loadFormData();
 
-        // Show Mobile Record Details Function
-        function showMobileRecordDetails(recordId) {
-            // แสดง modal หรือ alert สำหรับรายละเอียดบนมือถือ
-            const record = document.querySelector(`[onclick="showMobileRecordDetails(${recordId})"]`);
-            if (record) {
-                const description = record.querySelector('.mobile-record-description').textContent;
-                const amount = record.querySelector('.mobile-record-amount').textContent;
-                const date = record.querySelector('.mobile-record-date').textContent;
-                
-                let details = `📋 รายละเอียดรายการ\n\n`;
-                details += `📅 วันที่: ${date}\n`;
-                details += `📝 รายละเอียด: ${description}\n`;
-                details += `💰 จำนวน: ${amount}\n`;
-                
-                // ดึงข้อมูลเพิ่มเติมจากรายการ
-                const detailElements = record.querySelectorAll('.mobile-record-detail');
-                detailElements.forEach(detail => {
-                    const text = detail.textContent.trim();
-                    details += `${text}\n`;
-                });
-                
-                alert(details);
-            }
-        }
+        // Save form data periodically
+        setInterval(saveFormData, 30000); // Save every 30 seconds
 
-        // Hide Record Details Function
-        function hideRecordDetails(recordId) {
-            const detailsElement = document.getElementById(`details-${recordId}`);
-            if (detailsElement) {
-                detailsElement.classList.add('hidden');
-            }
-        }
-
-        // Close all details when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('tr') && !e.target.closest('.bg-white')) {
-                const allDetails = document.querySelectorAll('[id^="details-"]');
-                allDetails.forEach(detail => {
-                    detail.classList.add('hidden');
-                });
-            }
-        });
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set today's date as default
-            const today = new Date().toISOString().split('T')[0];
-            document.querySelector('input[name="date"]').value = today;
-            
-            // Auto refresh after form submission
-            if (window.location.search.includes('success=true')) {
-                setTimeout(() => {
-                    window.location.href = window.location.pathname;
-                }, 2000);
-            }
-            
-            // Handle window resize for responsive design
-            window.addEventListener('resize', function() {
-                if (selectedItems.length > 0) {
-                    updateItemsDisplay();
-                }
-            });
-        });
+        console.log('💰 รายรับ-รายจ่าย Mobile App Initialized');
     </script>
 </body>
 </html>
