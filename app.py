@@ -170,6 +170,11 @@ def google_login():
         flash('Google OAuth ไม่พร้อมใช้งาน กรุณาติดตั้ง requests', 'error')
         return redirect(url_for('login'))
     
+    # ตรวจสอบว่า credentials ถูกตั้งค่าหรือไม่
+    if not app.config['GOOGLE_CLIENT_ID'] or not app.config['GOOGLE_CLIENT_SECRET']:
+        flash('Google OAuth credentials ยังไม่ได้ตั้งค่า กรุณาตั้งค่า GOOGLE_CLIENT_ID และ GOOGLE_CLIENT_SECRET', 'error')
+        return redirect(url_for('login'))
+    
     import urllib.parse
     redirect_uri = url_for('google_authorized', _external=True)
     params = {
