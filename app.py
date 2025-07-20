@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, send_file, flash, session
 import sqlite3
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 import pandas as pd
 import io
 import os
@@ -404,6 +404,16 @@ def init_db():
             morning_break_ot TEXT DEFAULT '0',
             afternoon_break_ot TEXT DEFAULT '0',
             evening_break_ot TEXT DEFAULT '0',
+            saturday_ot_enabled TEXT DEFAULT '0',
+            saturday_ot_start_time TEXT DEFAULT '12:00',
+            saturday_ot_rate_multiplier TEXT DEFAULT '2.0',
+            saturday_whole_day_ot TEXT DEFAULT '0',
+            weekday_ot_enabled TEXT DEFAULT '0',
+            weekday_ot_days TEXT DEFAULT '',
+            weekday_ot_start_time TEXT DEFAULT '18:00',
+            weekday_ot_rate_multiplier TEXT DEFAULT '1.5',
+            night_ot_enabled TEXT DEFAULT '0',
+            night_ot_rate_multiplier TEXT DEFAULT '2.0',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users (id),
@@ -467,6 +477,59 @@ def init_db():
     except sqlite3.OperationalError:
         pass  # คอลัมน์มีอยู่แล้ว
     
+    # เพิ่มคอลัมน์ใหม่สำหรับการตั้งค่าโอทีวันเสาร์
+    try:
+        conn.execute('ALTER TABLE work_settings ADD COLUMN saturday_ot_enabled TEXT DEFAULT "0"')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    try:
+        conn.execute('ALTER TABLE work_settings ADD COLUMN saturday_ot_start_time TEXT DEFAULT "12:00"')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    try:
+        conn.execute('ALTER TABLE work_settings ADD COLUMN saturday_ot_rate_multiplier TEXT DEFAULT "2.0"')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    try:
+        conn.execute('ALTER TABLE work_settings ADD COLUMN saturday_whole_day_ot TEXT DEFAULT "0"')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    # เพิ่มคอลัมน์ใหม่สำหรับการตั้งค่าโอทีวันธรรมดา
+    try:
+        conn.execute('ALTER TABLE work_settings ADD COLUMN weekday_ot_enabled TEXT DEFAULT "0"')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    try:
+        conn.execute('ALTER TABLE work_settings ADD COLUMN weekday_ot_days TEXT DEFAULT ""')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    try:
+        conn.execute('ALTER TABLE work_settings ADD COLUMN weekday_ot_start_time TEXT DEFAULT "18:00"')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    try:
+        conn.execute('ALTER TABLE work_settings ADD COLUMN weekday_ot_rate_multiplier TEXT DEFAULT "1.5"')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    # เพิ่มคอลัมน์ใหม่สำหรับการตั้งค่าโอทีช่วงดึก
+    try:
+        conn.execute('ALTER TABLE work_settings ADD COLUMN night_ot_enabled TEXT DEFAULT "0"')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    try:
+        conn.execute('ALTER TABLE work_settings ADD COLUMN night_ot_rate_multiplier TEXT DEFAULT "2.0"')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
     conn.commit()
     conn.close()
 
@@ -482,7 +545,10 @@ def calculate_ot(start_str, end_str, user_id):
         SELECT work_start_time, work_end_time, work_days,
                lunch_start, lunch_end,
                evening_break_start, evening_break_end,
-               evening_break_ot
+               evening_break_ot,
+               saturday_ot_enabled, saturday_ot_start_time, saturday_ot_rate_multiplier, saturday_whole_day_ot,
+               weekday_ot_enabled, weekday_ot_days, weekday_ot_start_time, weekday_ot_rate_multiplier,
+               night_ot_enabled, night_ot_rate_multiplier
         FROM work_settings 
         WHERE user_id = ?
     ''', (user_id,)).fetchone()
@@ -504,18 +570,42 @@ def calculate_ot(start_str, end_str, user_id):
     # การตั้งค่าโอทีในเบรคเย็น
     evening_break_ot = work_settings['evening_break_ot'] if work_settings else '0'
     
+    # การตั้งค่าโอทีวันเสาร์
+    saturday_ot_enabled = work_settings['saturday_ot_enabled'] if work_settings else '0'
+    saturday_ot_start_time = work_settings['saturday_ot_start_time'] if work_settings else '12:00'
+    saturday_ot_rate_multiplier = float(work_settings['saturday_ot_rate_multiplier']) if work_settings else 2.0
+    saturday_whole_day_ot = work_settings['saturday_whole_day_ot'] if work_settings else '0'
+    
+    # การตั้งค่าโอทีวันธรรมดา
+    weekday_ot_enabled = work_settings['weekday_ot_enabled'] if work_settings else '0'
+    weekday_ot_days = work_settings['weekday_ot_days'].split(',') if work_settings and work_settings['weekday_ot_days'] else []
+    weekday_ot_start_time = work_settings['weekday_ot_start_time'] if work_settings else '18:00'
+    weekday_ot_rate_multiplier = float(work_settings['weekday_ot_rate_multiplier']) if work_settings else 1.5
+    
+    # การตั้งค่าโอทีช่วงดึก
+    night_ot_enabled = work_settings['night_ot_enabled'] if work_settings else '0'
+    night_ot_rate_multiplier = float(work_settings['night_ot_rate_multiplier']) if work_settings else 2.0
+    
     # ตรวจสอบว่าเป็นวันทำงานหรือไม่
     current_weekday = str(start.weekday())
     if current_weekday not in work_days:
         return 0.0
 
+    # ตรวจสอบว่าเป็นวันเสาร์หรือไม่
+    is_saturday = current_weekday == '5'  # 5 = วันเสาร์
+    
+    # ตรวจสอบว่าเป็นวันธรรมดาที่เปิดใช้โอทีพิเศษหรือไม่
+    is_weekday_ot_enabled = weekday_ot_enabled == '1' and current_weekday in weekday_ot_days
+    
     # คำนวณเวลาเริ่มงานและเลิกงานปกติ
     work_start = datetime.strptime(f"{date_str} {work_start_time}", "%Y-%m-%d %H:%M")
     work_end = datetime.strptime(f"{date_str} {work_end_time}", "%Y-%m-%d %H:%M")
     
-    # เริ่มคิด OT หลังจากเวลาเลิกงานปกติ
-    if start.time() < work_end.time():
-        start = work_end
+    # เริ่มคิด OT หลังจากเวลาเลิกงานปกติ (เฉพาะเมื่อเป็นโอทีปกติ)
+    # ถ้าเป็นวันเสาร์ที่เปิดใช้โอทีพิเศษ หรือวันธรรมดาที่เปิดใช้โอทีพิเศษ จะไม่บังคับให้เริ่มหลังเวลาเลิกงาน
+    if not ((is_saturday and saturday_ot_enabled == '1') or is_weekday_ot_enabled):
+        if start.time() < work_end.time():
+            start = work_end
 
     # สร้างรายการเวลาพักจากฐานข้อมูล
     breaks = []
@@ -539,6 +629,107 @@ def calculate_ot(start_str, end_str, user_id):
             evening_end_h, evening_end_m = map(int, evening_break_end.split(':'))
             breaks.append((evening_start_h, evening_start_m, evening_end_h, evening_end_m))
 
+    # คำนวณโอทีตามลำดับความสำคัญ
+    total_ot_hours = 0.0
+    
+    # 1. โอทีช่วงดึก (22:00-06:00) - สูงสุด
+    if night_ot_enabled == '1':
+        night_ot_hours = calculate_night_ot(start, end, night_ot_rate_multiplier)
+        total_ot_hours += night_ot_hours
+    
+    # 2. โอทีวันเสาร์
+    if is_saturday and saturday_ot_enabled == '1':
+        saturday_ot_hours = calculate_saturday_ot(start, end, saturday_ot_start_time, saturday_ot_rate_multiplier, saturday_whole_day_ot, breaks)
+        total_ot_hours += saturday_ot_hours
+    
+    # 3. โอทีวันธรรมดา
+    elif is_weekday_ot_enabled:
+        weekday_ot_hours = calculate_weekday_ot(start, end, weekday_ot_start_time, weekday_ot_rate_multiplier, breaks)
+        total_ot_hours += weekday_ot_hours
+    
+    # 4. โอทีปกติ (หลังเวลาเลิกงาน)
+    else:
+        normal_ot_hours = calculate_normal_ot(start, end, breaks)
+        total_ot_hours += normal_ot_hours
+
+    return round(total_ot_hours, 2)
+
+
+def calculate_night_ot(start, end, multiplier):
+    """คำนวณโอทีช่วงดึก (22:00-06:00)"""
+    night_start = datetime.combine(start.date(), time(22, 0))
+    night_end = datetime.combine(start.date() + timedelta(days=1), time(6, 0))
+    
+    # คำนวณเวลาที่ทับซ้อนกับช่วงดึก
+    overlap_start = max(start, night_start)
+    overlap_end = min(end, night_end)
+    
+    if overlap_start < overlap_end:
+        night_hours = (overlap_end - overlap_start).total_seconds() / 3600
+        return night_hours * multiplier
+    return 0.0
+
+
+def calculate_saturday_ot(start, end, saturday_start_time, multiplier, whole_day_ot, breaks):
+    """คำนวณโอทีวันเสาร์"""
+    if whole_day_ot == '1':
+        # คิดโอทีทั้งวัน
+        total_hours = (end - start).total_seconds() / 3600
+        # หักเวลาพัก
+        for bh, bm, eh, em in breaks:
+            brk_start = datetime.combine(start.date(), time(bh, bm))
+            brk_end = datetime.combine(start.date(), time(eh, em))
+            overlap_start = max(start, brk_start)
+            overlap_end = min(end, brk_end)
+            if overlap_start < overlap_end:
+                total_hours -= (overlap_end - overlap_start).total_seconds() / 3600
+        return total_hours * multiplier
+    else:
+        # คิดโอทีตามเวลาที่กำหนด
+        saturday_start = datetime.combine(start.date(), datetime.strptime(saturday_start_time, "%H:%M").time())
+        
+        # ถ้าเริ่มงานก่อนเวลาโอที ให้เริ่มคิดจากเวลาโอที
+        if start < saturday_start:
+            start = saturday_start
+        
+        if start < end:
+            total_hours = (end - start).total_seconds() / 3600
+            # หักเวลาพัก
+            for bh, bm, eh, em in breaks:
+                brk_start = datetime.combine(start.date(), time(bh, bm))
+                brk_end = datetime.combine(start.date(), time(eh, em))
+                overlap_start = max(start, brk_start)
+                overlap_end = min(end, brk_end)
+                if overlap_start < overlap_end:
+                    total_hours -= (overlap_end - overlap_start).total_seconds() / 3600
+            return total_hours * multiplier
+        return 0.0
+
+
+def calculate_weekday_ot(start, end, weekday_start_time, multiplier, breaks):
+    """คำนวณโอทีวันธรรมดา"""
+    weekday_start = datetime.combine(start.date(), datetime.strptime(weekday_start_time, "%H:%M").time())
+    
+    # ถ้าเริ่มงานก่อนเวลาโอที ให้เริ่มคิดจากเวลาโอที
+    if start < weekday_start:
+        start = weekday_start
+    
+    if start < end:
+        total_hours = (end - start).total_seconds() / 3600
+        # หักเวลาพัก
+        for bh, bm, eh, em in breaks:
+            brk_start = datetime.combine(start.date(), time(bh, bm))
+            brk_end = datetime.combine(start.date(), time(eh, em))
+            overlap_start = max(start, brk_start)
+            overlap_end = min(end, brk_end)
+            if overlap_start < overlap_end:
+                total_hours -= (overlap_end - overlap_start).total_seconds() / 3600
+        return total_hours * multiplier
+    return 0.0
+
+
+def calculate_normal_ot(start, end, breaks):
+    """คำนวณโอทีปกติ (หลังเวลาเลิกงาน)"""
     total_seconds = (end - start).total_seconds()
 
     for bh, bm, eh, em in breaks:
@@ -549,7 +740,7 @@ def calculate_ot(start_str, end_str, user_id):
         if overlap_start < overlap_end:
             total_seconds -= (overlap_end - overlap_start).total_seconds()
 
-    return round(max(total_seconds / 3600, 0), 2)
+    return max(total_seconds / 3600, 0)
 
 
 @app.route('/index', methods=['GET', 'POST'])
@@ -1404,7 +1595,10 @@ def settings():
         SELECT work_start_time, work_end_time, ot_rate, work_days,
                lunch_start, lunch_end,
                evening_break_start, evening_break_end,
-               evening_break_ot
+               evening_break_ot,
+               saturday_ot_enabled, saturday_ot_start_time, saturday_ot_rate_multiplier, saturday_whole_day_ot,
+               weekday_ot_enabled, weekday_ot_days, weekday_ot_start_time, weekday_ot_rate_multiplier,
+               night_ot_enabled, night_ot_rate_multiplier
         FROM work_settings 
         WHERE user_id = ?
     ''', (user_id,)).fetchone()
@@ -1432,13 +1626,13 @@ def change_password():
     conn = get_db_connection()
     user = conn.execute('SELECT * FROM users WHERE id = ?', (session['user_id'],)).fetchone()
     
-    if not check_password_hash(user['password'], current_password):
+    if not check_password_hash(user['password_hash'], current_password):
         conn.close()
         flash('รหัสผ่านปัจจุบันไม่ถูกต้อง', 'error')
         return redirect('/settings')
     
     hashed_password = generate_password_hash(new_password)
-    conn.execute('UPDATE users SET password = ? WHERE id = ?', (hashed_password, session['user_id']))
+    conn.execute('UPDATE users SET password_hash = ? WHERE id = ?', (hashed_password, session['user_id']))
     conn.commit()
     conn.close()
     
@@ -1466,8 +1660,27 @@ def update_work_time_settings():
     # การตั้งค่าโอทีในเบรคเย็น
     evening_break_ot = '1' if request.form.get('evening_break_ot') else '0'
     
+    # การตั้งค่าโอทีวันเสาร์
+    saturday_ot_enabled = '1' if request.form.get('saturday_ot_enabled') else '0'
+    saturday_ot_start_time = request.form.get('saturday_ot_start_time', '12:00')
+    saturday_ot_rate_multiplier = request.form.get('saturday_ot_rate_multiplier', '2.0')
+    saturday_whole_day_ot = '1' if request.form.get('saturday_whole_day_ot') else '0'
+    
+    # การตั้งค่าโอทีวันธรรมดา
+    weekday_ot_enabled = '1' if request.form.get('weekday_ot_enabled') else '0'
+    weekday_ot_days = request.form.getlist('weekday_ot_days')
+    weekday_ot_start_time = request.form.get('weekday_ot_start_time', '18:00')
+    weekday_ot_rate_multiplier = request.form.get('weekday_ot_rate_multiplier', '1.5')
+    
+    # การตั้งค่าโอทีช่วงดึก
+    night_ot_enabled = '1' if request.form.get('night_ot_enabled') else '0'
+    night_ot_rate_multiplier = request.form.get('night_ot_rate_multiplier', '2.0')
+    
     # แปลง work_days เป็น string
     work_days_str = ','.join(work_days) if work_days else '1,2,3,4,5'
+    
+    # แปลง weekday_ot_days เป็น string
+    weekday_ot_days_str = ','.join(weekday_ot_days) if weekday_ot_days else ''
     
     conn = get_db_connection()
     
@@ -1482,12 +1695,18 @@ def update_work_time_settings():
                 lunch_start = ?, lunch_end = ?,
                 evening_break_start = ?, evening_break_end = ?,
                 evening_break_ot = ?,
+                saturday_ot_enabled = ?, saturday_ot_start_time = ?, saturday_ot_rate_multiplier = ?, saturday_whole_day_ot = ?,
+                weekday_ot_enabled = ?, weekday_ot_days = ?, weekday_ot_start_time = ?, weekday_ot_rate_multiplier = ?,
+                night_ot_enabled = ?, night_ot_rate_multiplier = ?,
                 updated_at = CURRENT_TIMESTAMP
             WHERE user_id = ?
         ''', (work_start_time, work_end_time, ot_rate, work_days_str,
               lunch_start, lunch_end,
               evening_break_start, evening_break_end,
               evening_break_ot,
+              saturday_ot_enabled, saturday_ot_start_time, saturday_ot_rate_multiplier, saturday_whole_day_ot,
+              weekday_ot_enabled, weekday_ot_days_str, weekday_ot_start_time, weekday_ot_rate_multiplier,
+              night_ot_enabled, night_ot_rate_multiplier,
               user_id))
     else:
         # สร้างการตั้งค่าใหม่
@@ -1496,13 +1715,19 @@ def update_work_time_settings():
                 user_id, work_start_time, work_end_time, ot_rate, work_days,
                 lunch_start, lunch_end,
                 evening_break_start, evening_break_end,
-                evening_break_ot
+                evening_break_ot,
+                saturday_ot_enabled, saturday_ot_start_time, saturday_ot_rate_multiplier, saturday_whole_day_ot,
+                weekday_ot_enabled, weekday_ot_days, weekday_ot_start_time, weekday_ot_rate_multiplier,
+                night_ot_enabled, night_ot_rate_multiplier
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (user_id, work_start_time, work_end_time, ot_rate, work_days_str,
               lunch_start, lunch_end,
               evening_break_start, evening_break_end,
-              evening_break_ot))
+              evening_break_ot,
+              saturday_ot_enabled, saturday_ot_start_time, saturday_ot_rate_multiplier, saturday_whole_day_ot,
+              weekday_ot_enabled, weekday_ot_days_str, weekday_ot_start_time, weekday_ot_rate_multiplier,
+              night_ot_enabled, night_ot_rate_multiplier))
     
     conn.commit()
     conn.close()
