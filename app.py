@@ -365,6 +365,18 @@ def init_db():
     except sqlite3.OperationalError:
         # คอลัมน์มีอยู่แล้ว
         pass
+    
+    # เพิ่มคอลัมน์ main_category และ sub_category
+    try:
+        conn.execute('ALTER TABLE income_expense ADD COLUMN main_category TEXT')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
+    try:
+        conn.execute('ALTER TABLE income_expense ADD COLUMN sub_category TEXT')
+    except sqlite3.OperationalError:
+        pass  # คอลัมน์มีอยู่แล้ว
+    
     # ✅ แก้ตรงนี้: เพิ่ม note
     conn.execute('''
                  CREATE TABLE IF NOT EXISTS holidays
@@ -939,19 +951,23 @@ def income_expense():
             if not description:
                 description = f"รายรับ: {category}"
             conn.execute('''
-                         INSERT INTO income_expense (user_id, date, description, amount, category, vendor)
-                         VALUES (?, ?, ?, ?, ?, ?)
-                         ''', (user_id, date, description, amount, 'income', vendor))
+                         INSERT INTO income_expense (user_id, date, description, amount, category, vendor, main_category, sub_category)
+                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                         ''', (user_id, date, description, amount, 'income', vendor, category, None))
         else:
             # สำหรับรายจ่าย
             if not items_data or not description:
                 flash('กรุณาเลือกรายการสินค้า', 'error')
                 return redirect('/income-expense')
 
+            # ใช้ main_category และ sub_category จากฟอร์มโดยตรง
+            main_category = request.form.get('main_category', '')
+            sub_category = request.form.get('sub_category', '')
+
             conn.execute('''
-                         INSERT INTO income_expense (user_id, date, description, amount, category, vendor)
-                         VALUES (?, ?, ?, ?, ?, ?)
-                         ''', (user_id, date, description, amount, 'expense', vendor))
+                         INSERT INTO income_expense (user_id, date, description, amount, category, vendor, main_category, sub_category)
+                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                         ''', (user_id, date, description, amount, 'expense', vendor, main_category, sub_category))
 
         conn.commit()
         flash('บันทึกข้อมูลเรียบร้อยแล้ว', 'success')
@@ -1058,6 +1074,8 @@ def edit_income_expense(id):
         amount = float(request.form['amount'])
         category = request.form['category']
         vendor = request.form['vendor']  # ✅ ต้องมีตัวนี้
+        main_category = request.form.get('main_category', '')
+        sub_category = request.form.get('sub_category', '')
 
         conn.execute('''
                      UPDATE income_expense
@@ -1065,9 +1083,11 @@ def edit_income_expense(id):
                          description=?,
                          amount=?,
                          category=?,
-                         vendor=?
+                         vendor=?,
+                         main_category=?,
+                         sub_category=?
                      WHERE id = ? AND user_id = ?
-                     ''', (date, description, amount, category, vendor, id, user_id))  # ✅ ครบ 7 ค่า
+                     ''', (date, description, amount, category, vendor, main_category, sub_category, id, user_id))  # ✅ ครบ 9 ค่า
         conn.commit()
         conn.close()
         return redirect('/income-expense')

@@ -95,6 +95,20 @@
           <option value="expense" {% if record['category'] == 'expense' %}selected{% endif %}>💸 รายจ่าย</option>
       </select>
     </div>
+    
+    <div>
+        <label class="block font-semibold mb-2 text-sm sm:text-base">🏷️ ประเภทหลัก</label>
+        <input type="text" name="main_category" value="{{ record['main_category'] or '' }}" 
+               class="w-full border rounded p-3 sm:p-2 text-base focus:ring-2 focus:ring-blue-400"
+               placeholder="เช่น อาหาร, ของใช้, ค่าเดินทาง">
+    </div>
+    
+    <div>
+        <label class="block font-semibold mb-2 text-sm sm:text-base">📂 ประเภทย่อย</label>
+        <input type="text" name="sub_category" value="{{ record['sub_category'] or '' }}" 
+               class="w-full border rounded p-3 sm:p-2 text-base focus:ring-2 focus:ring-blue-400"
+               placeholder="เช่น อาหารหลัก, สบู่, น้ำมัน">
+    </div>
       
       <div class="flex justify-center sm:justify-end">
         <button type="submit" 
