@@ -588,23 +588,45 @@ def delete_income_expense(id):
 def export_income_expense_month(category, year_month):
     conn = get_db_connection()
     user_id = session['user_id']
-    if category == 'all':
-        df = pd.read_sql_query('''
-                               SELECT *
-                               FROM income_expense
-                               WHERE user_id = ? AND strftime('%Y-%m', date) = ?
-                               ORDER BY date ASC
-                               ''', conn, params=[user_id, year_month])
-        filename = f"income_expense_{year_month}.csv"
-    else:
-        df = pd.read_sql_query('''
-                               SELECT *
-                               FROM income_expense
-                               WHERE user_id = ? AND strftime('%Y-%m', date) = ?
-                                 AND category = ?
-                               ORDER BY date ASC
-                               ''', conn, params=[user_id, year_month, category])
-        filename = f"{category}_{year_month}.csv"
+    
+    # Check if year_month is a year (4 digits) or year-month (7 digits)
+    if len(year_month) == 4:  # Year only
+        if category == 'all':
+            df = pd.read_sql_query('''
+                                   SELECT *
+                                   FROM income_expense
+                                   WHERE user_id = ? AND strftime('%Y', date) = ?
+                                   ORDER BY date ASC
+                                   ''', conn, params=[user_id, year_month])
+            filename = f"income_expense_{year_month}.csv"
+        else:
+            df = pd.read_sql_query('''
+                                   SELECT *
+                                   FROM income_expense
+                                   WHERE user_id = ? AND strftime('%Y', date) = ?
+                                     AND category = ?
+                                   ORDER BY date ASC
+                                   ''', conn, params=[user_id, year_month, category])
+            filename = f"{category}_{year_month}.csv"
+    else:  # Year-month format
+        if category == 'all':
+            df = pd.read_sql_query('''
+                                   SELECT *
+                                   FROM income_expense
+                                   WHERE user_id = ? AND strftime('%Y-%m', date) = ?
+                                   ORDER BY date ASC
+                                   ''', conn, params=[user_id, year_month])
+            filename = f"income_expense_{year_month}.csv"
+        else:
+            df = pd.read_sql_query('''
+                                   SELECT *
+                                   FROM income_expense
+                                   WHERE user_id = ? AND strftime('%Y-%m', date) = ?
+                                     AND category = ?
+                                   ORDER BY date ASC
+                                   ''', conn, params=[user_id, year_month, category])
+            filename = f"{category}_{year_month}.csv"
+    
     conn.close()
 
     csv_buffer = io.StringIO()
@@ -700,6 +722,55 @@ def income_expense_month_view(year_month):
     conn.close()
 
     return render_template('income_expense_month.html', records=records, year_month=year_month)
+
+
+@app.route('/income-expense/year/<year>')
+@login_required
+def income_expense_year_view(year):
+    conn = get_db_connection()
+    user_id = session['user_id']
+    
+    # Get all records for the year
+    records = conn.execute('''
+                           SELECT *
+                           FROM income_expense
+                           WHERE user_id = ? AND strftime('%Y', date) = ?
+                           ORDER BY date DESC
+                           ''', (user_id, year)).fetchall()
+    
+    # Calculate yearly totals
+    yearly_income = conn.execute('''
+                                  SELECT COALESCE(SUM(amount), 0) as total
+                                  FROM income_expense
+                                  WHERE user_id = ? AND strftime('%Y', date) = ? AND category = 'income'
+                                  ''', (user_id, year)).fetchone()['total']
+    
+    yearly_expense = conn.execute('''
+                                   SELECT COALESCE(SUM(amount), 0) as total
+                                   FROM income_expense
+                                   WHERE user_id = ? AND strftime('%Y', date) = ? AND category = 'expense'
+                                   ''', (user_id, year)).fetchone()['total']
+    
+    # Get monthly breakdown
+    monthly_data = conn.execute('''
+                                 SELECT strftime('%Y-%m', date) as month,
+                                        SUM(CASE WHEN category = 'income' THEN amount ELSE 0 END) as income,
+                                        SUM(CASE WHEN category = 'expense' THEN amount ELSE 0 END) as expense,
+                                        COUNT(*) as count
+                                 FROM income_expense
+                                 WHERE user_id = ? AND strftime('%Y', date) = ?
+                                 GROUP BY strftime('%Y-%m', date)
+                                 ORDER BY month ASC
+                                 ''', (user_id, year)).fetchall()
+    
+    conn.close()
+    
+    return render_template('income_expense_year.html', 
+                         records=records, 
+                         year=year, 
+                         yearly_income=yearly_income,
+                         yearly_expense=yearly_expense,
+                         monthly_data=monthly_data)
 
 
 @app.route('/delete-income-expense-month/<int:id>', methods=['POST'])

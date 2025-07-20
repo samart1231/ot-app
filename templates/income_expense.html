@@ -605,10 +605,10 @@
             </form>
         </div>
 
-        <!-- Month Selection -->
+        <!-- Month Selection and Export -->
         <div class="bg-white p-4 lg:p-6 rounded-lg shadow-md mb-6">
             <h2 class="text-lg lg:text-xl font-semibold mb-4">📅 เลือกเดือนที่ต้องการดู</h2>
-            <div class="flex flex-col lg:flex-row items-start lg:items-center gap-3">
+            <div class="flex flex-col lg:flex-row items-start lg:items-center gap-3 mb-4">
                 <label class="font-semibold">เดือน:</label>
                 <select id="month-select" class="border rounded-lg p-2 focus:ring-2 focus:ring-blue-400" onchange="changeMonth(this.value)">
                     {% for month in available_months %}
@@ -619,6 +619,37 @@
                 </select>
                 <div class="text-sm text-gray-600">
                     แสดงข้อมูล รายรับ-รายจ่าย ประจำเดือน ({{ total_records }} รายการ)
+                </div>
+            </div>
+            
+            <!-- Export Buttons -->
+            <div class="border-t pt-4">
+                <h3 class="text-md font-semibold mb-3">📊 Export ข้อมูล</h3>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="exportData('all', '{{ selected_month }}')" 
+                            class="btn-animate bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">
+                        📄 Export ทั้งหมด
+                    </button>
+                    <button onclick="exportData('income', '{{ selected_month }}')" 
+                            class="btn-animate bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm">
+                        💰 Export รายรับ
+                    </button>
+                    <button onclick="exportData('expense', '{{ selected_month }}')" 
+                            class="btn-animate bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
+                        💸 Export รายจ่าย
+                    </button>
+                    <button onclick="showMonthlySummary()" 
+                            class="btn-animate bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm">
+                        📋 สรุปประจำเดือน
+                    </button>
+                    <button onclick="showYearlyView()" 
+                            class="btn-animate bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm">
+                        📅 ดูรายปี
+                    </button>
+                    <button onclick="exportYearData('{{ selected_month.split('-')[0] }}')" 
+                            class="btn-animate bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm">
+                        📊 Export รายปี
+                    </button>
                 </div>
             </div>
         </div>
@@ -1862,6 +1893,73 @@
         // Change Month Function
         function changeMonth(month) {
             window.location.href = `/income-expense?month=${month}`;
+        }
+
+        // Export Data Function
+        function exportData(category, yearMonth) {
+            const url = `/export-${category}/${yearMonth}`;
+            window.open(url, '_blank');
+        }
+
+        // Export Year Data Function
+        function exportYearData(year) {
+            const url = `/export-all/${year}`;
+            window.open(url, '_blank');
+        }
+
+        // Show Monthly Summary Function
+        function showMonthlySummary() {
+            const selectedMonth = document.getElementById('month-select').value;
+            const monthDisplay = document.getElementById('month-select').options[document.getElementById('month-select').selectedIndex].text;
+            
+            // Get summary data from the page
+            const totalIncome = parseFloat('{{ monthly_total_income }}') || 0;
+            const totalExpense = parseFloat('{{ monthly_total_expense }}') || 0;
+            const balance = totalIncome - totalExpense;
+            const totalRecords = parseInt('{{ total_records }}') || 0;
+            
+            let summary = `📋 สรุปประจำเดือน: ${monthDisplay}\n\n`;
+            summary += `💰 รายรับรวม: ${totalIncome.toFixed(2)} บาท\n`;
+            summary += `💸 รายจ่ายรวม: ${totalExpense.toFixed(2)} บาท\n`;
+            summary += `📊 ยอดคงเหลือ: ${balance.toFixed(2)} บาท\n`;
+            summary += `📝 จำนวนรายการ: ${totalRecords} รายการ\n\n`;
+            
+            if (balance > 0) {
+                summary += `✅ สถานะ: มีเงินเหลือ (กำไร)\n`;
+            } else if (balance < 0) {
+                summary += `⚠️ สถานะ: ใช้เงินเกิน (ขาดทุน)\n`;
+            } else {
+                summary += `⚖️ สถานะ: เงินเท่ากับรายจ่าย\n`;
+            }
+            
+            // Add percentage analysis
+            if (totalIncome > 0) {
+                const expensePercentage = ((totalExpense / totalIncome) * 100).toFixed(1);
+                summary += `📈 อัตราส่วนรายจ่ายต่อรายรับ: ${expensePercentage}%\n`;
+            }
+            
+            alert(summary);
+        }
+
+        // Show Yearly View Function
+        function showYearlyView() {
+            const currentYear = new Date().getFullYear();
+            const selectedMonth = document.getElementById('month-select').value;
+            const year = selectedMonth.split('-')[0];
+            
+            // Redirect to yearly view or show year selection
+            const choice = confirm(`ต้องการดูข้อมูลรายปี ${year} หรือไม่?\n\nกด "ตกลง" เพื่อดูข้อมูลรายปี\nกด "ยกเลิก" เพื่อเลือกปีอื่น`);
+            
+            if (choice) {
+                // Redirect to yearly view (you can create this route)
+                window.location.href = `/income-expense/year/${year}`;
+            } else {
+                // Show year selection
+                const newYear = prompt('กรุณาใส่ปีที่ต้องการดู (เช่น 2025):', year);
+                if (newYear && /^\d{4}$/.test(newYear)) {
+                    window.location.href = `/income-expense/year/${newYear}`;
+                }
+            }
         }
 
         // Initialize

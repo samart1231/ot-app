@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายรับรายจ่ายรายปี {{ year }}</title>
+    <script src="{{ url_for('static', filename='js/tailwind.min.js') }}"></script>
+    <style>
+        .btn-animate {
+            transition: all 0.2s ease;
+        }
+        .btn-animate:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .btn-animate:active {
+            transform: translateY(0);
+        }
+        .smooth-transition {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen">
+    <!-- Mobile Header -->
+    <div class="lg:hidden fixed top-0 left-0 w-full bg-white shadow-lg z-50">
+        <div class="flex items-center justify-between p-4">
+            <h1 class="text-xl font-bold text-gray-800">📊 รายรับ-รายจ่าย {{ year }}</h1>
+            <button id="mobile-menu-btn" class="text-gray-600 hover:text-gray-800 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden bg-white border-t">
+            <nav class="py-2">
+                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📅 OT Records</a>
+                <a href="/income-expense" class="block px-4 py-3 bg-green-100 text-green-700 font-medium border-b">💰 Income/Expense</a>
+                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">🎉 Holidays</a>
+                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📊 Import CSV</a>
+                <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⏰ Import OT CSV</a>
+                <div class="px-4 py-3 border-b">
+                    <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
+                </div>
+                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50">🚪 Logout</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Desktop Sidebar -->
+    <div class="hidden lg:block fixed top-0 left-0 w-64 h-full bg-white shadow-lg z-40">
+        <div class="p-6">
+            <h1 class="text-2xl font-bold text-gray-800 mb-8">📊 ระบบจัดการ</h1>
+            <nav class="space-y-2">
+                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">📅 OT Records</a>
+                <a href="/income-expense" class="block px-4 py-3 bg-green-100 text-green-700 font-medium rounded-lg">💰 Income/Expense</a>
+                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">🎉 Holidays</a>
+                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">📊 Import CSV</a>
+                <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg smooth-transition">⏰ Import OT CSV</a>
+            </nav>
+            <div class="mt-8 pt-6 border-t">
+                <div class="px-4 py-2">
+                    <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
+                </div>
+                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg smooth-transition">🚪 Logout</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="lg:ml-64 pt-20 lg:pt-6 p-4 lg:p-6">
+        <!-- Page Header -->
+        <div class="mb-6">
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl lg:text-3xl font-bold">📊 รายรับ-รายจ่าย ปี {{ year }}</h1>
+                <a href="/income-expense" class="btn-animate bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                    ← กลับไปหน้าหลัก
+                </a>
+            </div>
+        </div>
+
+        <!-- Yearly Summary Cards -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
+            <div class="bg-green-100 p-4 rounded-lg text-center">
+                <div class="text-green-800 font-bold text-xl">{{ "%.2f"|format(yearly_income) }}</div>
+                <div class="text-green-600 text-sm">รายรับรวม (บาท)</div>
+            </div>
+            <div class="bg-red-100 p-4 rounded-lg text-center">
+                <div class="text-red-800 font-bold text-xl">{{ "%.2f"|format(yearly_expense) }}</div>
+                <div class="text-red-600 text-sm">รายจ่ายรวม (บาท)</div>
+            </div>
+            <div class="bg-blue-100 p-4 rounded-lg text-center">
+                <div class="text-blue-800 font-bold text-xl">{{ "%.2f"|format(yearly_income - yearly_expense) }}</div>
+                <div class="text-blue-600 text-sm">คงเหลือ (บาท)</div>
+            </div>
+            <div class="bg-purple-100 p-4 rounded-lg text-center">
+                <div class="text-purple-800 font-bold text-xl">{{ records|length }}</div>
+                <div class="text-purple-600 text-sm">จำนวนรายการ</div>
+            </div>
+        </div>
+
+        <!-- Export Buttons -->
+        <div class="bg-white p-4 lg:p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-lg lg:text-xl font-semibold mb-4">📊 Export ข้อมูลรายปี</h2>
+            <div class="flex flex-wrap gap-2">
+                <button onclick="exportYearData('all', '{{ year }}')" 
+                        class="btn-animate bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">
+                    📄 Export ทั้งหมด
+                </button>
+                <button onclick="exportYearData('income', '{{ year }}')" 
+                        class="btn-animate bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm">
+                    💰 Export รายรับ
+                </button>
+                <button onclick="exportYearData('expense', '{{ year }}')" 
+                        class="btn-animate bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
+                    💸 Export รายจ่าย
+                </button>
+                <button onclick="showYearlySummary()" 
+                        class="btn-animate bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm">
+                    📋 สรุปรายปี
+                </button>
+            </div>
+        </div>
+
+        <!-- Monthly Breakdown -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+            <div class="p-4 lg:p-6 border-b">
+                <h2 class="text-lg lg:text-xl font-semibold">📅 สรุปรายเดือน</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">เดือน</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">รายรับ (บาท)</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">รายจ่าย (บาท)</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">คงเหลือ (บาท)</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">จำนวนรายการ</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if monthly_data %}
+                            {% for month in monthly_data %}
+                                {% set month_income = month.income or 0 %}
+                                {% set month_expense = month.expense or 0 %}
+                                {% set month_balance = month_income - month_expense %}
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="px-4 py-3 text-sm font-medium">
+                                        {% set month_name = month.month.split('-')[1] %}
+                                        {% if month_name == '01' %}มกราคม
+                                        {% elif month_name == '02' %}กุมภาพันธ์
+                                        {% elif month_name == '03' %}มีนาคม
+                                        {% elif month_name == '04' %}เมษายน
+                                        {% elif month_name == '05' %}พฤษภาคม
+                                        {% elif month_name == '06' %}มิถุนายน
+                                        {% elif month_name == '07' %}กรกฎาคม
+                                        {% elif month_name == '08' %}สิงหาคม
+                                        {% elif month_name == '09' %}กันยายน
+                                        {% elif month_name == '10' %}ตุลาคม
+                                        {% elif month_name == '11' %}พฤศจิกายน
+                                        {% elif month_name == '12' %}ธันวาคม
+                                        {% endif %} {{ year }}
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-green-600 font-medium">{{ "%.2f"|format(month_income) }}</td>
+                                    <td class="px-4 py-3 text-sm text-red-600 font-medium">{{ "%.2f"|format(month_expense) }}</td>
+                                    <td class="px-4 py-3 text-sm font-medium {% if month_balance > 0 %}text-green-600{% elif month_balance < 0 %}text-red-600{% else %}text-gray-600{% endif %}">
+                                        {{ "%.2f"|format(month_balance) }}
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-center">{{ month.count }}</td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <a href="/income-expense?month={{ month.month }}" 
+                                           class="text-blue-600 hover:text-blue-800">
+                                            👁️ ดูรายละเอียด
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                                    <div class="text-4xl mb-2">📭</div>
+                                    <div>ไม่มีข้อมูลในปีนี้</div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- All Records Table -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="p-4 lg:p-6 border-b">
+                <h2 class="text-lg lg:text-xl font-semibold">📊 รายการทั้งหมดในปี {{ year }}</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">วันที่</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">รายละเอียด</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">จำนวน</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">ร้านค้า</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">ประเภท</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if records %}
+                            {% for record in records %}
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="px-4 py-3 text-sm">{{ record.date }}</td>
+                                    <td class="px-4 py-3 text-sm">{{ record.description }}</td>
+                                    <td class="px-4 py-3 text-sm font-medium {% if record.category == 'income' %}text-green-600{% else %}text-red-600{% endif %}">
+                                        {{ "%.2f"|format(record.amount) }}
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">{{ record.vendor or '-' }}</td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <span class="px-2 py-1 rounded-full text-xs {% if record.category == 'income' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                                            {% if record.category == 'income' %}💰 รายรับ{% else %}💸 รายจ่าย{% endif %}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <div class="flex gap-2">
+                                            <a href="/edit-income-expense/{{ record.id }}" 
+                                               class="text-blue-600 hover:text-blue-800 text-sm">
+                                                ✏️ แก้ไข
+                                            </a>
+                                            <form method="POST" action="/delete-income-expense/{{ record.id }}" 
+                                                  class="inline" onsubmit="return confirm('ต้องการลบรายการนี้หรือไม่?')">
+                                                <button type="submit" class="text-red-600 hover:text-red-800 text-sm">
+                                                    🗑️ ลบ
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                                    <div class="text-4xl mb-2">📭</div>
+                                    <div>ไม่มีข้อมูลในปีนี้</div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+
+        // Export Year Data Function
+        function exportYearData(category, year) {
+            const url = `/export-${category}/${year}`;
+            window.open(url, '_blank');
+        }
+
+        // Show Yearly Summary Function
+        function showYearlySummary() {
+            const yearlyIncome = parseFloat('{{ yearly_income }}') || 0;
+            const yearlyExpense = parseFloat('{{ yearly_expense }}') || 0;
+            const balance = yearlyIncome - yearlyExpense;
+            const totalRecords = parseInt('{{ records|length }}') || 0;
+            
+            let summary = `📋 สรุปรายปี: {{ year }}\n\n`;
+            summary += `💰 รายรับรวม: ${yearlyIncome.toFixed(2)} บาท\n`;
+            summary += `💸 รายจ่ายรวม: ${yearlyExpense.toFixed(2)} บาท\n`;
+            summary += `📊 ยอดคงเหลือ: ${balance.toFixed(2)} บาท\n`;
+            summary += `📝 จำนวนรายการ: ${totalRecords} รายการ\n\n`;
+            
+            if (balance > 0) {
+                summary += `✅ สถานะ: มีเงินเหลือ (กำไร)\n`;
+            } else if (balance < 0) {
+                summary += `⚠️ สถานะ: ใช้เงินเกิน (ขาดทุน)\n`;
+            } else {
+                summary += `⚖️ สถานะ: เงินเท่ากับรายจ่าย\n`;
+            }
+            
+            // Add percentage analysis
+            if (yearlyIncome > 0) {
+                const expensePercentage = ((yearlyExpense / yearlyIncome) * 100).toFixed(1);
+                summary += `📈 อัตราส่วนรายจ่ายต่อรายรับ: ${expensePercentage}%\n`;
+            }
+            
+            // Add monthly average
+            const monthlyIncome = (yearlyIncome / 12).toFixed(2);
+            const monthlyExpense = (yearlyExpense / 12).toFixed(2);
+            summary += `📅 รายรับเฉลี่ยต่อเดือน: ${monthlyIncome} บาท\n`;
+            summary += `📅 รายจ่ายเฉลี่ยต่อเดือน: ${monthlyExpense} บาท\n`;
+            
+            alert(summary);
+        }
+    </script>
+</body>
+</html> 
