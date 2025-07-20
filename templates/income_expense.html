@@ -1174,12 +1174,11 @@
             const type = this.value;
             
             // Clear category options
-            mainCategorySelect.innerHTML = '<option value="">--เลือกประเภทหลัก--</option>';
-            subCategorySelect.innerHTML = '<option value="">--เลือกประเภทย่อย--</option>';
-            updateCategoryDisplay();
+            mainCategorySelect.innerHTML = '<option value="">-- เลือกประเภทหลัก --</option>';
+            subCategorySelect.innerHTML = '<option value="">-- เลือกประเภทย่อย --</option>';
             
             if (type === 'income') {
-                // Show income amount section, hide items and vendor sections
+                // Show income amount section
                 incomeAmountSection.classList.remove('hidden');
                 itemsSection.classList.add('hidden');
                 vendorSection.classList.add('hidden');
@@ -1191,9 +1190,8 @@
                     option.textContent = category;
                     mainCategorySelect.appendChild(option);
                 });
-                
             } else if (type === 'expense') {
-                // Show items and vendor sections, hide income amount section
+                // Show items section
                 incomeAmountSection.classList.add('hidden');
                 itemsSection.classList.remove('hidden');
                 vendorSection.classList.remove('hidden');
@@ -1219,7 +1217,7 @@
             const transactionType = transactionTypeSelect.value;
             
             // Clear sub category options
-            subCategorySelect.innerHTML = '<option value="">--เลือกประเภทย่อย--</option>';
+            subCategorySelect.innerHTML = '<option value="">-- เลือกประเภทย่อย --</option>';
             
             if (mainCategory && transactionType) {
                 const subCategories = categoryData[transactionType][mainCategory] || [];
@@ -1230,86 +1228,133 @@
                     subCategorySelect.appendChild(option);
                 });
             }
-            
-            updateCategoryDisplay();
         });
 
         // Sub Category Change Handler
         subCategorySelect.addEventListener('change', function() {
-            updateCategoryDisplay();
-        });
-
-        // Update Category Display Function
-        function updateCategoryDisplay() {
+            // Update hidden category field for form submission
             const mainCategory = mainCategorySelect.value;
-            const subCategory = subCategorySelect.value;
+            const subCategory = this.value;
             
-            document.getElementById('selected-main-category').textContent = mainCategory || '-';
-            document.getElementById('selected-sub-category').textContent = subCategory || '-';
-            
-            // Update combined category for form submission
-            const combinedCategory = mainCategory && subCategory ? `${mainCategory} > ${subCategory}` : '';
-            document.getElementById('combined-category').value = combinedCategory;
-        }
+            if (mainCategory && subCategory) {
+                // Create a hidden input for the combined category if it doesn't exist
+                let combinedCategoryInput = document.getElementById('combined-category');
+                if (!combinedCategoryInput) {
+                    combinedCategoryInput = document.createElement('input');
+                    combinedCategoryInput.type = 'hidden';
+                    combinedCategoryInput.id = 'combined-category';
+                    combinedCategoryInput.name = 'category';
+                    document.querySelector('form').appendChild(combinedCategoryInput);
+                }
+                combinedCategoryInput.value = `${mainCategory} > ${subCategory}`;
+            }
+        });
 
         // Add Item Function
-        document.getElementById('add-item-btn').addEventListener('click', function() {
-            addNewItem();
-        });
-
-                // Add New Item Function
-        function addNewItem() {
-            const name = document.getElementById('item-name').value.trim();
-            const price = parseFloat(document.getElementById('item-price').value) || 0;
-            const quantity = parseInt(document.getElementById('item-quantity').value) || 1;
-            const tag = document.getElementById('item-tag').value;
-            const emojiBtn = document.getElementById('emoji-picker-btn');
-            const emoji = emojiBtn.textContent;
+        function addItem() {
+            // สร้าง modal หรือ form สำหรับเพิ่มรายการสินค้า
+            const itemName = prompt('📝 ชื่อสินค้า:');
+            if (!itemName) return;
             
-            if (!name) {
-                alert('กรุณากรอกชื่อสินค้า');
-                document.getElementById('item-name').focus();
+            const itemPrice = prompt('💰 ราคา (บาท):');
+            if (!itemPrice || isNaN(itemPrice) || parseFloat(itemPrice) <= 0) {
+                alert('กรุณากรอกราคาที่ถูกต้อง');
                 return;
             }
-
-            if (price <= 0) {
-                alert('กรุณากรอกราคาที่มากกว่า 0');
-                document.getElementById('item-price').focus();
+            
+            const itemQuantity = prompt('📊 จำนวน (ค่าเริ่มต้น: 1):', '1');
+            if (!itemQuantity || isNaN(itemQuantity) || parseInt(itemQuantity) <= 0) {
+                alert('กรุณากรอกจำนวนที่ถูกต้อง');
                 return;
             }
+            
+            const itemTag = prompt('🏷️ แท็ก (เช่น: อาหาร, เครื่องดื่ม):', 'ของใช้');
             
             const item = {
                 id: ++itemCounter,
-                name: name,
-                tag: tag,
-                emoji: emoji,
-                price: price,
-                quantity: quantity,
-                total: price * quantity
+                name: itemName,
+                tag: itemTag,
+                emoji: '😊',
+                price: parseFloat(itemPrice),
+                quantity: parseInt(itemQuantity),
+                total: parseFloat(itemPrice) * parseInt(itemQuantity)
             };
             
             selectedItems.push(item);
             updateItemsDisplay();
             
-            // Clear inputs
-            document.getElementById('item-name').value = '';
-            document.getElementById('item-price').value = '';
-            document.getElementById('item-quantity').value = '1';
-            document.getElementById('item-tag').value = '';
-            emojiBtn.textContent = '😊';
+            // Update form data
+            updateFormData();
+        }
+
+        // Update Items Display
+        function updateItemsDisplay() {
+            const selectedItemsDiv = document.getElementById('selected-items');
+            const totalItemsSpan = document.getElementById('total-items');
+            const totalAmountSpan = document.getElementById('total-amount');
             
-            // Focus back to item name for next entry
-            document.getElementById('item-name').focus();
+            if (selectedItems.length === 0) {
+                selectedItemsDiv.innerHTML = '<div class="text-gray-500 text-center py-4">ยังไม่มีรายการสินค้า</div>';
+                totalItemsSpan.textContent = '0';
+                totalAmountSpan.textContent = '0.00';
+                return;
+            }
             
-            // Show success feedback
-            const addBtn = document.getElementById('add-item-btn');
-            const originalText = addBtn.innerHTML;
-            addBtn.innerHTML = '✅ เพิ่มแล้ว';
-            addBtn.classList.add('bg-green-600');
-            setTimeout(() => {
-                addBtn.innerHTML = originalText;
-                addBtn.classList.remove('bg-green-600');
-            }, 1000);
+            let totalAmount = 0;
+            let html = '<div class="space-y-2">';
+            
+            selectedItems.forEach((item, index) => {
+                totalAmount += item.total;
+                html += `
+                    <div class="bg-gray-50 border rounded-lg p-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-lg">${item.emoji}</span>
+                                <span class="font-medium">${item.name}</span>
+                                <span class="text-sm text-gray-600">x${item.quantity}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-blue-600">${item.total.toFixed(2)}</span>
+                                <button onclick="removeItem(${item.id})" class="text-red-500 hover:text-red-700">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            selectedItemsDiv.innerHTML = html;
+            totalItemsSpan.textContent = selectedItems.length;
+            totalAmountSpan.textContent = totalAmount.toFixed(2);
+            
+            // Update form data
+            updateFormData();
+        }
+
+        // Remove Item Function
+        function removeItem(itemId) {
+            selectedItems = selectedItems.filter(item => item.id !== itemId);
+            updateItemsDisplay();
+        }
+
+        // Update Form Data Function
+        function updateFormData() {
+            const itemsDataInput = document.getElementById('items-data');
+            const calculatedTotalInput = document.getElementById('calculated-total');
+            const descriptionInput = document.getElementById('description');
+            
+            // Update items data
+            itemsDataInput.value = JSON.stringify(selectedItems);
+            
+            // Calculate total
+            const total = selectedItems.reduce((sum, item) => sum + item.total, 0);
+            calculatedTotalInput.value = total.toFixed(2);
+            
+            // Create description
+            const description = selectedItems.map(item => `${item.name} x${item.quantity}`).join(', ');
+            descriptionInput.value = description;
         }
 
         // Enter key handler for item inputs
@@ -1697,34 +1742,6 @@
                         duplicateBtn.style.transform = 'scale(1)';
                     }, 200);
                 }
-            }
-        }
-
-        // Remove Item Function
-        function removeItem(itemId) {
-            if (confirm('ต้องการลบรายการนี้หรือไม่?')) {
-                selectedItems = selectedItems.filter(item => item.id !== itemId);
-                updateItemsDisplay();
-                
-                // Show feedback
-                const itemElement = document.querySelector(`[onclick="removeItem(${itemId})"]`);
-                if (itemElement) {
-                    itemElement.style.backgroundColor = '#fef2f2';
-                    itemElement.style.borderColor = '#ef4444';
-                    setTimeout(() => {
-                        itemElement.style.backgroundColor = '';
-                        itemElement.style.borderColor = '';
-                    }, 300);
-                }
-            }
-        }
-
-        // Clear All Items Function
-        function clearAllItems() {
-            if (selectedItems.length > 0 && confirm('ต้องการล้างรายการทั้งหมดหรือไม่?')) {
-                selectedItems = [];
-                updateItemsDisplay();
-                alert('ล้างรายการทั้งหมดเรียบร้อยแล้ว');
             }
         }
 
