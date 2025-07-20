@@ -7,7 +7,7 @@ import os
 import re
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
-import requests
+# import requests
 import json
 from config import Config
 import os
