@@ -546,6 +546,58 @@ def init_db():
     conn.close()
 
 
+
+
+def calculate_night_ot(start, end, multiplier):
+    """คำนวณโอทีช่วงดึก (22:00-06:00)"""
+    night_start = datetime.combine(start.date(), time(22, 0))
+    night_end = datetime.combine(start.date() + timedelta(days=1), time(6, 0))
+    
+    # คำนวณเวลาที่ทับซ้อนกับช่วงดึก
+    overlap_start = max(start, night_start)
+    overlap_end = min(end, night_end)
+    
+    if overlap_start < overlap_end:
+        night_hours = (overlap_end - overlap_start).total_seconds() / 3600
+        return night_hours * multiplier
+    return 0.0
+
+
+def calculate_saturday_ot(start, end, saturday_start_time, multiplier, whole_day_ot, breaks):
+    """คำนวณโอทีวันเสาร์"""
+    if whole_day_ot == '1':
+        # คิดโอทีทั้งวัน
+        total_hours = (end - start).total_seconds() / 3600
+        # หักเวลาพัก
+        for bh, bm, eh, em in breaks:
+            brk_start = datetime.combine(start.date(), time(bh, bm))
+            brk_end = datetime.combine(start.date(), time(eh, em))
+            overlap_start = max(start, brk_start)
+            overlap_end = min(end, brk_end)
+            if overlap_start < overlap_end:
+                total_hours -= (overlap_end - overlap_start).total_seconds() / 3600
+        return total_hours * multiplier
+    else:
+        # คิดโอทีตามเวลาที่กำหนด
+        saturday_start = datetime.combine(start.date(), datetime.strptime(saturday_start_time, "%H:%M").time())
+        
+        # ถ้าเริ่มงานก่อนเวลาโอที ให้เริ่มคิดจากเวลาโอที
+        if start < saturday_start:
+            start = saturday_start
+        
+        if start < end:
+            total_hours = (end - start).total_seconds() / 3600
+            # หักเวลาพัก
+            for bh, bm, eh, em in breaks:
+                brk_start = datetime.combine(start.date(), time(bh, bm))
+                brk_end = datetime.combine(start.date(), time(eh, em))
+                overlap_start = max(start, brk_start)
+                overlap_end = min(end, brk_end)
+                if overlap_start < overlap_end:
+                    total_hours -= (overlap_end - overlap_start).total_seconds() / 3600
+            return total_hours * multiplier
+        return 0.0
+
 def calculate_ot(start_str, end_str, user_id):
     start = datetime.strptime(start_str, "%Y-%m-%dT%H:%M")
     end = datetime.strptime(end_str, "%Y-%m-%dT%H:%M")
@@ -570,6 +622,18 @@ def calculate_ot(start_str, end_str, user_id):
     work_start_time = work_settings['work_start_time'] if work_settings else '08:00'
     work_end_time = work_settings['work_end_time'] if work_settings else '17:00'
     work_days = work_settings['work_days'].split(',') if work_settings else ['1', '2', '3', '4', '5']
+    
+    # 🔧 แก้ไขการแปลงวันในสัปดาห์
+    python_weekday = start.weekday()  # 0=จันทร์, 1=อังคาร, ..., 6=อาทิตย์
+    
+    # แปลงเป็นรูปแบบที่ฐานข้อมูลใช้
+    if python_weekday == 6:  # อาทิตย์
+        current_weekday = '0'
+    else:
+        current_weekday = str(python_weekday + 1)  # จันทร์=1, อังคาร=2, ...
+    
+    # เพิ่ม debug เพื่อตรวจสอบ
+    print(f"🔍 DEBUG: Python weekday={python_weekday}, DB weekday={current_weekday}, work_days={work_days}")
     
     # เวลาพักเที่ยง
     lunch_start = work_settings['lunch_start'] if work_settings else '12:00'
@@ -599,12 +663,12 @@ def calculate_ot(start_str, end_str, user_id):
     night_ot_rate_multiplier = float(work_settings['night_ot_rate_multiplier']) if work_settings else 2.0
     
     # ตรวจสอบว่าเป็นวันทำงานหรือไม่
-    current_weekday = str(start.weekday())
     if current_weekday not in work_days:
+        print(f"❌ ไม่ใช่วันทำงาน: current_weekday={current_weekday}, work_days={work_days}")
         return 0.0
 
-    # ตรวจสอบว่าเป็นวันเสาร์หรือไม่
-    is_saturday = current_weekday == '5'  # 5 = วันเสาร์
+    # 🔧 แก้ไขการตรวจสอบวันเสาร์
+    is_saturday = current_weekday == '6'  # เปลี่ยนจาก '5' เป็น '6'
     
     # ตรวจสอบว่าเป็นวันธรรมดาที่เปิดใช้โอทีพิเศษหรือไม่
     is_weekday_ot_enabled = weekday_ot_enabled == '1' and current_weekday in weekday_ot_days
@@ -664,59 +728,8 @@ def calculate_ot(start_str, end_str, user_id):
         normal_ot_hours = calculate_normal_ot(start, end, breaks)
         total_ot_hours += normal_ot_hours
 
+    print(f"🔍 DEBUG: Final OT hours = {total_ot_hours}")
     return round(total_ot_hours, 2)
-
-
-def calculate_night_ot(start, end, multiplier):
-    """คำนวณโอทีช่วงดึก (22:00-06:00)"""
-    night_start = datetime.combine(start.date(), time(22, 0))
-    night_end = datetime.combine(start.date() + timedelta(days=1), time(6, 0))
-    
-    # คำนวณเวลาที่ทับซ้อนกับช่วงดึก
-    overlap_start = max(start, night_start)
-    overlap_end = min(end, night_end)
-    
-    if overlap_start < overlap_end:
-        night_hours = (overlap_end - overlap_start).total_seconds() / 3600
-        return night_hours * multiplier
-    return 0.0
-
-
-def calculate_saturday_ot(start, end, saturday_start_time, multiplier, whole_day_ot, breaks):
-    """คำนวณโอทีวันเสาร์"""
-    if whole_day_ot == '1':
-        # คิดโอทีทั้งวัน
-        total_hours = (end - start).total_seconds() / 3600
-        # หักเวลาพัก
-        for bh, bm, eh, em in breaks:
-            brk_start = datetime.combine(start.date(), time(bh, bm))
-            brk_end = datetime.combine(start.date(), time(eh, em))
-            overlap_start = max(start, brk_start)
-            overlap_end = min(end, brk_end)
-            if overlap_start < overlap_end:
-                total_hours -= (overlap_end - overlap_start).total_seconds() / 3600
-        return total_hours * multiplier
-    else:
-        # คิดโอทีตามเวลาที่กำหนด
-        saturday_start = datetime.combine(start.date(), datetime.strptime(saturday_start_time, "%H:%M").time())
-        
-        # ถ้าเริ่มงานก่อนเวลาโอที ให้เริ่มคิดจากเวลาโอที
-        if start < saturday_start:
-            start = saturday_start
-        
-        if start < end:
-            total_hours = (end - start).total_seconds() / 3600
-            # หักเวลาพัก
-            for bh, bm, eh, em in breaks:
-                brk_start = datetime.combine(start.date(), time(bh, bm))
-                brk_end = datetime.combine(start.date(), time(eh, em))
-                overlap_start = max(start, brk_start)
-                overlap_end = min(end, brk_end)
-                if overlap_start < overlap_end:
-                    total_hours -= (overlap_end - overlap_start).total_seconds() / 3600
-            return total_hours * multiplier
-        return 0.0
-
 
 def calculate_weekday_ot(start, end, weekday_start_time, multiplier, breaks):
     """คำนวณโอทีวันธรรมดา"""
