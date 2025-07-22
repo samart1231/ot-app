@@ -389,9 +389,9 @@
                     <div>
                         <label class="form-label">📊 ประเภทรายการ</label>
                         <select id="transaction-type" name="category" required class="form-input">
-                            <option value="">-- เลือกประเภทรายการ --</option>
-                            <option value="income">💰 รายรับ</option>
+                            <!-- <option value="">-- เลือกประเภทรายการ --</option> -->
                             <option value="expense">💸 รายจ่าย</option>
+                            <option value="income">💰 รายรับ</option>                            
                         </select>
                     </div>
 
@@ -1090,13 +1090,13 @@
                                     <tr>
                                         <td class="text-center font-bold">${index + 1}</td>
                                         <td>
-                                            <div class="flex items-center gap-2">
+                                            <div class="flex items-center gap-1">
                                                 <span class="text-xl">${item.emoji}</span>
                                                 <span class="font-medium">${item.name}</span>
                                             </div>
                                         </td>
                                         <td>
-                                            <div class="flex items-center gap-2">
+                                            <div class="flex items-center gap-1">
                                                 <button onclick="updateItemPrice(${item.id}, Math.max(0, ${item.price} - 1))" 
                                                         class="btn btn-danger btn-sm">-</button>
                                                 <input type="number" value="${item.price}" step="0.01" min="0"
@@ -1107,7 +1107,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <div class="flex items-center gap-2">
+                                            <div class="flex items-center gap-1">
                                                 <button onclick="updateItemQuantity(${item.id}, Math.max(1, ${item.quantity} - 1))" 
                                                         class="btn btn-danger btn-sm">-</button>
                                                 <input type="number" value="${item.quantity}" min="1"
