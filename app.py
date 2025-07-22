@@ -1744,7 +1744,7 @@ def update_work_time_settings():
     user_id = session['user_id']
     work_start_time = request.form.get('work_start_time', '08:00')
     work_end_time = request.form.get('work_end_time', '17:00')
-    ot_rate = request.form.get('ot_rate', '50.00')
+    ot_rate = request.form.get('ot_rate', '75.00')
     work_days = request.form.getlist('work_days')
     
     # เวลาพักเที่ยง
@@ -1760,8 +1760,8 @@ def update_work_time_settings():
     
     # การตั้งค่าโอทีวันเสาร์
     saturday_ot_enabled = '1' if request.form.get('saturday_ot_enabled') else '0'
-    saturday_ot_start_time = request.form.get('saturday_ot_start_time', '12:00')
-    saturday_ot_rate_multiplier = request.form.get('saturday_ot_rate_multiplier', '2.0')
+    saturday_ot_start_time = request.form.get('saturday_ot_start_time', '13:00')
+    saturday_ot_rate_multiplier = request.form.get('saturday_ot_rate_multiplier', '1.0')
     saturday_whole_day_ot = '1' if request.form.get('saturday_whole_day_ot') else '0'
     
     # การตั้งค่าโอทีวันธรรมดา
