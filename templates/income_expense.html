@@ -420,17 +420,15 @@
                     <!-- Vendor Selection (for expense) -->
                     <div id="vendor-section" class="hidden">
                         <label class="form-label">🏪 ร้านค้า</label>
-                        <div class="flex gap-2">
-                            <select id="vendor-select" name="vendor" class="form-input flex-1">
-                                <option value="">-- เลือกร้านค้า --</option>
-                                <option value="ร้านสะดวกซื้อ 7-11">ร้านสะดวกซื้อ 7-11</option>
-                                <option value="ร้านค้าชุมชน">ร้านค้าชุมชน</option>
-                                <option value="ตลาดสด">ตลาดสด</option>
-                                <option value="ซูเปอร์มาร์เก็ต">ซูเปอร์มาร์เก็ต</option>
-                                <option value="ออนไลน์">ออนไลน์</option>
-                                <option value="อื่นๆ">อื่นๆ</option>
-                            </select>
-                        </div>
+                        <input list="vendor-list" name="vendor" id="vendor-select" class="form-input flex-1" placeholder="เลือกหรือกรอกชื่อร้านค้า">
+                        <datalist id="vendor-list">
+                            <option value="ร้านสะดวกซื้อ 7-11">
+                            <option value="ร้านค้าชุมชน">
+                            <option value="ตลาดสด">
+                            <option value="ซูเปอร์มาร์เก็ต">
+                            <option value="ออนไลน์">
+                            <option value="อื่นๆ">
+                        </datalist>
                     </div>
 
                     <!-- Items Section (for expense) -->
@@ -449,6 +447,14 @@
                             <button type="button" onclick="addQuickItem()" class="btn btn-primary w-full mb-4">
                                 ➕ เพิ่มสินค้า
                             </button>
+                            <div class="mt-4">
+                                <label class="form-label">⭐ เพิ่มสินค้าโปรด</label>
+                                <div class="flex gap-2 mb-2">
+                                    <input type="text" id="fav-item-name" placeholder="ชื่อสินค้า" class="form-input flex-1">
+                                    <input type="number" id="fav-item-price" placeholder="ราคา" class="form-input w-24" step="0.01" min="0">
+                                    <button type="button" onclick="addFavoriteItem()" class="btn btn-success">⭐ เพิ่ม</button>
+                                </div>
+                            </div>
                             
                             <!-- Quick Add Buttons -->
                             <div class="quick-add-grid">
@@ -636,17 +642,20 @@
                                 </td>
                                 <td>
                                     <div class="max-w-xs">
-                                        <div class="font-medium">{{ record.description or 'ไม่มีรายละเอียด' }}</div>
-                                        {% if record.items_data %}
-                                            {% set items = record.items_data | from_json %}
-                                            {% if items %}
-                                                <div class="text-sm text-gray-500 mt-1">
+                                        <div class="font-medium">
+                                            {% if record.items_data %}
+                                                {% set items = record.items_data | from_json %}
+                                                {% if items %}
                                                     {% for item in items %}
                                                         {{ item.name }} ({{ item.quantity }}x{{ "%.2f"|format(item.price) }}฿){% if not loop.last %}, {% endif %}
                                                     {% endfor %}
-                                                </div>
+                                                {% else %}
+                                                    {{ record.description or 'ไม่มีรายละเอียด' }}
+                                                {% endif %}
+                                            {% else %}
+                                                {{ record.description or 'ไม่มีรายละเอียด' }}
                                             {% endif %}
-                                        {% endif %}
+                                        </div>
                                     </div>
                                 </td>
                                 <td>
@@ -1009,59 +1018,57 @@
         }
 
         function renderMobileItemsList() {
-            return selectedItems.map((item, index) => `
-                <div class="card p-4">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                ${index + 1}
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="text-2xl">${item.emoji}</span>
-                                <div>
-                                    <div class="font-semibold text-gray-800">${item.name}</div>
-                                </div>
-                            </div>
-                        </div>
-                        <button onclick="removeItem(${item.id})" class="text-red-500 hover:text-red-700 p-2">
-                            🗑️
-                        </button>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-3 mb-3">
-                        <div>
-                            <label class="text-xs text-gray-600 mb-1 block">💰 ราคา</label>
-                            <div class="flex items-center gap-1">
-                                <button onclick="updateItemPrice(${item.id}, Math.max(0, ${item.price} - 1))" 
-                                        class="w-8 h-8 bg-red-500 text-white rounded flex items-center justify-center text-sm font-bold">-</button>
-                                <input type="number" value="${item.price}" step="0.01" min="0"
-                                       onchange="updateItemPrice(${item.id}, parseFloat(this.value) || 0)"
-                                       class="flex-1 h-8 border border-gray-300 rounded px-2 text-center text-sm">
-                                <button onclick="updateItemPrice(${item.id}, ${item.price} + 1)" 
-                                        class="w-8 h-8 bg-green-500 text-white rounded flex items-center justify-center text-sm font-bold">+</button>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="text-xs text-gray-600 mb-1 block">📊 จำนวน</label>
-                            <div class="flex items-center gap-1">
-                                <button onclick="updateItemQuantity(${item.id}, Math.max(1, ${item.quantity} - 1))" 
-                                        class="w-8 h-8 bg-red-500 text-white rounded flex items-center justify-center text-sm font-bold">-</button>
-                                <input type="number" value="${item.quantity}" min="1"
-                                       onchange="updateItemQuantity(${item.id}, parseInt(this.value) || 1)"
-                                       class="flex-1 h-8 border border-gray-300 rounded px-2 text-center text-sm">
-                                <button onclick="updateItemQuantity(${item.id}, ${item.quantity} + 1)" 
-                                        class="w-8 h-8 bg-green-500 text-white rounded flex items-center justify-center text-sm font-bold">+</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="flex justify-between items-center pt-3 border-t">
-                        <span class="text-sm text-gray-600">ยอดรวม</span>
-                        <span class="font-bold text-green-600 text-lg">${item.total.toFixed(2)} ฿</span>
+    return selectedItems.map((item, index) => `
+        <div class="card p-4">
+            <div class="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full flex items-center justify-center text-xs md:text-sm font-bold">
+                    ${index + 1}
+                </div>
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">${item.emoji}</span>
+                    <div>
+                        <div class="font-semibold text-gray-800">${item.name}</div>
                     </div>
                 </div>
-            `).join('');
-        }
+                <button onclick="removeItem(${item.id})" class="text-red-500 hover:text-red-700 p-2">
+                    🗑️
+                </button>
+            </div>
+            <!-- ราคาอยู่บน -->
+            <div class="mb-3">
+                <label class="text-xs text-gray-600 mb-1 block">💰 ราคา</label>
+                <div class="flex items-center gap-0.5">
+    <button onclick="updateItemPrice(${item.id}, Math.max(0, ${item.price} - 1))" 
+            class="w-10 h-10 bg-red-500 text-white rounded flex items-center justify-center text-base font-bold">-</button>
+    <input type="number" value="${item.price}" step="0.01" min="0"
+           onchange="updateItemPrice(${item.id}, parseFloat(this.value) || 0)"
+           class="flex-1 h-10 border border-gray-300 rounded px-2 text-center text-sm">
+    <button onclick="updateItemPrice(${item.id}, ${item.price} + 1)" 
+            class="w-10 h-10 bg-green-500 text-white rounded flex items-center justify-center text-base font-bold">+</button>
+</div>
+            </div>
+            <!-- จำนวนอยู่ล่าง -->
+            <div class="mb-3">
+                <label class="text-xs text-gray-600 mb-1 block">📊 จำนวน</label>
+                <div class="flex items-center gap-0.5">
+    <button onclick="updateItemQuantity(${item.id}, Math.max(1, ${item.quantity} - 1))" 
+            class="w-10 h-10 bg-red-500 text-white rounded flex items-center justify-center text-base font-bold">-</button>
+    <input type="number" value="${item.quantity}" min="1"
+           onchange="updateItemQuantity(${item.id}, parseInt(this.value) || 1)"
+           class="flex-1 h-10 border border-gray-300 rounded px-2 text-center text-sm">
+    <button onclick="updateItemQuantity(${item.id}, ${item.quantity} + 1)" 
+            class="w-10 h-10 bg-green-500 text-white rounded flex items-center justify-center text-base font-bold">+</button>
+</div>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t">
+                <span class="text-sm text-gray-600">ยอดรวม</span>
+                <span class="font-bold text-green-600 text-lg">${item.total.toFixed(2)} ฿</span>
+            </div>
+            <div class="flex justify-end mt-3">
+            </div>
+        </div>
+    `).join('');
+}
 
         function renderDesktopItemsList() {
             return `
@@ -1122,7 +1129,7 @@
                         </table>
                     </div>
                 </div>
-                <div class="block md:hidden">
+                <div class="block">
                     ${renderMobileItemsList()}
                 </div>
             `;
@@ -1198,6 +1205,76 @@
                 updateItemsDisplay();
             }
         });
+        // --- Favorite Quick Add Items ---
+let favoriteItems = JSON.parse(localStorage.getItem('favoriteItems') || '[]');
+
+function renderFavoriteQuickAdd() {
+    const quickAddGrid = document.querySelector('.quick-add-grid');
+    if (!quickAddGrid) return;
+
+    // ลบปุ่มที่เคยเพิ่มไว้ก่อน
+    quickAddGrid.querySelectorAll('.fav-quick-add-btn').forEach(btn => btn.remove());
+
+    // กำหนดชุดสี
+    const colors = [
+        '#10b981', // เขียว
+        '#3b82f6', // ฟ้า
+        '#f59e0b', // ส้ม
+        '#8b5cf6', // ม่วง
+        '#ef4444', // แดง
+        '#6b7280'  // เทา
+    ];
+
+    // เพิ่มปุ่มสินค้าโปรด
+    favoriteItems.forEach((item, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'quick-add-btn fav-quick-add-btn';
+        // สุ่มสี
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        btn.style.background = color;
+        btn.style.color = 'white';
+        btn.innerHTML = `
+            <span style="font-size: 16px;">⭐</span>
+            <span>${item.name}</span>
+            <span>${item.price}฿</span>
+            <span style="font-size:10px;color:#fff;cursor:pointer;" onclick="removeFavoriteItem(${idx});event.stopPropagation();">ลบ</span>
+        `;
+        btn.onclick = () => quickAddItem(item.name, item.price);
+        quickAddGrid.appendChild(btn);
+    });
+}
+
+function addFavoriteItem() {
+    const name = document.getElementById('fav-item-name').value.trim();
+    const price = parseFloat(document.getElementById('fav-item-price').value);
+    if (!name) {
+        alert('กรุณากรอกชื่อสินค้า');
+        return;
+    }
+    if (!price || price <= 0) {
+        alert('กรุณากรอกราคาที่ถูกต้อง');
+        return;
+    }
+    favoriteItems.push({ name, price });
+    localStorage.setItem('favoriteItems', JSON.stringify(favoriteItems));
+    document.getElementById('fav-item-name').value = '';
+    document.getElementById('fav-item-price').value = '';
+    renderFavoriteQuickAdd();
+}
+
+function removeFavoriteItem(idx) {
+    if (confirm('ลบสินค้าโปรดนี้ใช่หรือไม่?')) {
+        favoriteItems.splice(idx, 1);
+        localStorage.setItem('favoriteItems', JSON.stringify(favoriteItems));
+        renderFavoriteQuickAdd();
+    }
+}
+
+// เรียก render เมื่อโหลดหน้า
+document.addEventListener('DOMContentLoaded', function() {
+    renderFavoriteQuickAdd();
+});
     </script>
 </body>
 </html>
