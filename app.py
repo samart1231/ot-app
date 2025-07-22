@@ -94,10 +94,27 @@ def add_income_expense():
 
     # รวม category กับ item เป็นข้อความเดียว
     detail = f"{category}: {item}"
-
+    
     # บันทึกค่าลงฐานข้อมูล
     # db.execute('INSERT INTO income_expense (detail, amount, date) VALUES (?, ?, ?)', (detail, amount, date))
-
+    # ในไฟล์ app.py ที่ฟังก์ชัน income_expense()
+    # เพิ่ม debug เพื่อเช็คข้อมูล
+    print("=== DEBUG: Form Data ===")
+    if request.method == 'POST':
+        items_data = request.form.get('items_data')
+        print(f"Items Data: {items_data}")
+        print(f"Category: {category}")
+        print(f"Item: {item}")
+        print(f"Amount: {amount}")
+        print(f"Date: {date}")
+    
+    if items_data:
+        try:
+            import json
+            items = json.loads(items_data)
+            print(f"Parsed Items: {items}")
+        except:
+            print("Error parsing items_data")
     return redirect(url_for('index'))
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -1198,11 +1215,14 @@ def export_income_expense_month(category, year_month):
             import json
             items = json.loads(items_data)
             if isinstance(items, list) and len(items) > 0:
-                names = [item.get('name', '') for item in items if isinstance(item, dict)]
+            # แสดงแบบ: กาแฟ (1x20.00฿), ข้าวผัด (1x45.00฿)
+                names = [f"{item.get('name', '')} ({item.get('quantity', 1)}x{item.get('price', 0):.2f}฿)" 
+                    for item in items if isinstance(item, dict)]
                 return ', '.join(names)
             return ''
         except:
             return ''
+    
     
     # เพิ่มคอลัมน์ชื่อสินค้า
     df['item_names'] = df['items_data'].apply(extract_item_names)

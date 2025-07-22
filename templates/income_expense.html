@@ -999,12 +999,8 @@
                     </div>
                 `;
             } else {
-                const isMobile = window.innerWidth <= 768;
-                if (isMobile) {
-                    container.innerHTML = renderMobileItemsList();
-                } else {
-                    container.innerHTML = renderDesktopItemsList();
-                }
+                // แสดงทั้งแบบ desktop และ mobile
+                container.innerHTML = renderDesktopItemsList();
             }
             
             const totalAmount = selectedItems.reduce((sum, item) => sum + item.total, 0);
@@ -1069,60 +1065,65 @@
 
         function renderDesktopItemsList() {
             return `
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>ชื่อสินค้า</th>
-                                <th>ราคา</th>
-                                <th>จำนวน</th>
-                                <th>รวม</th>
-                                <th>จัดการ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${selectedItems.map((item, index) => `
+                <div class="hidden md:block">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
                                 <tr>
-                                    <td class="text-center font-bold">${index + 1}</td>
-                                    <td>
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-xl">${item.emoji}</span>
-                                            <span class="font-medium">${item.name}</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="flex items-center gap-2">
-                                            <button onclick="updateItemPrice(${item.id}, Math.max(0, ${item.price} - 1))" 
-                                                    class="btn btn-danger btn-sm">-</button>
-                                            <input type="number" value="${item.price}" step="0.01" min="0"
-                                                   onchange="updateItemPrice(${item.id}, parseFloat(this.value) || 0)"
-                                                   class="form-input w-20 text-center" style="padding: 4px 8px; font-size: 12px;">
-                                            <button onclick="updateItemPrice(${item.id}, ${item.price} + 1)" 
-                                                    class="btn btn-success btn-sm">+</button>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="flex items-center gap-2">
-                                            <button onclick="updateItemQuantity(${item.id}, Math.max(1, ${item.quantity} - 1))" 
-                                                    class="btn btn-danger btn-sm">-</button>
-                                            <input type="number" value="${item.quantity}" min="1"
-                                                   onchange="updateItemQuantity(${item.id}, parseInt(this.value) || 1)"
-                                                   class="form-input w-20 text-center" style="padding: 4px 8px; font-size: 12px;">
-                                            <button onclick="updateItemQuantity(${item.id}, ${item.quantity} + 1)" 
-                                                    class="btn btn-success btn-sm">+</button>
-                                        </div>
-                                    </td>
-                                    <td class="text-center font-bold text-green-600">${item.total.toFixed(2)} ฿</td>
-                                    <td class="text-center">
-                                        <button onclick="removeItem(${item.id})" class="btn btn-danger btn-sm">
-                                            🗑️ ลบ
-                                        </button>
-                                    </td>
+                                    <th>#</th>
+                                    <th>ชื่อสินค้า</th>
+                                    <th>ราคา</th>
+                                    <th>จำนวน</th>
+                                    <th>รวม</th>
+                                    <th>จัดการ</th>
                                 </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                ${selectedItems.map((item, index) => `
+                                    <tr>
+                                        <td class="text-center font-bold">${index + 1}</td>
+                                        <td>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xl">${item.emoji}</span>
+                                                <span class="font-medium">${item.name}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="flex items-center gap-2">
+                                                <button onclick="updateItemPrice(${item.id}, Math.max(0, ${item.price} - 1))" 
+                                                        class="btn btn-danger btn-sm">-</button>
+                                                <input type="number" value="${item.price}" step="0.01" min="0"
+                                                       onchange="updateItemPrice(${item.id}, parseFloat(this.value) || 0)"
+                                                       class="form-input w-20 text-center" style="padding: 4px 8px; font-size: 12px;">
+                                                <button onclick="updateItemPrice(${item.id}, ${item.price} + 1)" 
+                                                        class="btn btn-success btn-sm">+</button>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="flex items-center gap-2">
+                                                <button onclick="updateItemQuantity(${item.id}, Math.max(1, ${item.quantity} - 1))" 
+                                                        class="btn btn-danger btn-sm">-</button>
+                                                <input type="number" value="${item.quantity}" min="1"
+                                                       onchange="updateItemQuantity(${item.id}, parseInt(this.value) || 1)"
+                                                       class="form-input w-20 text-center" style="padding: 4px 8px; font-size: 12px;">
+                                                <button onclick="updateItemQuantity(${item.id}, ${item.quantity} + 1)" 
+                                                        class="btn btn-success btn-sm">+</button>
+                                            </div>
+                                        </td>
+                                        <td class="text-center font-bold text-green-600">${item.total.toFixed(2)} ฿</td>
+                                        <td class="text-center">
+                                            <button onclick="removeItem(${item.id})" class="btn btn-danger btn-sm">
+                                                🗑️ ลบ
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="block md:hidden">
+                    ${renderMobileItemsList()}
                 </div>
             `;
         }
@@ -1133,16 +1134,26 @@
             const descriptionInput = document.getElementById('description-input');
             
             if (itemsDataInput) {
-                itemsDataInput.value = JSON.stringify(selectedItems);
+                // ตรวจสอบให้แน่ใจว่าข้อมูลมี price และ quantity
+                const itemsWithComplete = selectedItems.map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    price: parseFloat(item.price) || 0,
+                    quantity: parseInt(item.quantity) || 1,
+                    total: parseFloat(item.total) || 0,
+                    emoji: item.emoji || '🛒'
+                }));
+                itemsDataInput.value = JSON.stringify(itemsWithComplete);
+                console.log('Items data being sent:', itemsWithComplete); // Debug log
             }
             
             if (calculatedTotalInput) {
-                const totalAmount = selectedItems.reduce((sum, item) => sum + item.total, 0);
+                const totalAmount = selectedItems.reduce((sum, item) => sum + (parseFloat(item.total) || 0), 0);
                 calculatedTotalInput.value = totalAmount.toFixed(2);
             }
             
             if (descriptionInput) {
-                const descriptions = selectedItems.map(item => `${item.name} x${item.quantity}`);
+                const descriptions = selectedItems.map(item => `${item.name} (${item.quantity}x${parseFloat(item.price).toFixed(2)}฿)`);
                 descriptionInput.value = descriptions.join(', ');
             }
         }
