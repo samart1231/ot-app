@@ -119,6 +119,12 @@
             color: white;
         }
 
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            min-height: 32px;
+        }
+
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -160,45 +166,6 @@
             background-color: var(--hover-bg);
         }
 
-        /* Enhanced Modal Styles */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .modal.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 24px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-            transform: scale(0.9) translateY(-20px);
-            transition: all 0.3s ease;
-        }
-
-        .modal.show .modal-content {
-            transform: scale(1) translateY(0);
-        }
-
         /* Quick Add Grid */
         .quick-add-grid {
             display: grid;
@@ -228,6 +195,58 @@
         .quick-add-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Status Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .badge-info {
+            background: rgba(59, 130, 246, 0.1);
+            color: #2563eb;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        /* Flash Messages */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #065f46;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #991b1b;
         }
 
         /* Enhanced Mobile Styles */
@@ -267,54 +286,11 @@
             }
         }
 
-        /* Loading States */
-        .loading {
-            opacity: 0.7;
-            pointer-events: none;
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
         }
 
-        .spinner {
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid var(--primary-color);
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Toast Notifications */
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 16px 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            z-index: 1100;
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-        }
-
-        .toast.show {
-            transform: translateX(0);
-        }
-
-        .toast.success {
-            border-left: 4px solid var(--success-color);
-        }
-
-        .toast.error {
-            border-left: 4px solid var(--danger-color);
-        }
-
-        /* Enhanced Animations */
         .fade-in {
             animation: fadeIn 0.3s ease-in-out;
         }
@@ -322,87 +298,6 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-
-        .slide-up {
-            animation: slideUp 0.3s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        /* Utility Classes */
-        .hidden {
-            display: none !important;
-        }
-
-        .text-truncate {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .shadow-sm {
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        }
-
-        .shadow-md {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-        }
-
-        .shadow-lg {
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Status Badges */
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.025em;
-        }
-
-        .badge-success {
-            background: rgba(16, 185, 129, 0.1);
-            color: #059669;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-
-        .badge-danger {
-            background: rgba(239, 68, 68, 0.1);
-            color: #dc2626;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-
-        .badge-info {
-            background: rgba(59, 130, 246, 0.1);
-            color: #2563eb;
-            border: 1px solid rgba(59, 130, 246, 0.2);
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
         }
     </style>
 </head>
@@ -421,15 +316,15 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden bg-white border-t">
             <nav class="py-2">
-                <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📅 บันทึกโอที</a>
-                <a href="#" class="block px-4 py-3 bg-green-100 text-green-700 font-medium border-b">💰 รายรับ/รายจ่าย</a>
-                <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">🎉 วันหยุด</a>
-                <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📊 นำเข้า CSV</a>
-                <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⚙️ ตั้งค่า</a>
+                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📅 บันทึกโอที</a>
+                <a href="/income-expense" class="block px-4 py-3 bg-green-100 text-green-700 font-medium border-b">💰 รายรับ/รายจ่าย</a>
+                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">🎉 วันหยุด</a>
+                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📊 นำเข้า CSV</a>
+                <a href="/settings" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⚙️ ตั้งค่า</a>
                 <div class="px-4 py-3 border-b">
-                    <span class="text-sm text-gray-500">👤 ผู้ใช้ทดสอบ</span>
+                    <span class="text-sm text-gray-500">👤 {{ session.get('user_email', 'ผู้ใช้') }}</span>
                 </div>
-                <a href="#" class="block px-4 py-3 text-red-600 hover:bg-red-50">🚪 ออกจากระบบ</a>
+                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50">🚪 ออกจากระบบ</a>
             </nav>
         </div>
     </div>
@@ -439,17 +334,17 @@
         <div class="p-6">
             <h1 class="text-2xl font-bold text-gray-800 mb-8">📊 ระบบจัดการ</h1>
             <nav class="space-y-2">
-                <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">📅 บันทึกโอที</a>
-                <a href="#" class="block px-4 py-3 bg-green-100 text-green-700 font-medium rounded-lg">💰 รายรับ/รายจ่าย</a>
-                <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">🎉 วันหยุด</a>
-                <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">📊 นำเข้า CSV</a>
-                <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">⚙️ ตั้งค่า</a>
+                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">📅 บันทึกโอที</a>
+                <a href="/income-expense" class="block px-4 py-3 bg-green-100 text-green-700 font-medium rounded-lg">💰 รายรับ/รายจ่าย</a>
+                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">🎉 วันหยุด</a>
+                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">📊 นำเข้า CSV</a>
+                <a href="/settings" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">⚙️ ตั้งค่า</a>
             </nav>
             <div class="mt-8 pt-6 border-t">
                 <div class="px-4 py-3">
-                    <span class="text-sm text-gray-500">👤 ผู้ใช้ทดสอบ</span>
+                    <span class="text-sm text-gray-500">👤 {{ session.get('user_email', 'ผู้ใช้') }}</span>
                 </div>
-                <a href="#" class="block px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors">🚪 ออกจากระบบ</a>
+                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors">🚪 ออกจากระบบ</a>
             </div>
         </div>
     </div>
@@ -457,13 +352,17 @@
     <!-- Main Content -->
     <div class="lg:ml-64 pt-20 lg:pt-6 min-h-screen">
         <div class="container">
-            <!-- Success Message -->
-            <div id="success-message" class="hidden mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg fade-in">
-                <div class="flex items-center">
-                    <span class="mr-2">✅</span>
-                    <span>บันทึกรายการเรียบร้อยแล้ว</span>
-                </div>
-            </div>
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'success' if category == 'success' else 'error' }} fade-in">
+                            <span>{{ '✅' if category == 'success' else '❌' }}</span>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
 
             <!-- Page Title -->
             <div class="mb-6">
@@ -478,7 +377,8 @@
                     <p class="text-sm text-gray-600 mt-1">บันทึกรายรับหรือรายจ่ายใหม่</p>
                 </div>
                 
-                <form id="transaction-form" class="p-6 space-y-6">
+                <!-- ✅ เชื่อมต่อกับ Flask -->
+                <form method="POST" action="/income-expense" class="p-6 space-y-6" id="transaction-form">
                     <!-- Date Input -->
                     <div>
                         <label class="form-label">📅 วันที่</label>
@@ -514,7 +414,7 @@
                     <!-- Income Amount Section -->
                     <div id="income-amount-section" class="hidden">
                         <label class="form-label">💰 จำนวนเงิน (บาท)</label>
-                        <input type="number" step="0.01" name="amount" class="form-input" placeholder="0.00">
+                        <input type="number" step="0.01" name="amount" class="form-input" placeholder="0.00" min="0">
                     </div>
 
                     <!-- Vendor Selection (for expense) -->
@@ -523,14 +423,13 @@
                         <div class="flex gap-2">
                             <select id="vendor-select" name="vendor" class="form-input flex-1">
                                 <option value="">-- เลือกร้านค้า --</option>
-                                <option value="ร้านค้า A">ร้านค้า A</option>
-                                <option value="ร้านค้า B">ร้านค้า B</option>
-                                <option value="ร้านค้า C">ร้านค้า C</option>
+                                <option value="ร้านสะดวกซื้อ 7-11">ร้านสะดวกซื้อ 7-11</option>
+                                <option value="ร้านค้าชุมชน">ร้านค้าชุมชน</option>
+                                <option value="ตลาดสด">ตลาดสด</option>
+                                <option value="ซูเปอร์มาร์เก็ต">ซูเปอร์มาร์เก็ต</option>
+                                <option value="ออนไลน์">ออนไลน์</option>
                                 <option value="อื่นๆ">อื่นๆ</option>
                             </select>
-                            <button type="button" onclick="addVendor()" class="btn btn-secondary">
-                                ➕ เพิ่ม
-                            </button>
                         </div>
                     </div>
 
@@ -616,10 +515,9 @@
                         </div>
                     </div>
 
-                    <!-- Hidden inputs -->
+                    <!-- Hidden inputs for Flask -->
                     <input type="hidden" id="items-data" name="items_data">
                     <input type="hidden" id="calculated-total" name="calculated_amount">
-                    <input type="hidden" id="combined-category" name="combined_category">
                     <input type="hidden" name="description" id="description-input">
 
                     <!-- Submit Button -->
@@ -632,28 +530,25 @@
                 </form>
             </div>
 
-            <!-- Month Selection and Summary -->
+            <!-- Month Selection and Export -->
             <div class="card mb-6 fade-in">
                 <div class="p-6 border-b border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-800">📅 เลือกเดือนที่ต้องการดู</h2>
-                    <p class="text-sm text-gray-600 mt-1">เลือกเดือนเพื่อดูข้อมูลรายรับ-รายจ่าย</p>
+                    <h2 class="text-xl font-semibold text-gray-800">📅 เลือกเดือนและส่งออกข้อมูล</h2>
                 </div>
                 <div class="p-6">
                     <div class="flex flex-col lg:flex-row items-start lg:items-center gap-4 mb-6">
                         <div class="flex items-center gap-3">
                             <label class="font-semibold text-gray-700">📅 เดือน:</label>
                             <select id="month-select" class="form-input w-auto" onchange="changeMonth(this.value)">
-                                <option value="2025-07" selected>กรกฎาคม 2025</option>
-                                <option value="2025-06">มิถุนายน 2025</option>
-                                <option value="2025-05">พฤษภาคม 2025</option>
+                                {% for month_data in available_months %}
+                                    <option value="{{ month_data.month }}" 
+                                            {% if month_data.month == selected_month %}selected{% endif %}
+                                            data-has-data="{{ month_data.has_data }}">
+                                        {{ month_data.display }}
+                                        {% if month_data.has_data %}✅{% endif %}
+                                    </option>
+                                {% endfor %}
                             </select>
-                        </div>
-                        <div class="card p-3">
-                            <div class="text-sm text-gray-700">
-                                <span class="font-medium">📊 สถานะ:</span> แสดงข้อมูลเดือน 
-                                <span class="font-bold text-gray-900">กรกฎาคม 2025</span>
-                                <span class="text-gray-600">(5 รายการ)</span>
-                            </div>
                         </div>
                     </div>
                     
@@ -661,10 +556,9 @@
                     <div class="border-t pt-6">
                         <h3 class="text-lg font-semibold text-gray-800 mb-4">📊 ส่งออกข้อมูล</h3>
                         <div class="flex flex-wrap gap-2">
-                            <button onclick="exportData('all')" class="btn btn-primary">📄 ส่งออกทั้งหมด</button>
-                            <button onclick="exportData('income')" class="btn btn-success">💰 ส่งออกรายรับ</button>
-                            <button onclick="exportData('expense')" class="btn btn-danger">💸 ส่งออกรายจ่าย</button>
-                            <button onclick="showSummary()" class="btn btn-secondary">📋 สรุปประจำเดือน</button>
+                            <a href="/export-all/{{ selected_month }}" class="btn btn-primary">📄 ส่งออกทั้งหมด</a>
+                            <a href="/export-income/{{ selected_month }}" class="btn btn-success">💰 ส่งออกรายรับ</a>
+                            <a href="/export-expense/{{ selected_month }}" class="btn btn-danger">💸 ส่งออกรายจ่าย</a>
                         </div>
                     </div>
                 </div>
@@ -672,45 +566,49 @@
 
             <!-- Summary Cards -->
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
-                <div class="card p-6 slide-up">
+                <div class="card p-6">
                     <div class="flex items-center justify-between mb-3">
                         <div class="text-green-600 text-2xl">💰</div>
                         <div class="text-gray-600 text-sm font-medium">รายรับ</div>
                     </div>
-                    <div class="text-green-700 font-bold text-2xl mb-1">16,500.00</div>
+                    <div class="text-green-700 font-bold text-2xl mb-1">{{ "%.2f"|format(monthly_total_income or 0) }}</div>
                     <div class="text-gray-500 text-sm">บาท</div>
                 </div>
-                <div class="card p-6 slide-up" style="animation-delay: 0.1s;">
+                <div class="card p-6">
                     <div class="flex items-center justify-between mb-3">
                         <div class="text-red-600 text-2xl">💸</div>
                         <div class="text-gray-600 text-sm font-medium">รายจ่าย</div>
                     </div>
-                    <div class="text-red-700 font-bold text-2xl mb-1">9,285.00</div>
+                    <div class="text-red-700 font-bold text-2xl mb-1">{{ "%.2f"|format(monthly_total_expense or 0) }}</div>
                     <div class="text-gray-500 text-sm">บาท</div>
                 </div>
-                <div class="card p-6 slide-up" style="animation-delay: 0.2s;">
+                <div class="card p-6">
                     <div class="flex items-center justify-between mb-3">
                         <div class="text-blue-600 text-2xl">📊</div>
                         <div class="text-gray-600 text-sm font-medium">คงเหลือ</div>
                     </div>
-                    <div class="text-blue-700 font-bold text-2xl mb-1">7,215.00</div>
+                    {% set balance = (monthly_total_income or 0) - (monthly_total_expense or 0) %}
+                    <div class="font-bold text-2xl mb-1 {% if balance >= 0 %}text-blue-700{% else %}text-red-700{% endif %}">
+                        {{ "%.2f"|format(balance) }}
+                    </div>
                     <div class="text-gray-500 text-sm">บาท</div>
                 </div>
-                <div class="card p-6 slide-up" style="animation-delay: 0.3s;">
+                <div class="card p-6">
                     <div class="flex items-center justify-between mb-3">
                         <div class="text-gray-600 text-2xl">📝</div>
                         <div class="text-gray-600 text-sm font-medium">รายการ</div>
                     </div>
-                    <div class="text-gray-700 font-bold text-2xl mb-1">5</div>
+                    <div class="text-gray-700 font-bold text-2xl mb-1">{{ total_records or 0 }}</div>
                     <div class="text-gray-500 text-sm">รายการ</div>
                 </div>
             </div>
 
             <!-- Records Table -->
+            {% if records %}
             <div class="card fade-in">
                 <div class="p-6 border-b border-gray-200">
                     <h2 class="text-xl font-semibold text-gray-800">📊 รายการทั้งหมด</h2>
-                    <p class="text-sm text-gray-600 mt-1">แสดงรายการรายรับ-รายจ่ายทั้งหมดในเดือนที่เลือก</p>
+                    <p class="text-sm text-gray-600 mt-1">เดือน {{ selected_month }} - จำนวน {{ total_records }} รายการ</p>
                 </div>
                 
                 <!-- Table View -->
@@ -727,218 +625,77 @@
                                 <th>⚙️ จัดการ</th>
                             </tr>
                         </thead>
-                        <tbody id="records-tbody">
-                            <tr>
+                        <tbody>
+                            {% for record in records %}
+                            <tr class="hover:bg-gray-50">
                                 <td>
                                     <div class="flex items-center gap-2">
                                         <span class="text-gray-400">📅</span>
-                                        2025-07-20
+                                        {{ record.date }}
                                     </div>
                                 </td>
                                 <td>
                                     <div class="max-w-xs">
-                                        <div class="font-medium">เงินเดือนประจำ</div>
-                                        <div class="text-sm text-gray-500">รายรับจากงานประจำ</div>
+                                        <div class="font-medium">{{ record.description or 'ไม่มีรายละเอียด' }}</div>
+                                        {% if record.items_data %}
+                                            {% set items = record.items_data | from_json %}
+                                            {% if items %}
+                                                <div class="text-sm text-gray-500 mt-1">
+                                                    {% for item in items %}
+                                                        {{ item.name }} ({{ item.quantity }}x{{ "%.2f"|format(item.price) }}฿){% if not loop.last %}, {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
                                     </div>
                                 </td>
                                 <td>
                                     <div class="flex items-center gap-1">
-                                        <span class="badge badge-success">💰 +15,000.00</span>
+                                        {% if record.category == 'income' %}
+                                            <span class="badge badge-success">💰 +{{ "%.2f"|format(record.amount) }}</span>
+                                        {% else %}
+                                            <span class="badge badge-danger">💸 -{{ "%.2f"|format(record.amount) }}</span>
+                                        {% endif %}
                                     </div>
                                 </td>
                                 <td>
                                     <div class="flex items-center gap-1">
                                         <span class="text-gray-400">🏪</span>
-                                        บริษัท ABC
+                                        {{ record.vendor or '-' }}
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge badge-success">💰 รายรับ</span>
+                                    {% if record.category == 'income' %}
+                                        <span class="badge badge-success">💰 รายรับ</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">💸 รายจ่าย</span>
+                                    {% endif %}
                                 </td>
                                 <td>
-                                    <span class="badge badge-info">เงินเดือน</span>
+                                    <div class="space-y-1">
+                                        {% if record.main_category %}
+                                            <span class="badge badge-info">{{ record.main_category }}</span>
+                                        {% endif %}
+                                        {% if record.sub_category %}
+                                            <div><span class="text-xs text-gray-500">{{ record.sub_category }}</span></div>
+                                        {% endif %}
+                                    </div>
                                 </td>
                                 <td>
                                     <div class="flex gap-2">
-                                        <button onclick="editRecord('record-1')" class="btn btn-primary btn-sm">
+                                        <a href="/edit-income-expense/{{ record.id }}" class="btn btn-primary btn-sm">
                                             ✏️ แก้ไข
-                                        </button>
-                                        <button onclick="deleteRecord('record-1')" class="btn btn-danger btn-sm">
-                                            🗑️ ลบ
-                                        </button>
+                                        </a>
+                                        <form method="POST" action="/delete-income-expense/{{ record.id }}" class="inline"
+                                              onsubmit="return confirm('ต้องการลบรายการนี้หรือไม่?')">
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                🗑️ ลบ
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
-                            
-                            <tr>
-                                <td>
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-gray-400">📅</span>
-                                        2025-07-19
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="max-w-xs">
-                                        <div class="font-medium">ซื้อของใช้ประจำวัน</div>
-                                        <div class="text-sm text-gray-500">
-                                            <div>กาแฟ x2, ข้าวผัด x1, น้ำส้ม x1</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="flex items-center gap-1">
-                                        <span class="badge badge-danger">💸 -85.00</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="flex items-center gap-1">
-                                        <span class="text-gray-400">🏪</span>
-                                        ร้านสะดวกซื้อ
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge badge-danger">💸 รายจ่าย</span>
-                                </td>
-                                <td>
-                                    <span class="badge badge-info">อาหาร</span>
-                                </td>
-                                <td>
-                                    <div class="flex gap-2">
-                                        <button onclick="editRecord('record-2')" class="btn btn-primary btn-sm">
-                                            ✏️ แก้ไข
-                                        </button>
-                                        <button onclick="deleteRecord('record-2')" class="btn btn-danger btn-sm">
-                                            🗑️ ลบ
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td>
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-gray-400">📅</span>
-                                        2025-07-18
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="max-w-xs">
-                                        <div class="font-medium">ค่าเช่าบ้าน</div>
-                                        <div class="text-sm text-gray-500">ค่าเช่าประจำเดือน</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="flex items-center gap-1">
-                                        <span class="badge badge-danger">💸 -8,000.00</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="flex items-center gap-1">
-                                        <span class="text-gray-400">🏪</span>
-                                        เจ้าของบ้าน
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge badge-danger">💸 รายจ่าย</span>
-                                </td>
-                                <td>
-                                    <span class="badge badge-info">ที่อยู่อาศัย</span>
-                                </td>
-                                <td>
-                                    <div class="flex gap-2">
-                                        <button onclick="editRecord('record-3')" class="btn btn-primary btn-sm">
-                                            ✏️ แก้ไข
-                                        </button>
-                                        <button onclick="deleteRecord('record-3')" class="btn btn-danger btn-sm">
-                                            🗑️ ลบ
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td>
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-gray-400">📅</span>
-                                        2025-07-17
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="max-w-xs">
-                                        <div class="font-medium">ค่าน้ำ-ไฟ</div>
-                                        <div class="text-sm text-gray-500">ค่าสาธารณูปโภค</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="flex items-center gap-1">
-                                        <span class="badge badge-danger">💸 -1,200.00</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="flex items-center gap-1">
-                                        <span class="text-gray-400">🏪</span>
-                                        การไฟฟ้า/ประปา
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge badge-danger">💸 รายจ่าย</span>
-                                </td>
-                                <td>
-                                    <span class="badge badge-info">ที่อยู่อาศัย</span>
-                                </td>
-                                <td>
-                                    <div class="flex gap-2">
-                                        <button onclick="editRecord('record-4')" class="btn btn-primary btn-sm">
-                                            ✏️ แก้ไข
-                                        </button>
-                                        <button onclick="deleteRecord('record-4')" class="btn btn-danger btn-sm">
-                                            🗑️ ลบ
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td>
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-gray-400">📅</span>
-                                        2025-07-16
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="max-w-xs">
-                                        <div class="font-medium">รายได้เสริม</div>
-                                        <div class="text-sm text-gray-500">ขายของออนไลน์</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="flex items-center gap-1">
-                                        <span class="badge badge-success">💰 +1,500.00</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="flex items-center gap-1">
-                                        <span class="text-gray-400">🏪</span>
-                                        ออนไลน์
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge badge-success">💰 รายรับ</span>
-                                </td>
-                                <td>
-                                    <span class="badge badge-info">รายได้เสริม</span>
-                                </td>
-                                <td>
-                                    <div class="flex gap-2">
-                                        <button onclick="editRecord('record-5')" class="btn btn-primary btn-sm">
-                                            ✏️ แก้ไข
-                                        </button>
-                                        <button onclick="deleteRecord('record-5')" class="btn btn-danger btn-sm">
-                                            🗑️ ลบ
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -946,478 +703,471 @@
                 <!-- Table Footer -->
                 <div class="p-6 border-t bg-gray-50">
                     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-                        <div class="text-sm text-gray-600">
-                            แสดง 5 รายการ จากทั้งหมด 5 รายการ
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                            <div>
+                                <span class="font-medium text-gray-700">รายรับรวม:</span>
+                                <span class="text-green-600 font-bold">{{ "%.2f"|format(monthly_total_income or 0) }} ฿</span>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-700">รายจ่ายรวม:</span>
+                                <span class="text-red-600 font-bold">{{ "%.2f"|format(monthly_total_expense or 0) }} ฿</span>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-700">คงเหลือ:</span>
+                                {% set balance = (monthly_total_income or 0) - (monthly_total_expense or 0) %}
+                                <span class="font-bold {% if balance >= 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                                    {{ "%.2f"|format(balance) }} ฿
+                                </span>
+                            </div>
                         </div>
                         <div class="flex gap-2">
-                            <button onclick="exportData('all')" class="btn btn-primary">
+                            <a href="/export-all/{{ selected_month }}" class="btn btn-primary">
                                 📊 ส่งออกทั้งหมด
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Add Vendor Modal -->
-    <div id="vendor-modal" class="modal">
-        <div class="modal-content">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="text-xl font-semibold">🏪 เพิ่มร้านค้าใหม่</h3>
-                <button onclick="closeVendorModal()" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
+            {% else %}
+            <!-- No Data Message -->
+            <div class="card text-center py-12 fade-in">
+                <div class="text-6xl mb-4">📊</div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">ยังไม่มีข้อมูลในเดือนนี้</h3>
+                <p class="text-gray-600 mb-4">เริ่มต้นด้วยการเพิ่มรายการรายรับหรือรายจ่าย</p>
+                <div class="flex justify-center gap-4">
+                    <button onclick="document.getElementById('transaction-type').focus()" class="btn btn-primary">
+                        ➕ เพิ่มรายการแรก
+                    </button>
+                    <a href="/import-csv" class="btn btn-secondary">
+                        📊 นำเข้าจาก CSV
+                    </a>
+                </div>
             </div>
-            
-            <form id="vendor-form" class="space-y-4">
-                <div>
-                    <label class="form-label">ชื่อร้านค้า</label>
-                    <input type="text" id="vendor-name" class="form-input" placeholder="เช่น ร้านสะดวกซื้อ 7-11" required>
-                </div>
-                
-                <div>
-                    <label class="form-label">ที่อยู่ (ไม่บังคับ)</label>
-                    <input type="text" id="vendor-address" class="form-input" placeholder="เช่น ซอยลาดพร้าว 15">
-                </div>
-                
-                <div>
-                    <label class="form-label">เบอร์โทร (ไม่บังคับ)</label>
-                    <input type="tel" id="vendor-phone" class="form-input" placeholder="เช่น 02-123-4567">
-                </div>
-                
-                <div class="flex gap-3 pt-4">
-                    <button type="button" onclick="closeVendorModal()" class="btn btn-secondary flex-1">
-                        ยกเลิก
-                    </button>
-                    <button type="submit" class="btn btn-primary flex-1">
-                        💾 บันทึก
-                    </button>
-                </div>
-            </form>
+            {% endif %}
         </div>
     </div>
-
-    <!-- Toast Container -->
-    <div id="toast-container" class="fixed top-4 right-4 z-[1100] space-y-2"></div>
 
     <script>
-        // Enhanced Application State Management
-        class AppState {
-            constructor() {
-                this.selectedItems = [];
-                this.itemCounter = 0;
-                this.currentMonth = '2025-07';
-                this.isLoading = false;
-                this.vendors = this.loadVendors();
-                this.categories = this.initializeCategories();
+        // Categories data for dynamic form
+        const categories = {
+            income: {
+                'เงินเดือน': ['เงินเดือนประจำ', 'โบนัส', 'ค่าล่วงเวลา', 'ค่าคอมมิชชั่น'],
+                'รายได้เสริม': ['งานฟรีแลนซ์', 'ขายของออนไลน์', 'รับจ้างทั่วไป'],
+                'เงินออม': ['ดอกเบี้ยเงินฝาก', 'เงินปันผล', 'เงินคืนภาษี'],
+                'อื่นๆ': ['ของขวัญ', 'เงินกู้', 'รายได้อื่นๆ']
+            },
+            expense: {
+                'อาหาร': ['อาหารเช้า', 'อาหารกลางวัน', 'อาหารเย็น', 'ของว่าง', 'เครื่องดื่ม'],
+                'การเดินทาง': ['รถเมล์', 'รถไฟฟ้า', 'แท็กซี่', 'น้ำมันรถ', 'ค่าจอดรถ'],
+                'ที่อยู่อาศัย': ['ค่าเช่า', 'ค่าน้ำ', 'ค่าไฟ', 'ค่าแก๊ส', 'ค่าอินเทอร์เน็ต'],
+                'สุขภาพ': ['ยา', 'ตรวจสุขภาพ', 'ฟิตเนส', 'อาหารเสริม'],
+                'การศึกษา': ['ค่าเล่าเรียน', 'หนังสือ', 'อุปกรณ์การเรียน', 'คอร์สออนไลน์'],
+                'ความบันเทิง': ['ดูหนัง', 'ฟังเพลง', 'เกม', 'ท่องเที่ยว'],
+                'เสื้อผ้า': ['เสื้อ', 'กางเกง', 'รองเท้า', 'กระเป๋า', 'เครื่องประดับ'],
+                'ของใช้': ['เครื่องสำอาง', 'ของใช้ในบ้าน', 'อุปกรณ์อิเล็กทรอนิกส์'],
+                'อื่นๆ': ['ค่าธรรมเนียม', 'ของขวัญ', 'บริจาค', 'รายจ่ายอื่นๆ']
             }
+        };
 
-            loadVendors() {
-                const defaultVendors = [
-                    { id: 'vendor1', name: 'ร้านสะดวกซื้อ 7-11', address: '', phone: '' },
-                    { id: 'vendor2', name: 'ร้านค้าชุมชน', address: '', phone: '' },
-                    { id: 'vendor3', name: 'ตลาดสด', address: '', phone: '' },
-                    { id: 'vendor4', name: 'ซูเปอร์มาร์เก็ต', address: '', phone: '' }
-                ];
-                return JSON.parse(localStorage.getItem('vendors') || JSON.stringify(defaultVendors));
-            }
+        // Application state
+        let selectedItems = [];
+        let itemCounter = 0;
 
-            saveVendors() {
-                localStorage.setItem('vendors', JSON.stringify(this.vendors));
-            }
+        // DOM Elements
+        const transactionTypeSelect = document.getElementById('transaction-type');
+        const mainCategorySelect = document.getElementById('main-category');
+        const subCategorySelect = document.getElementById('sub-category');
+        const incomeAmountSection = document.getElementById('income-amount-section');
+        const itemsSection = document.getElementById('items-section');
+        const vendorSection = document.getElementById('vendor-section');
 
-            initializeCategories() {
-                return {
-                    income: {
-                        'เงินเดือน': ['เงินเดือนประจำ', 'โบนัส', 'ค่าล่วงเวลา', 'ค่าคอมมิชชั่น'],
-                        'รายได้เสริม': ['งานฟรีแลนซ์', 'ขายของออนไลน์', 'รับจ้างทั่วไป'],
-                        'เงินออม': ['ดอกเบี้ยเงินฝาก', 'เงินปันผล', 'เงินคืนภาษี'],
-                        'อื่นๆ': ['ของขวัญ', 'เงินกู้', 'รายได้อื่นๆ']
-                    },
-                    expense: {
-                        'อาหาร': ['อาหารเช้า', 'อาหารกลางวัน', 'อาหารเย็น', 'ของว่าง', 'เครื่องดื่ม'],
-                        'การเดินทาง': ['รถเมล์', 'รถไฟฟ้า', 'แท็กซี่', 'น้ำมันรถ', 'ค่าจอดรถ'],
-                        'ที่อยู่อาศัย': ['ค่าเช่า', 'ค่าน้ำ', 'ค่าไฟ', 'ค่าแก๊ส', 'ค่าอินเทอร์เน็ต'],
-                        'สุขภาพ': ['ยา', 'ตรวจสุขภาพ', 'ฟิตเนส', 'อาหารเสริม'],
-                        'การศึกษา': ['ค่าเล่าเรียน', 'หนังสือ', 'อุปกรณ์การเรียน', 'คอร์สออนไลน์'],
-                        'ความบันเทิง': ['ดูหนัง', 'ฟังเพลง', 'เกม', 'ท่องเที่ยว'],
-                        'เสื้อผ้า': ['เสื้อ', 'กางเกง', 'รองเท้า', 'กระเป๋า', 'เครื่องประดับ'],
-                        'ของใช้': ['เครื่องสำอาง', 'ของใช้ในบ้าน', 'อุปกรณ์อิเล็กทรอนิกส์'],
-                        'อื่นๆ': ['ค่าธรรมเนียม', 'ของขวัญ', 'บริจาค', 'รายจ่ายอื่นๆ']
-                    }
-                };
-            }
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date-input').value = today;
 
-            addItem(item) {
-                this.selectedItems.push({ ...item, id: ++this.itemCounter });
-                this.updateItemsDisplay();
-                this.updateFormData();
-            }
+            // Initialize form handlers
+            setupEventHandlers();
+            
+            // Initialize items display
+            updateItemsDisplay();
 
-            removeItem(itemId) {
-                this.selectedItems = this.selectedItems.filter(item => item.id !== itemId);
-                this.updateItemsDisplay();
-                this.updateFormData();
-            }
+            // Mobile menu functionality
+            setupMobileMenu();
+        });
 
-            updateItem(itemId, updates) {
-                const itemIndex = this.selectedItems.findIndex(item => item.id === itemId);
-                if (itemIndex !== -1) {
-                    this.selectedItems[itemIndex] = { ...this.selectedItems[itemIndex], ...updates };
-                    this.selectedItems[itemIndex].total = this.selectedItems[itemIndex].price * this.selectedItems[itemIndex].quantity;
-                    this.updateItemsDisplay();
-                    this.updateFormData();
-                }
-            }
-
-            getTotalAmount() {
-                return this.selectedItems.reduce((sum, item) => sum + item.total, 0);
-            }
-
-            getTotalItems() {
-                return this.selectedItems.length;
-            }
-
-            updateItemsDisplay() {
-                const container = document.getElementById('selected-items');
-                const totalItemsSpan = document.getElementById('total-items');
-                const totalAmountSpan = document.getElementById('total-amount');
+        function setupEventHandlers() {
+            // Transaction type change
+            transactionTypeSelect.addEventListener('change', function() {
+                const type = this.value;
+                updateCategoryOptions(type);
                 
-                if (this.selectedItems.length === 0) {
-                    container.innerHTML = `
-                        <div class="text-gray-500 text-center py-8">
-                            <div class="text-4xl mb-2">🛒</div>
-                            <div>ยังไม่มีรายการสินค้า</div>
-                            <div class="text-sm mt-1">เริ่มต้นด้วยการเพิ่มสินค้าด่วน</div>
-                        </div>
-                    `;
+                if (type === 'income') {
+                    incomeAmountSection.classList.remove('hidden');
+                    itemsSection.classList.add('hidden');
+                    vendorSection.classList.add('hidden');
+                } else if (type === 'expense') {
+                    incomeAmountSection.classList.add('hidden');
+                    itemsSection.classList.remove('hidden');
+                    vendorSection.classList.remove('hidden');
                 } else {
-                    container.innerHTML = this.renderItemsList();
+                    incomeAmountSection.classList.add('hidden');
+                    itemsSection.classList.add('hidden');
+                    vendorSection.classList.add('hidden');
                 }
-                
-                totalItemsSpan.textContent = this.getTotalItems();
-                totalAmountSpan.textContent = this.getTotalAmount().toFixed(2);
+            });
+
+            // Main category change
+            mainCategorySelect.addEventListener('change', function() {
+                const transactionType = transactionTypeSelect.value;
+                updateSubCategoryOptions(this.value, transactionType);
+            });
+
+            // Quick add item inputs
+            const quickNameInput = document.getElementById('quick-item-name');
+            const quickPriceInput = document.getElementById('quick-item-price');
+            
+            if (quickNameInput && quickPriceInput) {
+                quickNameInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        quickPriceInput.focus();
+                    }
+                });
+
+                quickPriceInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addQuickItem();
+                    }
+                });
             }
 
-            renderItemsList() {
+            // Form submission validation
+            document.getElementById('transaction-form').addEventListener('submit', function(e) {
+                const transactionType = transactionTypeSelect.value;
+                const mainCategory = mainCategorySelect.value;
+                const subCategory = subCategorySelect.value;
+                
+                if (!transactionType) {
+                    alert('กรุณาเลือกประเภทรายการ');
+                    e.preventDefault();
+                    return false;
+                }
+                
+                if (!mainCategory || !subCategory) {
+                    alert('กรุณาเลือกประเภทหลักและประเภทย่อย');
+                    e.preventDefault();
+                    return false;
+                }
+                
+                if (transactionType === 'expense') {
+                    const vendor = document.getElementById('vendor-select').value;
+                    if (!vendor) {
+                        alert('กรุณาเลือกร้านค้า');
+                        e.preventDefault();
+                        return false;
+                    }
+                    
+                    if (selectedItems.length === 0) {
+                        alert('กรุณาเพิ่มรายการสินค้าอย่างน้อย 1 รายการ');
+                        e.preventDefault();
+                        return false;
+                    }
+                } else if (transactionType === 'income') {
+                    const amount = document.querySelector('input[name="amount"]').value;
+                    if (!amount || parseFloat(amount) <= 0) {
+                        alert('กรุณากรอกจำนวนเงินที่ถูกต้อง');
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+                
+                return true;
+            });
+        }
+
+        function updateCategoryOptions(transactionType) {
+            mainCategorySelect.innerHTML = '<option value="">-- เลือกประเภทหลัก --</option>';
+            subCategorySelect.innerHTML = '<option value="">-- เลือกประเภทย่อย --</option>';
+            
+            if (transactionType && categories[transactionType]) {
+                Object.keys(categories[transactionType]).forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category;
+                    mainCategorySelect.appendChild(option);
+                });
+            }
+        }
+
+        function updateSubCategoryOptions(mainCategory, transactionType) {
+            subCategorySelect.innerHTML = '<option value="">-- เลือกประเภทย่อย --</option>';
+            
+            if (mainCategory && transactionType && categories[transactionType][mainCategory]) {
+                categories[transactionType][mainCategory].forEach(subCategory => {
+                    const option = document.createElement('option');
+                    option.value = subCategory;
+                    option.textContent = subCategory;
+                    subCategorySelect.appendChild(option);
+                });
+            }
+        }
+
+        function addQuickItem() {
+            const nameInput = document.getElementById('quick-item-name');
+            const priceInput = document.getElementById('quick-item-price');
+            
+            const name = nameInput.value.trim();
+            const price = parseFloat(priceInput.value);
+            
+            if (!name) {
+                alert('กรุณากรอกชื่อสินค้า');
+                nameInput.focus();
+                return;
+            }
+            
+            if (!price || price <= 0) {
+                alert('กรุณากรอกราคาที่ถูกต้อง');
+                priceInput.focus();
+                return;
+            }
+            
+            addItem(name, price);
+            nameInput.value = '';
+            priceInput.value = '';
+            nameInput.focus();
+        }
+
+        function quickAddItem(name, price) {
+            addItem(name, price);
+        }
+
+        function addItem(name, price) {
+            const item = {
+                id: ++itemCounter,
+                name: name,
+                price: price,
+                quantity: 1,
+                total: price,
+                emoji: getEmojiForItem(name)
+            };
+            
+            selectedItems.push(item);
+            updateItemsDisplay();
+            updateFormData();
+        }
+
+        function removeItem(itemId) {
+            selectedItems = selectedItems.filter(item => item.id !== itemId);
+            updateItemsDisplay();
+            updateFormData();
+        }
+
+        function updateItemQuantity(itemId, quantity) {
+            const item = selectedItems.find(item => item.id === itemId);
+            if (item) {
+                item.quantity = Math.max(1, quantity);
+                item.total = item.price * item.quantity;
+                updateItemsDisplay();
+                updateFormData();
+            }
+        }
+
+        function updateItemPrice(itemId, price) {
+            const item = selectedItems.find(item => item.id === itemId);
+            if (item) {
+                item.price = Math.max(0, price);
+                item.total = item.price * item.quantity;
+                updateItemsDisplay();
+                updateFormData();
+            }
+        }
+
+        function updateItemsDisplay() {
+            const container = document.getElementById('selected-items');
+            const totalItemsSpan = document.getElementById('total-items');
+            const totalAmountSpan = document.getElementById('total-amount');
+            
+            if (selectedItems.length === 0) {
+                container.innerHTML = `
+                    <div class="text-gray-500 text-center py-8">
+                        <div class="text-4xl mb-2">🛒</div>
+                        <div>ยังไม่มีรายการสินค้า</div>
+                        <div class="text-sm mt-1">เริ่มต้นด้วยการเพิ่มสินค้าด่วน</div>
+                    </div>
+                `;
+            } else {
                 const isMobile = window.innerWidth <= 768;
-                
                 if (isMobile) {
-                    return this.renderMobileItemsList();
+                    container.innerHTML = renderMobileItemsList();
                 } else {
-                    return this.renderDesktopItemsList();
+                    container.innerHTML = renderDesktopItemsList();
                 }
             }
+            
+            const totalAmount = selectedItems.reduce((sum, item) => sum + item.total, 0);
+            totalItemsSpan.textContent = `${selectedItems.length} รายการ`;
+            totalAmountSpan.textContent = `${totalAmount.toFixed(2)} บาท`;
+        }
 
-            renderMobileItemsList() {
-                return this.selectedItems.map((item, index) => `
-                    <div class="card p-4">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                    ${index + 1}
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-2xl">${item.emoji || '🛒'}</span>
-                                    <div>
-                                        <div class="font-semibold text-gray-800">${item.name}</div>
-                                        <div class="text-xs text-gray-500">${item.tag || 'อาหาร'}</div>
-                                    </div>
-                                </div>
+        function renderMobileItemsList() {
+            return selectedItems.map((item, index) => `
+                <div class="card p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                                ${index + 1}
                             </div>
-                            <button onclick="app.removeItem(${item.id})" class="text-red-500 hover:text-red-700 p-2">
-                                🗑️
-                            </button>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-3 mb-3">
-                            <div>
-                                <label class="text-xs text-gray-600 mb-1 block">💰 ราคา</label>
-                                <div class="flex items-center gap-1">
-                                    <button onclick="app.updateItem(${item.id}, { price: Math.max(0, ${item.price} - 1) })" 
-                                            class="w-8 h-8 bg-red-500 text-white rounded flex items-center justify-center text-sm font-bold">-</button>
-                                    <input type="number" value="${item.price}" step="0.01" min="0"
-                                           onchange="app.updateItem(${item.id}, { price: parseFloat(this.value) || 0 })"
-                                           class="flex-1 h-8 border border-gray-300 rounded px-2 text-center text-sm">
-                                    <button onclick="app.updateItem(${item.id}, { price: ${item.price} + 1 })" 
-                                            class="w-8 h-8 bg-green-500 text-white rounded flex items-center justify-center text-sm font-bold">+</button>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="text-xs text-gray-600 mb-1 block">📊 จำนวน</label>
-                                <div class="flex items-center gap-1">
-                                    <button onclick="app.updateItem(${item.id}, { quantity: Math.max(1, ${item.quantity} - 1) })" 
-                                            class="w-8 h-8 bg-red-500 text-white rounded flex items-center justify-center text-sm font-bold">-</button>
-                                    <input type="number" value="${item.quantity}" min="1"
-                                           onchange="app.updateItem(${item.id}, { quantity: parseInt(this.value) || 1 })"
-                                           class="flex-1 h-8 border border-gray-300 rounded px-2 text-center text-sm">
-                                    <button onclick="app.updateItem(${item.id}, { quantity: ${item.quantity} + 1 })" 
-                                            class="w-8 h-8 bg-green-500 text-white rounded flex items-center justify-center text-sm font-bold">+</button>
+                            <div class="flex items-center gap-2">
+                                <span class="text-2xl">${item.emoji}</span>
+                                <div>
+                                    <div class="font-semibold text-gray-800">${item.name}</div>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="flex justify-between items-center pt-3 border-t">
-                            <span class="text-sm text-gray-600">ยอดรวม</span>
-                            <span class="font-bold text-green-600 text-lg">${item.total.toFixed(2)} ฿</span>
+                        <button onclick="removeItem(${item.id})" class="text-red-500 hover:text-red-700 p-2">
+                            🗑️
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div>
+                            <label class="text-xs text-gray-600 mb-1 block">💰 ราคา</label>
+                            <div class="flex items-center gap-1">
+                                <button onclick="updateItemPrice(${item.id}, Math.max(0, ${item.price} - 1))" 
+                                        class="w-8 h-8 bg-red-500 text-white rounded flex items-center justify-center text-sm font-bold">-</button>
+                                <input type="number" value="${item.price}" step="0.01" min="0"
+                                       onchange="updateItemPrice(${item.id}, parseFloat(this.value) || 0)"
+                                       class="flex-1 h-8 border border-gray-300 rounded px-2 text-center text-sm">
+                                <button onclick="updateItemPrice(${item.id}, ${item.price} + 1)" 
+                                        class="w-8 h-8 bg-green-500 text-white rounded flex items-center justify-center text-sm font-bold">+</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-600 mb-1 block">📊 จำนวน</label>
+                            <div class="flex items-center gap-1">
+                                <button onclick="updateItemQuantity(${item.id}, Math.max(1, ${item.quantity} - 1))" 
+                                        class="w-8 h-8 bg-red-500 text-white rounded flex items-center justify-center text-sm font-bold">-</button>
+                                <input type="number" value="${item.quantity}" min="1"
+                                       onchange="updateItemQuantity(${item.id}, parseInt(this.value) || 1)"
+                                       class="flex-1 h-8 border border-gray-300 rounded px-2 text-center text-sm">
+                                <button onclick="updateItemQuantity(${item.id}, ${item.quantity} + 1)" 
+                                        class="w-8 h-8 bg-green-500 text-white rounded flex items-center justify-center text-sm font-bold">+</button>
+                            </div>
                         </div>
                     </div>
-                `).join('');
-            }
+                    
+                    <div class="flex justify-between items-center pt-3 border-t">
+                        <span class="text-sm text-gray-600">ยอดรวม</span>
+                        <span class="font-bold text-green-600 text-lg">${item.total.toFixed(2)} ฿</span>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-            renderDesktopItemsList() {
-                return `
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
+        function renderDesktopItemsList() {
+            return `
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>ชื่อสินค้า</th>
+                                <th>ราคา</th>
+                                <th>จำนวน</th>
+                                <th>รวม</th>
+                                <th>จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${selectedItems.map((item, index) => `
                                 <tr>
-                                    <th>#</th>
-                                    <th>ชื่อสินค้า</th>
-                                    <th>ราคา</th>
-                                    <th>จำนวน</th>
-                                    <th>รวม</th>
-                                    <th>จัดการ</th>
+                                    <td class="text-center font-bold">${index + 1}</td>
+                                    <td>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-xl">${item.emoji}</span>
+                                            <span class="font-medium">${item.name}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="flex items-center gap-2">
+                                            <button onclick="updateItemPrice(${item.id}, Math.max(0, ${item.price} - 1))" 
+                                                    class="btn btn-danger btn-sm">-</button>
+                                            <input type="number" value="${item.price}" step="0.01" min="0"
+                                                   onchange="updateItemPrice(${item.id}, parseFloat(this.value) || 0)"
+                                                   class="form-input w-20 text-center" style="padding: 4px 8px; font-size: 12px;">
+                                            <button onclick="updateItemPrice(${item.id}, ${item.price} + 1)" 
+                                                    class="btn btn-success btn-sm">+</button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="flex items-center gap-2">
+                                            <button onclick="updateItemQuantity(${item.id}, Math.max(1, ${item.quantity} - 1))" 
+                                                    class="btn btn-danger btn-sm">-</button>
+                                            <input type="number" value="${item.quantity}" min="1"
+                                                   onchange="updateItemQuantity(${item.id}, parseInt(this.value) || 1)"
+                                                   class="form-input w-20 text-center" style="padding: 4px 8px; font-size: 12px;">
+                                            <button onclick="updateItemQuantity(${item.id}, ${item.quantity} + 1)" 
+                                                    class="btn btn-success btn-sm">+</button>
+                                        </div>
+                                    </td>
+                                    <td class="text-center font-bold text-green-600">${item.total.toFixed(2)} ฿</td>
+                                    <td class="text-center">
+                                        <button onclick="removeItem(${item.id})" class="btn btn-danger btn-sm">
+                                            🗑️ ลบ
+                                        </button>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                ${this.selectedItems.map((item, index) => `
-                                    <tr>
-                                        <td class="text-center font-bold">${index + 1}</td>
-                                        <td>
-                                            <div class="flex items-center gap-2">
-                                                <span class="text-xl">${item.emoji || '🛒'}</span>
-                                                <span class="font-medium">${item.name}</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="flex items-center gap-2">
-                                                <button onclick="app.updateItem(${item.id}, { price: Math.max(0, ${item.price} - 1) })" 
-                                                        class="btn btn-danger btn-sm">-</button>
-                                                <input type="number" value="${item.price}" step="0.01" min="0"
-                                                       onchange="app.updateItem(${item.id}, { price: parseFloat(this.value) || 0 })"
-                                                       class="form-input w-20 text-center">
-                                                <button onclick="app.updateItem(${item.id}, { price: ${item.price} + 1 })" 
-                                                        class="btn btn-success btn-sm">+</button>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="flex items-center gap-2">
-                                                <button onclick="app.updateItem(${item.id}, { quantity: Math.max(1, ${item.quantity} - 1) })" 
-                                                        class="btn btn-danger btn-sm">-</button>
-                                                <input type="number" value="${item.quantity}" min="1"
-                                                       onchange="app.updateItem(${item.id}, { quantity: parseInt(this.value) || 1 })"
-                                                       class="form-input w-20 text-center">
-                                                <button onclick="app.updateItem(${item.id}, { quantity: ${item.quantity} + 1 })" 
-                                                        class="btn btn-success btn-sm">+</button>
-                                            </div>
-                                        </td>
-                                        <td class="text-center font-bold text-green-600">${item.total.toFixed(2)} ฿</td>
-                                        <td class="text-center">
-                                            <button onclick="app.removeItem(${item.id})" class="btn btn-danger btn-sm">
-                                                🗑️ ลบ
-                                            </button>
-                                        </td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-            }
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
 
-            updateFormData() {
-                const itemsDataInput = document.getElementById('items-data');
-                const calculatedTotalInput = document.getElementById('calculated-total');
-                const descriptionInput = document.getElementById('description-input');
-                
-                if (itemsDataInput) {
-                    itemsDataInput.value = JSON.stringify(this.selectedItems);
-                }
-                
-                if (calculatedTotalInput) {
-                    calculatedTotalInput.value = this.getTotalAmount().toFixed(2);
-                }
-                
-                if (descriptionInput) {
-                    const descriptions = this.selectedItems.map(item => `${item.name} x${item.quantity}`);
-                    descriptionInput.value = descriptions.join(', ');
-                }
+        function updateFormData() {
+            const itemsDataInput = document.getElementById('items-data');
+            const calculatedTotalInput = document.getElementById('calculated-total');
+            const descriptionInput = document.getElementById('description-input');
+            
+            if (itemsDataInput) {
+                itemsDataInput.value = JSON.stringify(selectedItems);
+            }
+            
+            if (calculatedTotalInput) {
+                const totalAmount = selectedItems.reduce((sum, item) => sum + item.total, 0);
+                calculatedTotalInput.value = totalAmount.toFixed(2);
+            }
+            
+            if (descriptionInput) {
+                const descriptions = selectedItems.map(item => `${item.name} x${item.quantity}`);
+                descriptionInput.value = descriptions.join(', ');
             }
         }
 
-        // Enhanced UI Manager
-        class UIManager {
-            static showToast(message, type = 'success', duration = 3000) {
-                const container = document.getElementById('toast-container');
-                const toast = document.createElement('div');
-                toast.className = `toast ${type}`;
-                toast.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
-                        <span>${message}</span>
-                        <button onclick="this.parentElement.parentElement.remove()" class="ml-auto text-gray-400 hover:text-gray-600">✕</button>
-                    </div>
-                `;
-                
-                container.appendChild(toast);
-                
-                // Show toast
-                setTimeout(() => toast.classList.add('show'), 100);
-                
-                // Auto remove
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                    setTimeout(() => toast.remove(), 300);
-                }, duration);
-            }
-
-            static showModal(modalId) {
-                const modal = document.getElementById(modalId);
-                if (modal) {
-                    modal.classList.add('show');
-                    document.body.style.overflow = 'hidden';
-                }
-            }
-
-            static hideModal(modalId) {
-                const modal = document.getElementById(modalId);
-                if (modal) {
-                    modal.classList.remove('show');
-                    document.body.style.overflow = 'auto';
-                }
-            }
-
-            static setLoading(element, isLoading) {
-                if (isLoading) {
-                    element.classList.add('loading');
-                    const originalText = element.innerHTML;
-                    element.dataset.originalText = originalText;
-                    element.innerHTML = `<div class="spinner"></div> กำลังโหลด...`;
-                    element.disabled = true;
-                } else {
-                    element.classList.remove('loading');
-                    element.innerHTML = element.dataset.originalText || element.innerHTML;
-                    element.disabled = false;
-                }
-            }
-
-            static updateCategoryOptions(transactionType) {
-                const mainCategorySelect = document.getElementById('main-category');
-                const subCategorySelect = document.getElementById('sub-category');
-                
-                // Clear options
-                mainCategorySelect.innerHTML = '<option value="">-- เลือกประเภทหลัก --</option>';
-                subCategorySelect.innerHTML = '<option value="">-- เลือกประเภทย่อย --</option>';
-                
-                if (transactionType && app.categories[transactionType]) {
-                    Object.keys(app.categories[transactionType]).forEach(category => {
-                        const option = document.createElement('option');
-                        option.value = category;
-                        option.textContent = category;
-                        mainCategorySelect.appendChild(option);
-                    });
-                }
-            }
-
-            static updateSubCategoryOptions(mainCategory, transactionType) {
-                const subCategorySelect = document.getElementById('sub-category');
-                subCategorySelect.innerHTML = '<option value="">-- เลือกประเภทย่อย --</option>';
-                
-                if (mainCategory && transactionType && app.categories[transactionType][mainCategory]) {
-                    app.categories[transactionType][mainCategory].forEach(subCategory => {
-                        const option = document.createElement('option');
-                        option.value = subCategory;
-                        option.textContent = subCategory;
-                        subCategorySelect.appendChild(option);
-                    });
-                }
-            }
+        function getEmojiForItem(name) {
+            const emojiMap = {
+                'กาแฟ': '☕',
+                'ข้าวผัด': '🍛',
+                'น้ำส้ม': '🧃',
+                'ขนม': '🍪',
+                'น้ำเปล่า': '💧',
+                'ส้มตำ': '🥗'
+            };
+            return emojiMap[name] || '🛒';
         }
 
-        // Enhanced Event Handlers
-        class EventHandlers {
-            static setupFormHandlers() {
-                const transactionTypeSelect = document.getElementById('transaction-type');
-                const mainCategorySelect = document.getElementById('main-category');
-                const subCategorySelect = document.getElementById('sub-category');
-                const incomeAmountSection = document.getElementById('income-amount-section');
-                const itemsSection = document.getElementById('items-section');
-                const vendorSection = document.getElementById('vendor-section');
+        function changeMonth(month) {
+            window.location.href = `/income-expense?month=${month}`;
+        }
 
-                // Transaction type change
-                transactionTypeSelect.addEventListener('change', function() {
-                    const type = this.value;
-                    
-                    UIManager.updateCategoryOptions(type);
-                    
-                    if (type === 'income') {
-                        incomeAmountSection.classList.remove('hidden');
-                        itemsSection.classList.add('hidden');
-                        vendorSection.classList.add('hidden');
-                    } else if (type === 'expense') {
-                        incomeAmountSection.classList.add('hidden');
-                        itemsSection.classList.remove('hidden');
-                        vendorSection.classList.remove('hidden');
-                    } else {
-                        incomeAmountSection.classList.add('hidden');
-                        itemsSection.classList.add('hidden');
-                        vendorSection.classList.add('hidden');
-                    }
-                });
-
-                // Main category change
-                mainCategorySelect.addEventListener('change', function() {
-                    const transactionType = transactionTypeSelect.value;
-                    UIManager.updateSubCategoryOptions(this.value, transactionType);
-                });
-
-                // Sub category change
-                subCategorySelect.addEventListener('change', function() {
-                    const mainCategory = mainCategorySelect.value;
-                    const subCategory = this.value;
-                    
-                    if (mainCategory && subCategory) {
-                        const combinedCategoryInput = document.getElementById('combined-category');
-                        if (combinedCategoryInput) {
-                            combinedCategoryInput.value = `${mainCategory} > ${subCategory}`;
-                        }
-                    }
-                });
-
-                // Quick add item inputs
-                const quickNameInput = document.getElementById('quick-item-name');
-                const quickPriceInput = document.getElementById('quick-item-price');
-                
-                if (quickNameInput) {
-                    quickNameInput.addEventListener('keypress', function(e) {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            quickPriceInput.focus();
-                        }
-                    });
-                }
-                
-                if (quickPriceInput) {
-                    quickPriceInput.addEventListener('keypress', function(e) {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            EventHandlers.addQuickItem();
-                        }
-                    });
-                }
-
-                // Form submission
-                const form = document.getElementById('transaction-form');
-                form.addEventListener('submit', EventHandlers.handleFormSubmit);
-            }
-
-            static setupMobileMenu() {
-                const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-                const mobileMenu = document.getElementById('mobile-menu');
-                
+        function setupMobileMenu() {
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuBtn && mobileMenu) {
                 mobileMenuBtn.addEventListener('click', () => {
                     mobileMenu.classList.toggle('hidden');
                 });
@@ -1429,310 +1179,14 @@
                     }
                 });
             }
+        }
 
-            static setupVendorModal() {
-                const vendorForm = document.getElementById('vendor-form');
-                vendorForm.addEventListener('submit', EventHandlers.handleVendorSubmit);
-
-                // Close modal when clicking outside
-                const modal = document.getElementById('vendor-modal');
-                modal.addEventListener('click', (e) => {
-                    if (e.target === modal) {
-                        UIManager.hideModal('vendor-modal');
-                    }
-                });
+        // Handle window resize for responsive items display
+        window.addEventListener('resize', function() {
+            if (selectedItems.length > 0) {
+                updateItemsDisplay();
             }
-
-            static addQuickItem() {
-                const nameInput = document.getElementById('quick-item-name');
-                const priceInput = document.getElementById('quick-item-price');
-                
-                const name = nameInput.value.trim();
-                const price = parseFloat(priceInput.value);
-                
-                if (!name) {
-                    UIManager.showToast('กรุณากรอกชื่อสินค้า', 'error');
-                    nameInput.focus();
-                    return;
-                }
-                
-                if (!price || price <= 0) {
-                    UIManager.showToast('กรุณากรอกราคาที่ถูกต้อง', 'error');
-                    priceInput.focus();
-                    return;
-                }
-                
-                const item = {
-                    name: name,
-                    price: price,
-                    quantity: 1,
-                    total: price,
-                    emoji: '🛒',
-                    tag: 'อาหาร'
-                };
-                
-                app.addItem(item);
-                
-                // Clear inputs
-                nameInput.value = '';
-                priceInput.value = '';
-                nameInput.focus();
-                
-                UIManager.showToast(`เพิ่ม ${name} เรียบร้อยแล้ว`);
-            }
-
-            static quickAddItem(name, price) {
-                const item = {
-                    name: name,
-                    price: price,
-                    quantity: 1,
-                    total: price,
-                    emoji: EventHandlers.getEmojiForItem(name),
-                    tag: 'อาหาร'
-                };
-                
-                app.addItem(item);
-                UIManager.showToast(`เพิ่ม ${name} เรียบร้อยแล้ว`);
-            }
-
-            static getEmojiForItem(name) {
-                const emojiMap = {
-                    'กาแฟ': '☕',
-                    'ข้าวผัด': '🍛',
-                    'น้ำส้ม': '🧃',
-                    'ขนม': '🍪',
-                    'น้ำเปล่า': '💧',
-                    'ส้มตำ': '🥗'
-                };
-                return emojiMap[name] || '🛒';
-            }
-
-            static handleFormSubmit(e) {
-                e.preventDefault();
-                
-                const submitBtn = document.getElementById('submit-btn');
-                UIManager.setLoading(submitBtn, true);
-                
-                const formData = new FormData(e.target);
-                const transactionType = formData.get('category');
-                
-                // Validation
-                if (!transactionType) {
-                    UIManager.showToast('กรุณาเลือกประเภทรายการ', 'error');
-                    UIManager.setLoading(submitBtn, false);
-                    return;
-                }
-                
-                if (!formData.get('main_category') || !formData.get('sub_category')) {
-                    UIManager.showToast('กรุณาเลือกประเภทหลักและประเภทย่อย', 'error');
-                    UIManager.setLoading(submitBtn, false);
-                    return;
-                }
-                
-                if (transactionType === 'expense' && app.selectedItems.length === 0) {
-                    UIManager.showToast('กรุณาเพิ่มรายการสินค้าอย่างน้อย 1 รายการ', 'error');
-                    UIManager.setLoading(submitBtn, false);
-                    return;
-                }
-                
-                if (transactionType === 'expense' && !formData.get('vendor')) {
-                    UIManager.showToast('กรุณาเลือกร้านค้า', 'error');
-                    UIManager.setLoading(submitBtn, false);
-                    return;
-                }
-                
-                // Simulate form submission
-                setTimeout(() => {
-                    UIManager.setLoading(submitBtn, false);
-                    UIManager.showToast('บันทึกรายการเรียบร้อยแล้ว', 'success');
-                    
-                    // Reset form
-                    e.target.reset();
-                    app.selectedItems = [];
-                    app.updateItemsDisplay();
-                    
-                    // Hide conditional sections
-                    document.getElementById('income-amount-section').classList.add('hidden');
-                    document.getElementById('items-section').classList.add('hidden');
-                    document.getElementById('vendor-section').classList.add('hidden');
-                    
-                    // Set today's date
-                    document.getElementById('date-input').value = new Date().toISOString().split('T')[0];
-                    
-                }, 1500);
-            }
-
-            static handleVendorSubmit(e) {
-                e.preventDefault();
-                
-                const name = document.getElementById('vendor-name').value.trim();
-                const address = document.getElementById('vendor-address').value.trim();
-                const phone = document.getElementById('vendor-phone').value.trim();
-                
-                if (!name) {
-                    UIManager.showToast('กรุณากรอกชื่อร้านค้า', 'error');
-                    return;
-                }
-                
-                const newVendor = {
-                    id: 'vendor_' + Date.now(),
-                    name: name,
-                    address: address,
-                    phone: phone
-                };
-                
-                app.vendors.push(newVendor);
-                app.saveVendors();
-                
-                // Update vendor select
-                const vendorSelect = document.getElementById('vendor-select');
-                const option = document.createElement('option');
-                option.value = newVendor.name;
-                option.textContent = newVendor.name;
-                vendorSelect.appendChild(option);
-                vendorSelect.value = newVendor.name;
-                
-                UIManager.hideModal('vendor-modal');
-                UIManager.showToast(`เพิ่มร้านค้า "${name}" เรียบร้อยแล้ว`);
-                
-                // Reset form
-                e.target.reset();
-            }
-        }
-
-        // Global functions for backward compatibility
-        function addQuickItem() {
-            EventHandlers.addQuickItem();
-        }
-
-        function quickAddItem(name, price) {
-            EventHandlers.quickAddItem(name, price);
-        }
-
-        function addVendor() {
-            UIManager.showModal('vendor-modal');
-        }
-
-        function closeVendorModal() {
-            UIManager.hideModal('vendor-modal');
-        }
-
-        function changeMonth(month) {
-            app.currentMonth = month;
-            UIManager.showToast('เปลี่ยนเดือนเรียบร้อยแล้ว');
-            // Here you would typically reload the data
-        }
-
-        function exportData(type) {
-            UIManager.showToast(`กำลังส่งออกข้อมูล${type === 'all' ? 'ทั้งหมด' : type === 'income' ? 'รายรับ' : 'รายจ่าย'}...`);
-            
-            // Simulate export
-            setTimeout(() => {
-                UIManager.showToast('ส่งออกข้อมูลเรียบร้อยแล้ว', 'success');
-            }, 2000);
-        }
-
-        function showSummary() {
-            const summary = `
-📋 สรุปประจำเดือน กรกฎาคม 2025
-
-💰 รายรับรวม: 16,500.00 บาท
-💸 รายจ่ายรวม: 9,285.00 บาท
-📊 ยอดคงเหลือ: 7,215.00 บาท
-📝 จำนวนรายการ: 5 รายการ
-
-✅ สถานะ: มีเงินเหลือ (กำไร)
-📈 อัตราส่วนรายจ่ายต่อรายรับ: 56.3%
-
-📊 รายละเอียดการเงิน:
-• รายรับหลัก: เงินเดือน 15,000 บาท (90.9%)
-• รายรับเสริม: ขายของออนไลน์ 1,500 บาท (9.1%)
-• รายจ่ายใหญ่: ค่าเช่าบ้าน 8,000 บาท (86.2%)
-• รายจ่ายอื่นๆ: ค่าสาธารณูปโภค และอาหาร 1,285 บาท (13.8%)
-            `;
-            alert(summary);
-        }
-
-        function toggleDetails(recordId) {
-            UIManager.showToast('แสดงรายละเอียดเพิ่มเติม');
-        }
-
-        function editRecord(recordId) {
-            UIManager.showToast('เปิดหน้าแก้ไขรายการ');
-        }
-
-        function deleteRecord(recordId) {
-            if (confirm('ต้องการลบรายการนี้หรือไม่?')) {
-                UIManager.showToast('ลบรายการเรียบร้อยแล้ว', 'success');
-            }
-        }
-
-        function loadMoreRecords() {
-            UIManager.showToast('โหลดรายการเพิ่มเติม...');
-        }
-
-        // Initialize application
-        let app;
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize app state
-            app = new AppState();
-            
-            // Setup event handlers
-            EventHandlers.setupFormHandlers();
-            EventHandlers.setupMobileMenu();
-            EventHandlers.setupVendorModal();
-            
-            // Set today's date as default
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('date-input').value = today;
-            
-            // Initialize items display
-            app.updateItemsDisplay();
-            
-            // Add keyboard shortcuts
-            document.addEventListener('keydown', function(e) {
-                // Ctrl+Enter to add item
-                if (e.ctrlKey && e.key === 'Enter') {
-                    const quickNameInput = document.getElementById('quick-item-name');
-                    if (quickNameInput.value.trim()) {
-                        EventHandlers.addQuickItem();
-                    }
-                }
-                
-                // Escape to close modals
-                if (e.key === 'Escape') {
-                    const modals = document.querySelectorAll('.modal.show');
-                    modals.forEach(modal => {
-                        modal.classList.remove('show');
-                    });
-                    document.body.style.overflow = 'auto';
-                }
-            });
-            
-            // Handle window resize
-            window.addEventListener('resize', function() {
-                if (app.selectedItems.length > 0) {
-                    app.updateItemsDisplay();
-                }
-            });
-            
-            // Show welcome message
-            setTimeout(() => {
-                UIManager.showToast('ยินดีต้อนรับสู่ระบบรายรับ-รายจ่าย', 'success', 2000);
-            }, 500);
         });
-
-        // Add CSS for button sizes
-        const style = document.createElement('style');
-        style.textContent = `
-            .btn-sm {
-                padding: 6px 12px;
-                font-size: 12px;
-                min-height: 32px;
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
