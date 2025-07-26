@@ -299,55 +299,366 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        .hamburger-line {
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+#mobile-menu-btn.hamburger-active .hamburger-line:nth-child(1) {
+    transform: rotate(45deg) translate(6px, 6px);
+}
+
+#mobile-menu-btn.hamburger-active .hamburger-line:nth-child(2) {
+    opacity: 0;
+    transform: translateX(20px);
+}
+
+#mobile-menu-btn.hamburger-active .hamburger-line:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* Submenu animations */
+.submenu {
+    transition: max-height 0.3s ease;
+}
+
+.submenu.active {
+    max-height: 500px;
+}
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #3b82f6, #8b5cf6);
+    border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #2563eb, #7c3aed);
+}
     </style>
 </head>
 <body>
     <!-- Mobile Header -->
-    <div class="lg:hidden fixed top-0 left-0 w-full bg-white shadow-lg z-50">
-        <div class="flex items-center justify-between p-4">
-            <h1 class="text-xl font-bold text-gray-800">💰 รายรับ-รายจ่าย</h1>
-            <button id="mobile-menu-btn" class="text-gray-600 hover:text-gray-800 focus:outline-none">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-            </button>
+<div class="lg:hidden fixed top-0 left-0 w-full bg-white shadow-lg z-50 border-b border-gray-200">
+    <div class="flex items-center justify-between p-4">
+        <!-- Logo and Title -->
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <span class="text-white font-bold text-sm">💰</span>
+            </div>
+            <h1 class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                รายรับ-รายจ่าย
+            </h1>
         </div>
         
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden bg-white border-t">
-            <nav class="py-2">
-                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📅 บันทึกโอที</a>
-                <a href="/income-expense" class="block px-4 py-3 bg-green-100 text-green-700 font-medium border-b">💰 รายรับ/รายจ่าย</a>
-                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">🎉 วันหยุด</a>
-                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📊 นำเข้า CSV</a>
-                <a href="/settings" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⚙️ ตั้งค่า</a>
-                <div class="px-4 py-3 border-b">
-                    <span class="text-sm text-gray-500">👤 {{ session.get('user_email', 'ผู้ใช้') }}</span>
+        <!-- Mobile Controls -->
+        <div class="flex items-center space-x-3">
+            <!-- Quick Add Button -->
+            <button onclick="showQuickAdd()" class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+            </button>
+            
+            <!-- Search Button -->
+            <button id="mobile-search-btn" class="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </button>
+            
+            <!-- Notifications -->
+            <button class="relative p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM4 4h7a1 1 0 011 1v7a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1z"></path>
+                </svg>
+                <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse">3</span>
+            </button>
+            
+            <!-- Hamburger Menu -->
+            <button id="mobile-menu-btn" class="p-2 text-gray-600 hover:text-gray-800 focus:outline-none transition-all">
+                <div class="w-6 h-6 flex flex-col justify-center space-y-1">
+                    <div class="hamburger-line w-6 h-0.5 bg-current transition-all duration-300"></div>
+                    <div class="hamburger-line w-6 h-0.5 bg-current transition-all duration-300"></div>
+                    <div class="hamburger-line w-6 h-0.5 bg-current transition-all duration-300"></div>
                 </div>
-                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50">🚪 ออกจากระบบ</a>
-            </nav>
+            </button>
         </div>
     </div>
-
-    <!-- Desktop Sidebar -->
-    <div class="hidden lg:block fixed top-0 left-0 w-64 h-full bg-white shadow-lg z-40">
-        <div class="p-6">
-            <h1 class="text-2xl font-bold text-gray-800 mb-8">📊 ระบบจัดการ</h1>
-            <nav class="space-y-2">
-                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">📅 บันทึกโอที</a>
-                <a href="/income-expense" class="block px-4 py-3 bg-green-100 text-green-700 font-medium rounded-lg">💰 รายรับ/รายจ่าย</a>
-                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">🎉 วันหยุด</a>
-                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">📊 นำเข้า CSV</a>
-                <a href="/settings" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">⚙️ ตั้งค่า</a>
-            </nav>
-            <div class="mt-8 pt-6 border-t">
-                <div class="px-4 py-3">
-                    <span class="text-sm text-gray-500">👤 {{ session.get('user_email', 'ผู้ใช้') }}</span>
-                </div>
-                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors">🚪 ออกจากระบบ</a>
+    
+    <!-- Mobile Search Bar -->
+    <div id="mobile-search" class="hidden px-4 pb-4 border-t border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50">
+        <div class="relative">
+            <input type="text" placeholder="ค้นหาเมนู, รายการ, หรือข้อมูล..." 
+                   class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
+                   onkeyup="searchMenu(this.value)">
+            <svg class="absolute left-3 top-3.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+        </div>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden bg-white border-t border-gray-200 max-h-96 overflow-y-auto">
+        <!-- Quick Actions -->
+        <div class="p-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50">
+            <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-3">⚡ Quick Actions</h3>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="addIncome()" class="flex items-center justify-center p-3 bg-gradient-to-r from-green-400 to-green-600 text-white rounded-lg shadow-sm transform hover:scale-105 transition-transform">
+                    <span class="text-lg mr-2">💰</span>
+                    <span class="font-medium text-sm">เพิ่มรายรับ</span>
+                </button>
+                <button onclick="addExpense()" class="flex items-center justify-center p-3 bg-gradient-to-r from-red-400 to-red-600 text-white rounded-lg shadow-sm transform hover:scale-105 transition-transform">
+                    <span class="text-lg mr-2">💸</span>
+                    <span class="font-medium text-sm">เพิ่มรายจ่าย</span>
+                </button>
+                <button onclick="viewReport()" class="flex items-center justify-center p-3 bg-gradient-to-r from-purple-400 to-purple-600 text-white rounded-lg shadow-sm transform hover:scale-105 transition-transform">
+                    <span class="text-lg mr-2">📊</span>
+                    <span class="font-medium text-sm">รายงาน</span>
+                </button>
+                <button onclick="exportData()" class="flex items-center justify-center p-3 bg-gradient-to-r from-orange-400 to-orange-600 text-white rounded-lg shadow-sm transform hover:scale-105 transition-transform">
+                    <span class="text-lg mr-2">📤</span>
+                    <span class="font-medium text-sm">ส่งออก</span>
+                </button>
             </div>
         </div>
+        
+        <!-- Navigation Menu -->
+        <nav class="py-2">
+            <!-- Main Menu Items -->
+            <a href="/index" class="menu-item flex items-center px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 border-b border-gray-50 transition-all group">
+                <span class="text-xl mr-3 group-hover:scale-110 transition-transform">📅</span>
+                <span class="font-medium">บันทึกโอที</span>
+                <span class="ml-auto bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">5</span>
+            </a>
+            
+            <!-- Income/Expense with Submenu -->
+            <div class="border-b border-gray-50">
+                <button class="menu-item w-full flex items-center px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all group" onclick="toggleSubmenu('income-submenu', this)">
+                    <span class="text-xl mr-3 group-hover:scale-110 transition-transform">💰</span>
+                    <span class="font-medium">รายรับ/รายจ่าย</span>
+                    <svg class="ml-auto w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="income-submenu" class="submenu bg-gradient-to-r from-gray-50 to-blue-50 overflow-hidden max-h-0 transition-all duration-300">
+                    <a href="/income-expense" class="flex items-center px-12 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all">
+                        <span class="mr-2">📝</span> จัดการรายการ
+                    </a>
+                    <a href="/income-expense?category=income" class="flex items-center px-12 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all">
+                        <span class="mr-2">💹</span> รายรับ
+                    </a>
+                    <a href="/income-expense?category=expense" class="flex items-center px-12 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all">
+                        <span class="mr-2">💸</span> รายจ่าย
+                    </a>
+                    <a href="/export-all/2025" class="flex items-center px-12 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all">
+                        <span class="mr-2">📊</span> รายงานสรุป
+                    </a>
+                </div>
+            </div>
+            
+            <a href="/holidays" class="menu-item flex items-center px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 border-b border-gray-50 transition-all group">
+                <span class="text-xl mr-3 group-hover:scale-110 transition-transform">🎉</span>
+                <span class="font-medium">วันหยุด</span>
+            </a>
+            
+            <!-- Import with Submenu -->
+            <div class="border-b border-gray-50">
+                <button class="menu-item w-full flex items-center px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all group" onclick="toggleSubmenu('import-submenu', this)">
+                    <span class="text-xl mr-3 group-hover:scale-110 transition-transform">📥</span>
+                    <span class="font-medium">นำเข้าข้อมูล</span>
+                    <svg class="ml-auto w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="import-submenu" class="submenu bg-gradient-to-r from-gray-50 to-blue-50 overflow-hidden max-h-0 transition-all duration-300">
+                    <a href="/import-csv" class="flex items-center px-12 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all">
+                        <span class="mr-2">💰</span> CSV รายรับ/รายจ่าย
+                    </a>
+                    <a href="/import-ot-csv" class="flex items-center px-12 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all">
+                        <span class="mr-2">⏰</span> CSV โอที
+                    </a>
+                    <a href="/export-template" class="flex items-center px-12 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all">
+                        <span class="mr-2">📄</span> Template
+                    </a>
+                </div>
+            </div>
+            
+            <a href="/settings" class="menu-item flex items-center px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 border-b border-gray-50 transition-all group">
+                <span class="text-xl mr-3 group-hover:scale-110 transition-transform">⚙️</span>
+                <span class="font-medium">ตั้งค่า</span>
+            </a>
+            
+            <!-- User Profile -->
+            <div class="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold">👤</span>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-medium text-gray-800 text-sm">{{ session.get('user_email', 'ผู้ใช้') }}</p>
+                        <p class="text-xs text-gray-500 flex items-center">
+                            <span class="w-2 h-2 bg-green-400 rounded-full mr-1"></span>
+                            ออนไลน์
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <a href="/logout" class="menu-item flex items-center px-4 py-3 text-red-600 hover:bg-red-50 border-b border-gray-50 transition-all group">
+                <span class="text-xl mr-3 group-hover:scale-110 transition-transform">🚪</span>
+                <span class="font-medium">ออกจากระบบ</span>
+            </a>
+        </nav>
     </div>
+</div>
+
+<!-- Desktop Sidebar -->
+<div class="hidden lg:block fixed top-0 left-0 w-72 h-full bg-white shadow-xl z-40">
+    <div class="flex flex-col h-full">
+        <!-- Header -->
+        <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold">📊</span>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        ระบบจัดการ
+                    </h1>
+                    <p class="text-sm text-gray-500">Management System</p>
+                </div>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="relative">
+                <input type="text" placeholder="ค้นหา..." 
+                       class="w-full pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                       onkeyup="searchMenu(this.value)">
+                <svg class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="flex-1 overflow-y-auto custom-scrollbar">
+            <!-- Quick Actions -->
+            <div class="p-4 border-b border-gray-100">
+                <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">⚡ Quick Actions</h3>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="addIncome()" class="flex flex-col items-center p-3 bg-gradient-to-br from-green-400 to-green-600 text-white rounded-lg shadow-sm text-sm transform hover:scale-105 transition-transform">
+                        <span class="text-lg mb-1">💰</span>
+                        <span>รายรับ</span>
+                    </button>
+                    <button onclick="addExpense()" class="flex flex-col items-center p-3 bg-gradient-to-br from-red-400 to-red-600 text-white rounded-lg shadow-sm text-sm transform hover:scale-105 transition-transform">
+                        <span class="text-lg mb-1">💸</span>
+                        <span>รายจ่าย</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Main Navigation -->
+            <nav class="py-2">
+                <div class="px-4 mb-2">
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">📋 เมนูหลัก</h3>
+                </div>
+                
+                <a href="/index" class="menu-item flex items-center px-4 py-3 mx-2 rounded-lg text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 group transition-all">
+                    <span class="text-xl mr-3 group-hover:scale-110 transition-transform">📅</span>
+                    <span class="font-medium">บันทึกโอที</span>
+                    <span class="ml-auto bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">5</span>
+                </a>
+                
+                <!-- Income/Expense with Submenu -->
+                <div class="mx-2 mb-1">
+                    <button class="menu-item w-full flex items-center px-4 py-3 rounded-lg text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 group transition-all" onclick="toggleSubmenu('desktop-income-submenu', this)">
+                        <span class="text-xl mr-3 group-hover:scale-110 transition-transform">💰</span>
+                        <span class="font-medium">รายรับ/รายจ่าย</span>
+                        <svg class="ml-auto w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="desktop-income-submenu" class="submenu ml-4 mt-1 overflow-hidden max-h-0 transition-all duration-300">
+                        <a href="/income-expense" class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all">
+                            <span class="mr-2">📝</span> จัดการรายการ
+                        </a>
+                        <a href="/income-expense?category=income" class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all">
+                            <span class="mr-2">💹</span> รายรับ
+                        </a>
+                        <a href="/income-expense?category=expense" class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all">
+                            <span class="mr-2">💸</span> รายจ่าย
+                        </a>
+                        <a href="/export-all/2025" class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all">
+                            <span class="mr-2">📊</span> รายงานสรุป
+                        </a>
+                    </div>
+                </div>
+                
+                <a href="/holidays" class="menu-item flex items-center px-4 py-3 mx-2 rounded-lg text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 group transition-all">
+                    <span class="text-xl mr-3 group-hover:scale-110 transition-transform">🎉</span>
+                    <span class="font-medium">วันหยุด</span>
+                </a>
+                
+                <!-- Import Submenu -->
+                <div class="mx-2 mb-1">
+                    <button class="menu-item w-full flex items-center px-4 py-3 rounded-lg text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 group transition-all" onclick="toggleSubmenu('desktop-import-submenu', this)">
+                        <span class="text-xl mr-3 group-hover:scale-110 transition-transform">📥</span>
+                        <span class="font-medium">นำเข้าข้อมูล</span>
+                        <svg class="ml-auto w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="desktop-import-submenu" class="submenu ml-4 mt-1 overflow-hidden max-h-0 transition-all duration-300">
+                        <a href="/import-csv" class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all">
+                            <span class="mr-2">💰</span> CSV รายรับ/รายจ่าย
+                        </a>
+                        <a href="/import-ot-csv" class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all">
+                            <span class="mr-2">⏰</span> CSV โอที
+                        </a>
+                        <a href="/export-template" class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all">
+                            <span class="mr-2">📄</span> Template
+                        </a>
+                    </div>
+                </div>
+                
+                <a href="/settings" class="menu-item flex items-center px-4 py-3 mx-2 rounded-lg text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 group transition-all">
+                    <span class="text-xl mr-3 group-hover:scale-110 transition-transform">⚙️</span>
+                    <span class="font-medium">ตั้งค่า</span>
+                </a>
+            </nav>
+        </div>
+        
+        <!-- Footer -->
+        <div class="p-4 border-t border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
+            <div class="flex items-center space-x-3 mb-3">
+                <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold">👤</span>
+                </div>
+                <div class="flex-1">
+                    <p class="font-medium text-gray-800 text-sm">{{ session.get('user_email', 'ผู้ใช้') }}</p>
+                    <p class="text-xs text-gray-500 flex items-center">
+                        <span class="w-2 h-2 bg-green-400 rounded-full mr-1"></span>
+                        ออนไลน์
+                    </p>
+                </div>
+            </div>
+            <a href="/logout" class="flex items-center justify-center w-full px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                <span class="mr-2">🚪</span>
+                <span class="font-medium">ออกจากระบบ</span>
+            </a>
+        </div>
+    </div>
+</div>
 
     <!-- Main Content -->
     <div class="lg:ml-64 pt-20 lg:pt-6 min-h-screen">
@@ -1270,6 +1581,363 @@ function removeFavoriteItem(idx) {
         renderFavoriteQuickAdd();
     }
 }
+
+let mobileMenuOpen = false;
+let searchOpen = false;
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initializeMenu();
+});
+
+function initializeMenu() {
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileSearchBtn = document.getElementById('mobile-search-btn');
+    const mobileSearch = document.getElementById('mobile-search');
+    
+    if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+    }
+    
+    if (mobileSearchBtn && mobileSearch) {
+        mobileSearchBtn.addEventListener('click', toggleMobileSearch);
+    }
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (mobileMenu && !mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+            closeMobileMenu();
+        }
+        
+        if (mobileSearch && !mobileSearch.contains(e.target) && !mobileSearchBtn.contains(e.target)) {
+            closeMobileSearch();
+        }
+    });
+    
+    // Handle escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeMobileMenu();
+            closeMobileSearch();
+        }
+    });
+}
+
+function toggleMobileMenu() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    
+    if (mobileMenuOpen) {
+        closeMobileMenu();
+    } else {
+        openMobileMenu();
+    }
+}
+
+function openMobileMenu() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    
+    mobileMenuOpen = true;
+    mobileMenu.classList.remove('hidden');
+    mobileMenuBtn.classList.add('hamburger-active');
+    closeMobileSearch();
+}
+
+function closeMobileMenu() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    
+    if (!mobileMenuOpen) return;
+    
+    mobileMenuOpen = false;
+    mobileMenu.classList.add('hidden');
+    mobileMenuBtn.classList.remove('hamburger-active');
+}
+
+function toggleMobileSearch() {
+    if (searchOpen) {
+        closeMobileSearch();
+    } else {
+        openMobileSearch();
+    }
+}
+
+function openMobileSearch() {
+    const mobileSearch = document.getElementById('mobile-search');
+    
+    searchOpen = true;
+    mobileSearch.classList.remove('hidden');
+    
+    // Focus on search input
+    setTimeout(() => {
+        const searchInput = mobileSearch.querySelector('input');
+        if (searchInput) searchInput.focus();
+    }, 100);
+    
+    closeMobileMenu();
+}
+
+function closeMobileSearch() {
+    const mobileSearch = document.getElementById('mobile-search');
+    
+    if (!searchOpen) return;
+    
+    searchOpen = false;
+    mobileSearch.classList.add('hidden');
+}
+
+// Submenu functionality
+function toggleSubmenu(submenuId, button) {
+    const submenu = document.getElementById(submenuId);
+    const arrow = button.querySelector('svg');
+    
+    if (!submenu || !arrow) return;
+    
+    if (submenu.classList.contains('active')) {
+        // Close submenu
+        submenu.classList.remove('active');
+        submenu.style.maxHeight = '0';
+        arrow.style.transform = 'rotate(0deg)';
+    } else {
+        // Close all other submenus first
+        document.querySelectorAll('.submenu.active').forEach(menu => {
+            menu.classList.remove('active');
+            menu.style.maxHeight = '0';
+        });
+        
+        document.querySelectorAll('button svg').forEach(svg => {
+            if (svg !== arrow) {
+                svg.style.transform = 'rotate(0deg)';
+            }
+        });
+        
+        // Open this submenu
+        submenu.classList.add('active');
+        submenu.style.maxHeight = '500px';
+        arrow.style.transform = 'rotate(180deg)';
+    }
+}
+
+// Search functionality
+function searchMenu(query) {
+    const menuItems = document.querySelectorAll('.menu-item');
+    const lowerQuery = query.toLowerCase();
+    
+    if (query === '') {
+        // Show all items
+        menuItems.forEach(item => {
+            item.style.display = 'flex';
+            item.classList.remove('bg-yellow-100');
+        });
+        return;
+    }
+    
+    menuItems.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        if (text.includes(lowerQuery)) {
+            item.style.display = 'flex';
+            item.classList.add('bg-yellow-100');
+        } else {
+            item.style.display = 'none';
+            item.classList.remove('bg-yellow-100');
+        }
+    });
+}
+
+// Quick action functions
+function addIncome() {
+    showNotification('เปิดหน้าเพิ่มรายรับ', 'success');
+    // You can redirect to add income page
+    // window.location.href = '/add-income';
+}
+
+function addExpense() {
+    showNotification('เปิดหน้าเพิ่มรายจ่าย', 'success');
+    // You can redirect to add expense page
+    // window.location.href = '/add-expense';
+}
+
+function viewReport() {
+    showNotification('เปิดหน้ารายงาน', 'info');
+    // window.location.href = '/reports';
+}
+
+function exportData() {
+    showQuickExportMenu();
+}
+
+function showQuickAdd() {
+    const menu = document.createElement('div');
+    menu.className = 'fixed top-16 right-4 bg-white border border-gray-200 rounded-lg shadow-lg p-2 z-50 animate-fade-in';
+    menu.innerHTML = `
+        <button onclick="addIncome(); closeQuickMenu(this)" class="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-green-50 rounded flex items-center">
+            <span class="mr-2">💰</span> เพิ่มรายรับ
+        </button>
+        <button onclick="addExpense(); closeQuickMenu(this)" class="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-red-50 rounded flex items-center">
+            <span class="mr-2">💸</span> เพิ่มรายจ่าย
+        </button>
+    `;
+    
+    document.body.appendChild(menu);
+    
+    // Close menu when clicking outside
+    setTimeout(() => {
+        document.addEventListener('click', function closeMenu(e) {
+            if (!menu.contains(e.target)) {
+                menu.remove();
+                document.removeEventListener('click', closeMenu);
+            }
+        });
+    }, 100);
+}
+
+function showQuickExportMenu() {
+    const menu = document.createElement('div');
+    menu.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white border border-gray-200 rounded-lg shadow-xl p-4 z-50 animate-fade-in';
+    menu.innerHTML = `
+        <h3 class="font-semibold text-gray-800 mb-3">📤 ส่งออกข้อมูล</h3>
+        <div class="space-y-2">
+            <button onclick="exportAll(); closeQuickMenu(this)" class="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded flex items-center">
+                <span class="mr-2">📄</span> ส่งออกทั้งหมด
+            </button>
+            <button onclick="exportIncome(); closeQuickMenu(this)" class="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-green-50 rounded flex items-center">
+                <span class="mr-2">💰</span> ส่งออกรายรับ
+            </button>
+            <button onclick="exportExpense(); closeQuickMenu(this)" class="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-red-50 rounded flex items-center">
+                <span class="mr-2">💸</span> ส่งออกรายจ่าย
+            </button>
+        </div>
+        <button onclick="closeQuickMenu(this)" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    `;
+    
+    document.body.appendChild(menu);
+    
+    // Close menu when clicking outside
+    setTimeout(() => {
+        document.addEventListener('click', function closeMenu(e) {
+            if (!menu.contains(e.target)) {
+                menu.remove();
+                document.removeEventListener('click', closeMenu);
+            }
+        });
+    }, 100);
+}
+
+function closeQuickMenu(element) {
+    const menu = element.closest('.fixed');
+    if (menu) menu.remove();
+}
+
+// Export functions
+function exportAll() {
+    showNotification('กำลังส่งออกข้อมูลทั้งหมด...', 'info');
+    // window.location.href = '/export-all/2025';
+}
+
+function exportIncome() {
+    showNotification('กำลังส่งออกข้อมูลรายรับ...', 'success');
+    // window.location.href = '/export-income/2025';
+}
+
+function exportExpense() {
+    showNotification('กำลังส่งออกข้อมูลรายจ่าย...', 'warning');
+    // window.location.href = '/export-expense/2025';
+}
+
+// Notification system
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    const bgColor = {
+        'success': 'bg-green-500',
+        'error': 'bg-red-500', 
+        'warning': 'bg-yellow-500',
+        'info': 'bg-blue-500'
+    }[type] || 'bg-blue-500';
+    
+    const icon = {
+        'success': '✅',
+        'error': '❌',
+        'warning': '⚠️',
+        'info': 'ℹ️'
+    }[type] || 'ℹ️';
+    
+    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg text-white ${bgColor} animate-slide-in flex items-center space-x-2`;
+    notification.innerHTML = `
+        <span>${icon}</span>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Ctrl/Cmd + K for search
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        const searchInput = document.querySelector('input[placeholder*="ค้นหา"]');
+        if (searchInput) {
+            searchInput.focus();
+            searchInput.select();
+        }
+    }
+    
+    // Ctrl/Cmd + N for new income
+    if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+        e.preventDefault();
+        addIncome();
+    }
+    
+    // Ctrl/Cmd + E for new expense  
+    if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+        e.preventDefault();
+        addExpense();
+    }
+});
+
+// Add custom CSS animations
+const customStyles = document.createElement('style');
+customStyles.textContent = `
+    @keyframes slide-in {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes fade-in {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    
+    .animate-slide-in {
+        animation: slide-in 0.3s ease-out;
+    }
+    
+    .animate-fade-in {
+        animation: fade-in 0.2s ease-out;
+    }
+`;
+document.head.appendChild(customStyles);
+
+// Responsive handling
+window.addEventListener('resize', function() {
+    if (window.innerWidth >= 1024) {
+        closeMobileMenu();
+        closeMobileSearch();
+    }
+});
 
 // เรียก render เมื่อโหลดหน้า
 document.addEventListener('DOMContentLoaded', function() {

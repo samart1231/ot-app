@@ -117,6 +117,27 @@ def add_income_expense():
             print("Error parsing items_data")
     return redirect(url_for('index'))
 
+@app.route('/forgot-password', methods=['POST'])
+def forgot_password():
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        
+        # ตรวจสอบว่า email มีในระบบหรือไม่
+        conn = get_db_connection()
+        user = conn.execute('SELECT id FROM users WHERE email = ?', (email,)).fetchone()
+        conn.close()
+        
+        if user:
+            # สร้าง reset token และส่งอีเมล
+            # (ใช้ Flask-Mail หรือ service อื่น)
+            return {'success': True}
+        else:
+            return {'success': False, 'message': 'ไม่พบอีเมลนี้ในระบบ'}
+            
+    except Exception as e:
+        return {'success': False, 'message': 'เกิดข้อผิดพลาด'}
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
@@ -164,6 +185,7 @@ def signup():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    email = ''
     if request.method == 'POST':
         email = request.form['email'].strip().lower()
         password = request.form['password']
@@ -182,7 +204,11 @@ def login():
         else:
             flash('Email หรือรหัสผ่านไม่ถูกต้อง', 'error')
 
-    return render_template('login.html', config={'GOOGLE_OAUTH_AVAILABLE': GOOGLE_OAUTH_AVAILABLE})
+    return render_template(
+        'login.html',
+        config={'GOOGLE_OAUTH_AVAILABLE': GOOGLE_OAUTH_AVAILABLE},
+        email=email
+    )
 
 
 @app.route('/logout')
@@ -786,7 +812,6 @@ def calculate_normal_ot(start, end, breaks):
             total_seconds -= (overlap_end - overlap_start).total_seconds()
 
     return max(total_seconds / 3600, 0)
-
 
 @app.route('/index', methods=['GET', 'POST'])
 @login_required

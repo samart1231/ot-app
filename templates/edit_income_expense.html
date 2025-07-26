@@ -1,131 +1,440 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>แก้ไขรายการรายรับ/รายจ่าย</title>
-  <script src="{{ url_for('static', filename='js/tailwind.min.js') }}"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แก้ไขรายการรายรับ/รายจ่าย</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --secondary-color: #6b7280;
+            --bg-color: #f9fafb;
+            --card-bg: #ffffff;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --hover-bg: #f3f4f6;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Enhanced Container Styles */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Improved Card Styles */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
+        }
+
+        /* Enhanced Form Styles */
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            background-color: var(--card-bg);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        /* Enhanced Button Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            min-height: 44px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Flash Messages */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #065f46;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #991b1b;
+        }
+
+        /* Enhanced Mobile Styles */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 8px;
+            }
+
+            .card {
+                margin-bottom: 16px;
+                border-radius: 8px;
+            }
+
+            .btn {
+                padding: 10px 16px;
+                font-size: 13px;
+                min-height: 44px;
+            }
+
+            .form-input {
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
-<body class="bg-gray-100 p-4 sm:p-6 text-gray-800 min-h-screen">
-    <!-- Mobile Menu -->
+<body>
+    <!-- Mobile Header -->
     <div class="lg:hidden fixed top-0 left-0 w-full bg-white shadow-lg z-50">
         <div class="flex items-center justify-between p-4">
             <h1 class="text-xl font-bold text-gray-800">📝 แก้ไขรายการ</h1>
-            <button onclick="toggleMobileMenu()" class="text-gray-600 hover:text-gray-800">
+            <button id="mobile-menu-btn" class="text-gray-600 hover:text-gray-800 focus:outline-none">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
         </div>
+        
+        <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden bg-white border-t">
-            <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📅 OT Records</a>
-            <a href="/income-expense" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">💰 Income/Expense</a>
-            <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">🎉 Holidays</a>
-            <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📊 Import CSV</a>
-            <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⏰ Import OT CSV</a>
-            <div class="px-4 py-3 border-b">
-                <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
-            </div>
-            <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50">🚪 Logout</a>
+            <nav class="py-2">
+                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📅 บันทึกโอที</a>
+                <a href="/income-expense" class="block px-4 py-3 bg-green-100 text-green-700 font-medium border-b">💰 รายรับ/รายจ่าย</a>
+                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">🎉 วันหยุด</a>
+                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📊 นำเข้า CSV</a>
+                <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⏰ นำเข้า CSV โอที</a>
+                <a href="/settings" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⚙️ ตั้งค่า</a>
+                <div class="px-4 py-3 border-b">
+                    <span class="text-sm text-gray-500">👤 {{ session.get('user_email', 'ผู้ใช้') }}</span>
+                </div>
+                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50">🚪 ออกจากระบบ</a>
+            </nav>
         </div>
     </div>
 
-    <!-- Desktop Menu -->
-    <div class="hidden lg:block fixed top-0 left-0 w-64 h-full bg-white shadow-lg">
+    <!-- Desktop Sidebar -->
+    <div class="hidden lg:block fixed top-0 left-0 w-64 h-full bg-white shadow-lg z-40">
         <div class="p-6">
             <h1 class="text-2xl font-bold text-gray-800 mb-8">📊 ระบบจัดการ</h1>
             <nav class="space-y-2">
-                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">📅 OT Records</a>
-                <a href="/income-expense" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">💰 Income/Expense</a>
-                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">🎉 Holidays</a>
-                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">📊 Import CSV</a>
-                <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">⏰ Import OT CSV</a>
+                <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">📅 บันทึกโอที</a>
+                <a href="/income-expense" class="block px-4 py-3 bg-green-100 text-green-700 font-medium rounded-lg">💰 รายรับ/รายจ่าย</a>
+                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">🎉 วันหยุด</a>
+                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">📊 นำเข้า CSV</a>
+                <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">⏰ นำเข้า CSV โอที</a>
+                <a href="/settings" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">⚙️ ตั้งค่า</a>
             </nav>
             <div class="mt-8 pt-6 border-t">
-                <div class="px-4 py-2">
-                    <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
+                <div class="px-4 py-3">
+                    <span class="text-sm text-gray-500">👤 {{ session.get('user_email', 'ผู้ใช้') }}</span>
                 </div>
-                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors">🚪 Logout</a>
+                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors">🚪 ออกจากระบบ</a>
             </div>
         </div>
     </div>
 
     <!-- Main Content -->
-    <div class="lg:ml-64 pt-16 lg:pt-0">
-        <div class="p-6">
-            <h1 class="text-2xl sm:text-3xl font-bold mb-6 text-center sm:text-left">📝 แก้ไขรายการ</h1>
+    <div class="lg:ml-64 pt-20 lg:pt-6 min-h-screen">
+        <div class="container">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'success' if category == 'success' else 'error' }} fade-in">
+                            <span>{{ '✅' if category == 'success' else '❌' }}</span>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
 
-            <div class="max-w-2xl mx-auto">
-    <form method="POST" class="bg-white p-4 sm:p-6 rounded shadow space-y-4 sm:space-y-6">
-      <div>
-        <label class="block font-semibold mb-2 text-sm sm:text-base">📅 วันที่</label>
-        <input type="date" name="date" required value="{{ record['date'] }}" 
-               class="w-full border rounded p-3 sm:p-2 text-base focus:ring-2 focus:ring-blue-400">
-      </div>
-      
-    <div>
-        <label class="block font-semibold mb-2 text-sm sm:text-base">📝 รายละเอียด</label>
-        <input type="text" name="description" required value="{{ record['description'] }}" 
-               class="w-full border rounded p-3 sm:p-2 text-base focus:ring-2 focus:ring-blue-400">
-    </div>
-      
-    <div>
-        <label class="block font-semibold mb-2 text-sm sm:text-base">💰 จำนวนเงิน</label>
-        <input type="number" step="0.01" name="amount" required value="{{ record['amount'] }}" 
-               class="w-full border rounded p-3 sm:p-2 text-base focus:ring-2 focus:ring-blue-400">
-    </div>
-      
-    <div>
-        <label class="block font-semibold mb-2 text-sm sm:text-base">🏪 ร้านค้า</label>
-        <select name="vendor" class="w-full border rounded p-3 sm:p-2 text-base focus:ring-2 focus:ring-blue-400">
-    <option value="">-- ไม่เลือก --</option>
-          <option value="ร้านยายจ่อย" {% if record['vendor'] == 'ร้านยายจ่อย' %}selected{% endif %}>ร้านยายจ่อย</option>
-          <option value="ร้านผัก" {% if record['vendor'] == 'ร้านผัก' %}selected{% endif %}>ร้านผัก</option>
-          <option value="เจ้นัน" {% if record['vendor'] == 'เจ้นัน' %}selected{% endif %}>เจ้นัน</option>
-          <option value="พี่แก่" {% if record['vendor'] == 'พี่แก่' %}selected{% endif %}>พี่แก่</option>
-          <option value="พี่อาร์ม" {% if record['vendor'] == 'พี่อาร์ม' %}selected{% endif %}>พี่อาร์ม</option>
-          <option value="7-seven" {% if record['vendor'] == '7-seven' %}selected{% endif %}>7-seven</option>
-  </select>
-    </div>
-      
-    <div>
-        <label class="block font-semibold mb-2 text-sm sm:text-base">📊 ประเภท</label>
-        <select name="category" required class="w-full border rounded p-3 sm:p-2 text-base focus:ring-2 focus:ring-blue-400">
-          <option value="income" {% if record['category'] == 'income' %}selected{% endif %}>💰 รายรับ</option>
-          <option value="expense" {% if record['category'] == 'expense' %}selected{% endif %}>💸 รายจ่าย</option>
-      </select>
-    </div>
-    
-    <div>
-        <label class="block font-semibold mb-2 text-sm sm:text-base">🏷️ ประเภทหลัก</label>
-        <input type="text" name="main_category" value="{{ record['main_category'] or '' }}" 
-               class="w-full border rounded p-3 sm:p-2 text-base focus:ring-2 focus:ring-blue-400"
-               placeholder="เช่น อาหาร, ของใช้, ค่าเดินทาง">
-    </div>
-    
-    <div>
-        <label class="block font-semibold mb-2 text-sm sm:text-base">📂 ประเภทย่อย</label>
-        <input type="text" name="sub_category" value="{{ record['sub_category'] or '' }}" 
-               class="w-full border rounded p-3 sm:p-2 text-base focus:ring-2 focus:ring-blue-400"
-               placeholder="เช่น อาหารหลัก, สบู่, น้ำมัน">
-    </div>
-      
-      <div class="flex justify-center sm:justify-end">
-        <button type="submit" 
-                class="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-6 py-3 sm:py-2 rounded text-base">
-        💾 บันทึกการแก้ไข
-      </button>
-    </div>
-            </form>
+            <!-- Page Title -->
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-center lg:text-left">📝 แก้ไขรายการรายรับ-รายจ่าย</h1>
+                <p class="text-gray-600 text-center lg:text-left mt-2">แก้ไขข้อมูลรายรับหรือรายจ่าย</p>
+            </div>
+
+            <!-- Edit Form -->
+            <div class="card mb-6 fade-in max-w-4xl mx-auto">
+                <div class="p-6 border-b border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-800">✏️ แก้ไขรายการ</h2>
+                    <p class="text-sm text-gray-600 mt-1">แก้ไขข้อมูลรายรับหรือรายจ่าย</p>
+                </div>
+                
+                <form method="POST" class="p-6 space-y-6">
+                    <!-- Date -->
+                    <div>
+                        <label class="form-label">📅 วันที่</label>
+                        <input type="date" name="date" required value="{{ record['date'] }}" class="form-input">
+                    </div>
+
+                    <!-- Category -->
+                    <div>
+                        <label class="form-label">📊 ประเภทรายการ</label>
+                        <select name="category" required class="form-input" id="category-select">
+                            <option value="">-- เลือกประเภทรายการ --</option>
+                            <option value="income" {% if record['category'] == 'income' %}selected{% endif %}>💰 รายรับ</option>
+                            <option value="expense" {% if record['category'] == 'expense' %}selected{% endif %}>💸 รายจ่าย</option>
+                        </select>
+                    </div>
+
+                    <!-- Category Selection -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="form-label">🏷️ ประเภทหลัก</label>
+                            <input type="text" name="main_category" value="{{ record['main_category'] or '' }}" 
+                                   class="form-input" placeholder="เช่น อาหาร, ของใช้, ค่าเดินทาง">
+                        </div>
+                        <div>
+                            <label class="form-label">📂 ประเภทย่อย</label>
+                            <input type="text" name="sub_category" value="{{ record['sub_category'] or '' }}" 
+                                   class="form-input" placeholder="เช่น อาหารหลัก, สบู่, น้ำมัน">
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label class="form-label">📝 รายละเอียด</label>
+                        <input type="text" name="description" required value="{{ record['description'] }}" 
+                               class="form-input" placeholder="รายละเอียดรายการ">
+                    </div>
+
+                    <!-- Amount -->
+                    <div>
+                        <label class="form-label">💰 จำนวนเงิน (บาท)</label>
+                        <input type="number" step="0.01" name="amount" required value="{{ record['amount'] }}" 
+                               class="form-input" placeholder="0.00" min="0">
+                    </div>
+
+                    <!-- Vendor -->
+                    <div>
+                        <label class="form-label">🏪 ร้านค้า</label>
+                        <select name="vendor" class="form-input">
+                            <option value="">-- ไม่เลือก --</option>
+                            <option value="ร้านสะดวกซื้อ 7-11" {% if record['vendor'] == 'ร้านสะดวกซื้อ 7-11' %}selected{% endif %}>ร้านสะดวกซื้อ 7-11</option>
+                            <option value="ร้านค้าชุมชน" {% if record['vendor'] == 'ร้านค้าชุมชน' %}selected{% endif %}>ร้านค้าชุมชน</option>
+                            <option value="ตลาดสด" {% if record['vendor'] == 'ตลาดสด' %}selected{% endif %}>ตลาดสด</option>
+                            <option value="ซูเปอร์มาร์เก็ต" {% if record['vendor'] == 'ซูเปอร์มาร์เก็ต' %}selected{% endif %}>ซูเปอร์มาร์เก็ต</option>
+                            <option value="ออนไลน์" {% if record['vendor'] == 'ออนไลน์' %}selected{% endif %}>ออนไลน์</option>
+                            <option value="ร้านยายจ่อย" {% if record['vendor'] == 'ร้านยายจ่อย' %}selected{% endif %}>ร้านยายจ่อย</option>
+                            <option value="ร้านผัก" {% if record['vendor'] == 'ร้านผัก' %}selected{% endif %}>ร้านผัก</option>
+                            <option value="เจ้นัน" {% if record['vendor'] == 'เจ้นัน' %}selected{% endif %}>เจ้นัน</option>
+                            <option value="พี่แก่" {% if record['vendor'] == 'พี่แก่' %}selected{% endif %}>พี่แก่</option>
+                            <option value="พี่อาร์ม" {% if record['vendor'] == 'พี่อาร์ม' %}selected{% endif %}>พี่อาร์ม</option>
+                            <option value="7-seven" {% if record['vendor'] == '7-seven' %}selected{% endif %}>7-seven</option>
+                            <option value="อื่นๆ" {% if record['vendor'] == 'อื่นๆ' %}selected{% endif %}>อื่นๆ</option>
+                        </select>
+                    </div>
+
+                    <!-- Items Data (if available) -->
+                    {% if record['items_data'] %}
+                        <div>
+                            <label class="form-label">🛒 รายการสินค้า</label>
+                            <div class="card p-4 bg-gray-50">
+                                {% set items = record['items_data'] | from_json %}
+                                {% if items %}
+                                    <div class="text-sm text-gray-700">
+                                        {% for item in items %}
+                                            <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                                                <span>{{ item.name }} x{{ item.quantity }}</span>
+                                                <span class="font-medium">{{ "%.2f"|format(item.price) }} ฿</span>
+                                            </div>
+                                        {% endfor %}
+                                        <div class="flex justify-between items-center pt-2 font-semibold text-green-600">
+                                            <span>รวมทั้งหมด:</span>
+                                            <span>{{ "%.2f"|format(items | sum(attribute='total')) }} ฿</span>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <input type="hidden" name="items_data" value="{{ record['items_data'] }}">
+                        </div>
+                    {% endif %}
+
+                    <!-- Action Buttons -->
+                    <div class="pt-6 flex flex-col sm:flex-row gap-4">
+                        <a href="/income-expense" class="btn btn-secondary w-full sm:w-auto">
+                            <span class="text-xl mr-2">← </span>
+                            ย้อนกลับ
+                        </a>
+                        <button type="submit" class="btn btn-warning w-full sm:w-auto text-lg">
+                            <span class="text-xl mr-2">💾</span>
+                            บันทึกการแก้ไข
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Record Information -->
+            <div class="card fade-in max-w-4xl mx-auto">
+                <div class="p-6 border-b border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-800">ℹ️ ข้อมูลรายการ</h2>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <span class="text-gray-600">ID รายการ:</span>
+                            <span class="font-medium">{{ record['id'] }}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">วันที่สร้าง:</span>
+                            <span class="font-medium">{{ record['date'] }}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">ประเภท:</span>
+                            {% if record['category'] == 'income' %}
+                                <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                                    💰 รายรับ
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
+                                    💸 รายจ่าย
+                                </span>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <span class="text-gray-600">จำนวนเงิน:</span>
+                            <span class="font-bold text-lg {% if record['category'] == 'income' %}text-green-600{% else %}text-red-600{% endif %}">
+                                {{ "%.2f"|format(record['amount']) }} บาท
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         // Mobile Menu Toggle
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
+
