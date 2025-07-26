@@ -6,6 +6,8 @@ import io
 import os
 import re
 import csv
+import calendar
+import urllib.parse
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 # import requests
@@ -34,6 +36,16 @@ def from_json_filter(value):
         return json.loads(value)
     except (json.JSONDecodeError, TypeError):
         return None
+
+@app.context_processor
+def inject_user():
+    """ส่งข้อมูลผู้ใช้ไปยัง template ทุกหน้า"""
+    return {
+        'current_user_id': session.get('user_id'),
+        'current_user_email': session.get('user_email'),
+        'current_user_name': session.get('user_name'),
+        'current_user_picture': session.get('user_picture')
+    }
 
 # Google OAuth Configuration (optional)
 try:
@@ -84,39 +96,6 @@ def get_or_create_user_from_google(google_user_info):
         conn.close()
         return new_user
 
-@app.route('/add', methods=['POST'])
-def add_income_expense():
-    # รับค่าจากฟอร์ม
-    category = request.form['category']
-    item = request.form['item']
-    amount = request.form['amount']
-    date = request.form['date']
-
-    # รวม category กับ item เป็นข้อความเดียว
-    detail = f"{category}: {item}"
-    
-    # บันทึกค่าลงฐานข้อมูล
-    # db.execute('INSERT INTO income_expense (detail, amount, date) VALUES (?, ?, ?)', (detail, amount, date))
-    # ในไฟล์ app.py ที่ฟังก์ชัน income_expense()
-    # เพิ่ม debug เพื่อเช็คข้อมูล
-    print("=== DEBUG: Form Data ===")
-    if request.method == 'POST':
-        items_data = request.form.get('items_data')
-        print(f"Items Data: {items_data}")
-        print(f"Category: {category}")
-        print(f"Item: {item}")
-        print(f"Amount: {amount}")
-        print(f"Date: {date}")
-    
-    if items_data:
-        try:
-            import json
-            items = json.loads(items_data)
-            print(f"Parsed Items: {items}")
-        except:
-            print("Error parsing items_data")
-    return redirect(url_for('index'))
-
 @app.route('/forgot-password', methods=['POST'])
 def forgot_password():
     try:
@@ -131,7 +110,7 @@ def forgot_password():
         if user:
             # สร้าง reset token และส่งอีเมล
             # (ใช้ Flask-Mail หรือ service อื่น)
-            return {'success': True}
+            return {'success': True, 'message': 'ลิงค์รีเซ็ตรหัสผ่านถูกส่งไปยังอีเมลของคุณแล้ว'}
         else:
             return {'success': False, 'message': 'ไม่พบอีเมลนี้ในระบบ'}
             

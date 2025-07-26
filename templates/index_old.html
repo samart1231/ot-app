@@ -1,0 +1,312 @@
+{% extends "base.html" %}
+
+{% block title %}บันทึก OT - OT Tracker{% endblock %}
+
+{% block content %}
+                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors">🚪 ออกจากระบบ</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="lg:ml-64 pt-16 lg:pt-0">
+        <div class="p-6">
+            <h1 class="text-2xl sm:text-3xl font-bold mb-6 text-center sm:text-left">🧮 ระบบคำนวณโอที 🕒</h1>
+
+
+  <!-- ฟอร์มบันทึก -->
+  <form method="post" class="bg-white p-4 sm:p-6 rounded shadow mb-6">
+    <div class="grid grid-cols-1 gap-4 mb-6">
+      <!-- วันที่เริ่ม -->
+      <div>
+        <label for="work_date" class="block mb-2 font-semibold text-gray-700 text-sm sm:text-base">📅 วันที่เริ่มทำงาน ({{ work_start_time if work_start_time else '08:00' }})</label>
+        <input type="date" id="work_date" name="work_date"
+          class="w-full border rounded p-3 sm:p-2 text-base focus:ring-2 focus:ring-orange-400" required>
+      </div>
+
+      <!-- วันเวลาสิ้นสุด -->
+      <div>
+        <label for="end_time" class="block mb-2 font-semibold text-gray-700 text-sm sm:text-base">⏰ วัน-เวลาสิ้นสุด</label>
+        <input type="datetime-local" id="end_time" name="end_time"
+          class="w-full border rounded p-3 sm:p-2 text-base focus:ring-2 focus:ring-orange-400" required>
+      </div>
+    </div>
+
+    <div class="flex justify-center sm:justify-end">
+      <button type="submit"
+        class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-4 sm:py-3 text-lg font-semibold text-white bg-gradient-to-r from-orange-400 to-orange-600 rounded-full shadow-lg hover:from-orange-500 hover:to-orange-700 transition-all">
+        <span class="text-2xl">➕</span>
+        <span>บันทึก</span>
+      </button>
+    </div>
+  </form>
+    <!-- เลือกเดือน -->
+    <div class="bg-white p-4 sm:p-6 rounded shadow mb-6">
+      <h2 class="text-lg sm:text-xl font-semibold mb-4">📅 เลือกเดือนที่ต้องการดู</h2>
+      <form method="get" class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+        <label for="month" class="font-semibold text-sm sm:text-base">เดือน:</label>
+        <select name="month" id="month" onchange="this.form.submit()" 
+                class="p-3 sm:p-2 border rounded text-base focus:ring-2 focus:ring-blue-400">
+          {% for month_data in available_months %}
+            <option value="{{ month_data['month'] }}" 
+                    {% if selected_month == month_data['month'] %}selected{% endif %}>
+              {{ month_data['display'] }}{% if month_data['has_data'] %} ✅{% else %} ⭕{% endif %}
+            </option>
+          {% endfor %}
+        </select>
+        
+              <!-- ซ่อน parameters อื่นๆ -->
+      <input type="hidden" name="sort" value="{{ sort_order }}">
+        
+        <div class="text-sm text-gray-600">
+          แสดงข้อมูล OT เดือน {{ selected_month }}
+        </div>
+        
+        <div class="text-xs text-gray-500 mt-2">
+          <span class="mr-4">✅ = มีข้อมูล</span>
+          <span>⭕ = ไม่มีข้อมูล</span>
+        </div>
+      </form>
+    </div>
+
+
+  <!-- ตารางข้อมูล OT สำหรับเดือน {{ selected_month }} -->
+  <div class="bg-white rounded shadow mb-6">
+    <div class="p-4 sm:p-6 border-b">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h2 class="text-lg sm:text-xl font-semibold">📊 รายการ OT เดือน {{ selected_month }}</h2>
+                 <div class="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-semibold">
+           {{ total_records }} รายการ | รวม: {{ monthly_total_ot }} ชั่วโมง
+         </div>
+      </div>
+    </div>
+    
+    <div class="overflow-x-auto">
+      <table class="w-full table-auto text-sm">
+    <thead class="bg-gray-200 text-left">
+      <tr>
+            <th class="px-3 py-3 text-xs sm:text-sm">วันที่</th>
+            <th class="px-3 py-3 text-xs sm:text-sm">เริ่ม</th>
+            <th class="px-3 py-3 text-xs sm:text-sm">สิ้นสุด</th>
+            <th class="px-3 py-3 text-xs sm:text-sm">ชั่วโมง OT</th>
+            <th class="px-3 py-3 text-xs sm:text-sm">จัดการ</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr class="border-t hover:bg-gray-50">
+          <td class="px-3 py-3 text-xs sm:text-sm">{{ r['work_date'] }}</td>
+          <td class="px-3 py-3 text-xs sm:text-sm">{{ r['start_time'][11:16] }}</td>
+          <td class="px-3 py-3 text-xs sm:text-sm">{{ r['end_time'][11:16] }}</td>
+          <td class="px-3 py-3 text-xs sm:text-sm">{{ r['ot_hours'] }}</td>
+          <td class="px-3 py-3">
+            <div class="flex flex-col sm:flex-row gap-1 sm:gap-2">
+            <form action="{{ url_for('edit_ot', id=r['id']) }}" method="get">
+                <button type="submit" class="w-full sm:w-auto px-2 py-1 text-xs sm:text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600">
+    แก้ไข
+  </button>
+</form>
+              <button class="delete-btn w-full sm:w-auto px-2 py-1 text-xs sm:text-sm bg-red-600 text-white rounded hover:bg-red-700"
+                      data-id="{{ r['id'] }}" 
+                      data-date="{{ r['work_date'] }}" 
+                      data-start="{{ r['start_time'][11:16] }}" 
+                      data-end="{{ r['end_time'][11:16] }}" 
+                      data-hours="{{ r['ot_hours'] }}">
+            ลบ
+          </button>
+          <form id="delete-form-{{ r['id'] }}" method="post" action="{{ url_for('delete', id=r['id']) }}"></form>
+            </div>
+        </td>
+      </tr>
+      {% endfor %}
+        {% if not records %}
+        <tr>
+          <td colspan="5" class="px-3 py-6 text-center text-gray-500">
+            <div class="py-8">
+              <div class="text-4xl mb-4">📭</div>
+              <div class="text-lg font-medium mb-2">ไม่มีข้อมูล OT ในเดือน {{ selected_month }}</div>
+              <div class="text-sm text-gray-400">
+                เลือกเดือนอื่นที่มีสัญลักษณ์ ✅ หรือเพิ่มข้อมูล OT ใหม่
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endif %}
+    </tbody>
+  </table>
+    </div>
+  </div>
+
+  <!-- แสดงจำนวนรายการทั้งหมด -->
+  {% if records %}
+  <div class="text-center text-sm text-gray-600 my-4">
+    แสดงข้อมูล OT ทั้งหมด {{ total_records }} รายการ ในเดือน {{ selected_month }}
+  </div>
+  {% endif %}
+
+  <!-- รวมรายเดือน -->
+  <h2 class="mt-6 text-lg sm:text-xl font-semibold text-center sm:text-left">รวม OT รายเดือน</h2>
+  <div class="overflow-x-auto mt-2 bg-white shadow rounded">
+    <table class="w-full table-auto text-sm">
+  <thead class="bg-gray-200 text-left">
+    <tr>
+          <th class="px-3 py-3 text-xs sm:text-sm">เดือน</th>
+          <th class="px-3 py-3 text-xs sm:text-sm">รวม OT (ชม.)</th>
+          <th class="px-3 py-3 text-xs sm:text-sm">ส่งออก</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for m in monthly_ot %}
+    <tr class="border-t hover:bg-gray-50">
+          <td class="px-3 py-3">
+        <form action="{{ url_for('month_view', year_month=m['month']) }}" method="get">
+              <button type="submit" class="w-full sm:w-auto text-white bg-blue-600 hover:bg-blue-700 px-2 py-1 text-xs sm:text-sm rounded">
+            {{ m['month'] }}
+          </button>
+        </form>
+      </td>
+          <td class="px-3 py-3 text-xs sm:text-sm">{{ m['total'] | round(2) }}</td>
+          <td class="px-3 py-3">
+        <a href="{{ url_for('export_month_csv', year_month=m['month']) }}"
+               class="inline-block w-full sm:w-auto text-center text-xs sm:text-sm px-2 py-1 rounded bg-green-600 text-white hover:bg-green-700">
+          📥 ส่งออก
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+  </div>
+
+  <!-- สรุป OT -->
+  <div class="mt-6 bg-white p-4 sm:p-6 rounded shadow">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center sm:text-left">
+      <div>
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">📊 สรุป OT เดือน {{ selected_month }}</h3>
+        <p class="text-2xl sm:text-3xl font-bold text-blue-700">{{ monthly_total_ot }} ชั่วโมง</p>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">🎯 รวม OT ทั้งหมด</h3>
+        <p class="text-2xl sm:text-3xl font-bold text-green-700">{{ total_ot }} ชั่วโมง</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal ลบ -->
+  <div id="delete-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
+    <div class="bg-white p-4 sm:p-6 rounded shadow max-w-md w-full mx-4">
+      <h2 class="text-lg sm:text-xl font-bold mb-4 text-center">ยืนยันการลบรายการ OT</h2>
+      <div class="overflow-x-auto mb-4">
+        <table class="w-full text-xs sm:text-sm border">
+        <thead class="bg-gray-100">
+          <tr>
+              <th class="px-2 py-2 text-xs">วันที่</th>
+              <th class="px-2 py-2 text-xs">เริ่ม</th>
+              <th class="px-2 py-2 text-xs">สิ้นสุด</th>
+              <th class="px-2 py-2 text-xs">OT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+              <td class="px-2 py-2 text-xs" id="del-date"></td>
+              <td class="px-2 py-2 text-xs" id="del-start"></td>
+              <td class="px-2 py-2 text-xs" id="del-end"></td>
+              <td class="px-2 py-2 text-xs" id="del-hours"></td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="mb-3 text-sm text-center">พิมพ์ <strong>yes</strong> เพื่อยืนยันการลบ:</p>
+      <input type="text" id="confirm-input" class="w-full border p-3 rounded mb-4 text-base">
+      <div class="flex flex-col sm:flex-row justify-end gap-2">
+        <button onclick="hideModal()" class="w-full sm:w-auto px-4 py-3 bg-gray-300 rounded text-base">ยกเลิก</button>
+        <button onclick="confirmDelete()" class="w-full sm:w-auto px-4 py-3 bg-red-600 text-white rounded text-base">ลบจริง</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS Modal -->
+  <script>
+    let pendingId = null;
+    
+    // เพิ่ม event listener สำหรับปุ่มลบและ dropdown menu
+    document.addEventListener('DOMContentLoaded', function() {
+      // ปุ่มลบ OT
+      document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function() {
+          const id = this.dataset.id;
+          const date = this.dataset.date;
+          const start = this.dataset.start;
+          const end = this.dataset.end;
+          const hours = this.dataset.hours;
+          showModal(id, date, start, end, hours);
+        });
+      });
+      
+      // Dropdown menu
+      const menuButton = document.getElementById('menu-button');
+      const dropdownMenu = document.getElementById('dropdown-menu');
+      const menuArrow = document.getElementById('menu-arrow');
+      
+      // เปิด/ปิด dropdown เมื่อคลิกปุ่ม
+      menuButton.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isHidden = dropdownMenu.classList.contains('hidden');
+        
+        if (isHidden) {
+          dropdownMenu.classList.remove('hidden');
+          menuArrow.style.transform = 'rotate(180deg)';
+        } else {
+          dropdownMenu.classList.add('hidden');
+          menuArrow.style.transform = 'rotate(0deg)';
+        }
+      });
+      
+      // ปิด dropdown เมื่อคลิกนอกเมนู
+      document.addEventListener('click', function() {
+        dropdownMenu.classList.add('hidden');
+        menuArrow.style.transform = 'rotate(0deg)';
+      });
+      
+      // ป้องกันการปิด dropdown เมื่อคลิกภายในเมนู
+      dropdownMenu.addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+    });
+    
+    function showModal(id, date, start, end, hours) {
+      pendingId = id;
+      document.getElementById('confirm-input').value = '';
+      document.getElementById('del-date').innerText = date;
+      document.getElementById('del-start').innerText = start;
+      document.getElementById('del-end').innerText = end;
+      document.getElementById('del-hours').innerText = hours;
+      document.getElementById('delete-modal').classList.remove('hidden');
+    }
+
+    function hideModal() {
+      document.getElementById('delete-modal').classList.add('hidden');
+      pendingId = null;
+    }
+
+    function confirmDelete() {
+      const input = document.getElementById('confirm-input').value.trim().toLowerCase();
+      if (input.toLowerCase() === 'yes' || input.toLowerCase() === 'y') {
+  document.getElementById(`delete-form-${pendingId}`).submit();
+} else {
+        alert("ต้องพิมพ์ 'yes' เท่านั้นถึงจะลบได้");
+      }
+    }
+  </script>
+        </div>
+    </div>
+
+    <script>
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
