@@ -344,13 +344,69 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(180deg, #2563eb, #7c3aed);
 }
-/* เพิ่มในส่วน <style> ของ income_expense.html */
-    .menu-item {
+/* Menu Item Styles - แก้ไขตรงนี้ */
+.menu-item {
     display: flex !important;
+    align-items: center;
+    padding: 12px 16px;
+    text-decoration: none;
+    color: #374151;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+    margin: 2px 8px;
 }
 
-#mobile-menu, #desktop-sidebar {
-    display: block !important;
+.menu-item:hover {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    color: #1f2937;
+    transform: translateX(4px);
+}
+
+/* Mobile Menu Styles */
+#mobile-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    z-index: 50;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+}
+
+#mobile-menu.show {
+    display: block;
+}
+
+/* Desktop Sidebar Styles */
+#desktop-sidebar {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    #desktop-sidebar {
+        display: block !important;
+    }
+    
+    #mobile-menu {
+        display: none !important;
+    }
+}
+
+/* Main Content Adjustment */
+.main-content {
+    margin-left: 0;
+    padding-top: 80px;
+}
+
+@media (min-width: 1024px) {
+    .main-content {
+        margin-left: 288px;
+        padding-top: 24px;
+    }
 }
     </style>
 </head>
@@ -416,29 +472,8 @@
     </div>
     
     <!-- Mobile Menu -->
-    <div id="mobile-menu" class="hidden bg-white border-t border-gray-200 max-h-96 overflow-y-auto">
-        <!-- Quick Actions -->
-        <div class="p-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50">
-            <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-3">⚡ Quick Actions</h3>
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="addIncome()" class="flex items-center justify-center p-3 bg-gradient-to-r from-green-400 to-green-600 text-white rounded-lg shadow-sm transform hover:scale-105 transition-transform">
-                    <span class="text-lg mr-2">💰</span>
-                    <span class="font-medium text-sm">เพิ่มรายรับ</span>
-                </button>
-                <button onclick="addExpense()" class="flex items-center justify-center p-3 bg-gradient-to-r from-red-400 to-red-600 text-white rounded-lg shadow-sm transform hover:scale-105 transition-transform">
-                    <span class="text-lg mr-2">💸</span>
-                    <span class="font-medium text-sm">เพิ่มรายจ่าย</span>
-                </button>
-                <button onclick="viewReport()" class="flex items-center justify-center p-3 bg-gradient-to-r from-purple-400 to-purple-600 text-white rounded-lg shadow-sm transform hover:scale-105 transition-transform">
-                    <span class="text-lg mr-2">📊</span>
-                    <span class="font-medium text-sm">รายงาน</span>
-                </button>
-                <button onclick="exportData()" class="flex items-center justify-center p-3 bg-gradient-to-r from-orange-400 to-orange-600 text-white rounded-lg shadow-sm transform hover:scale-105 transition-transform">
-                    <span class="text-lg mr-2">📤</span>
-                    <span class="font-medium text-sm">ส่งออก</span>
-                </button>
-            </div>
-        </div>
+    <div id="mobile-menu" class="bg-white border-t border-gray-200 max-h-96 overflow-y-auto">
+
         
         <!-- Navigation Menu -->
         <nav class="py-2">
@@ -530,8 +565,8 @@
     </div>
 </div>
 
-<!-- Desktop Sidebar -->
-<div class="hidden lg:block fixed top-0 left-0 w-72 h-full bg-white shadow-xl z-40">
+    <!-- Desktop Sidebar -->
+    <div id="desktop-sidebar" class="fixed top-0 left-0 w-72 h-full bg-white shadow-xl z-40">
     <div class="flex flex-col h-full">
         <!-- Header -->
         <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
@@ -558,22 +593,7 @@
             </div>
         </div>
         
-        <!-- Navigation -->
-        <div class="flex-1 overflow-y-auto custom-scrollbar">
-            <!-- Quick Actions -->
-            <div class="p-4 border-b border-gray-100">
-                <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">⚡ Quick Actions</h3>
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="addIncome()" class="flex flex-col items-center p-3 bg-gradient-to-br from-green-400 to-green-600 text-white rounded-lg shadow-sm text-sm transform hover:scale-105 transition-transform">
-                        <span class="text-lg mb-1">💰</span>
-                        <span>รายรับ</span>
-                    </button>
-                    <button onclick="addExpense()" class="flex flex-col items-center p-3 bg-gradient-to-br from-red-400 to-red-600 text-white rounded-lg shadow-sm text-sm transform hover:scale-105 transition-transform">
-                        <span class="text-lg mb-1">💸</span>
-                        <span>รายจ่าย</span>
-                    </button>
-                </div>
-            </div>
+    
             
             <!-- Main Navigation -->
             <nav class="py-2">
@@ -669,7 +689,7 @@
 </div>
 
     <!-- Main Content -->
-    <div class="lg:ml-64 pt-20 lg:pt-6 min-h-screen">
+    <div class="main-content min-h-screen">
         <div class="container">
             <!-- Flash Messages -->
             {% with messages = get_flashed_messages(with_categories=true) %}
@@ -1123,6 +1143,9 @@
 
             // Mobile menu functionality
             setupMobileMenu();
+            
+            // Handle initial resize
+            handleResize();
         });
 
         function setupEventHandlers() {
@@ -1506,14 +1529,25 @@
             
             if (mobileMenuBtn && mobileMenu) {
                 mobileMenuBtn.addEventListener('click', () => {
-                    mobileMenu.classList.toggle('hidden');
+                    mobileMenu.classList.toggle('show');
+                    mobileMenuBtn.classList.toggle('hamburger-active');
                 });
 
                 // Close mobile menu when clicking outside
                 document.addEventListener('click', (e) => {
                     if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
-                        mobileMenu.classList.add('hidden');
+                        mobileMenu.classList.remove('show');
+                        mobileMenuBtn.classList.remove('hamburger-active');
                     }
+                });
+
+                // Close mobile menu when clicking on menu items
+                const menuItems = mobileMenu.querySelectorAll('a');
+                menuItems.forEach(item => {
+                    item.addEventListener('click', () => {
+                        mobileMenu.classList.remove('show');
+                        mobileMenuBtn.classList.remove('hamburger-active');
+                    });
                 });
             }
         }
@@ -1523,7 +1557,24 @@
             if (selectedItems.length > 0) {
                 updateItemsDisplay();
             }
+            handleResize();
         });
+
+        // เพิ่มฟังก์ชันสำหรับจัดการ responsive
+        function handleResize() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            
+            if (window.innerWidth >= 1024) {
+                // Desktop view
+                if (mobileMenu) {
+                    mobileMenu.classList.remove('show');
+                }
+                if (mobileMenuBtn) {
+                    mobileMenuBtn.classList.remove('hamburger-active');
+                }
+            }
+        }
         // --- Favorite Quick Add Items ---
 let favoriteItems = JSON.parse(localStorage.getItem('favoriteItems') || '[]');
 

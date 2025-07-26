@@ -1,62 +1,676 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบคำนวณโอที</title>
-  <script src="{{ url_for('static', filename='js/tailwind.min.js') }}"></script>
-</head>
-<body class="p-4 sm:p-8 bg-gray-100 text-gray-800 min-h-screen">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บันทึกโอที</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --secondary-color: #6b7280;
+            --bg-color: #f9fafb;
+            --card-bg: #ffffff;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --hover-bg: #f3f4f6;
+        }
 
-    <!-- Mobile Menu -->
-    <div class="lg:hidden fixed top-0 left-0 w-full bg-white shadow-lg z-50">
-        <div class="flex items-center justify-between p-4">
-            <h1 class="text-xl font-bold text-gray-800">📅 บันทึกโอที</h1>
-            <button onclick="toggleMobileMenu()" class="text-gray-600 hover:text-gray-800">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Enhanced Container Styles */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Improved Card Styles */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
+        }
+
+        /* Enhanced Form Styles */
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            background-color: var(--card-bg);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        /* Enhanced Button Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            min-height: 44px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            min-height: 32px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Enhanced Table Styles */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+        }
+
+        .table th {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border-color);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .table td {
+            padding: 16px 12px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .table tr:hover {
+            background-color: var(--hover-bg);
+        }
+
+        /* Status Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .badge-info {
+            background: rgba(59, 130, 246, 0.1);
+            color: #2563eb;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        /* Flash Messages */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #065f46;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #991b1b;
+        }
+
+        /* Enhanced Mobile Styles */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 8px;
+            }
+
+            .card {
+                margin-bottom: 16px;
+                border-radius: 8px;
+            }
+
+            .btn {
+                padding: 10px 16px;
+                font-size: 13px;
+                min-height: 44px;
+            }
+
+            .table-responsive {
+                border-radius: 8px;
+            }
+
+            .form-input {
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hamburger Menu Styles */
+        .hamburger-line {
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+
+        #mobile-menu-btn.hamburger-active .hamburger-line:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        #mobile-menu-btn.hamburger-active .hamburger-line:nth-child(2) {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+
+        #mobile-menu-btn.hamburger-active .hamburger-line:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+
+        /* Submenu animations */
+        .submenu {
+            transition: max-height 0.3s ease;
+        }
+
+        .submenu.active {
+            max-height: 500px;
+        }
+
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #3b82f6, #8b5cf6);
+            border-radius: 3px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #2563eb, #7c3aed);
+        }
+
+        /* Menu Item Styles */
+        .menu-item {
+            display: flex !important;
+            align-items: center;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: #374151;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            margin: 2px 8px;
+        }
+
+        .menu-item:hover {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            color: #1f2937;
+            transform: translateX(4px);
+        }
+
+        /* Mobile Menu Styles */
+        #mobile-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            max-height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+
+        #mobile-menu.show {
+            display: block;
+        }
+
+        /* Desktop Sidebar Styles */
+        #desktop-sidebar {
+            display: none;
+        }
+
+        @media (min-width: 1024px) {
+            #desktop-sidebar {
+                display: block !important;
+            }
+            
+            #mobile-menu {
+                display: none !important;
+            }
+        }
+
+        /* Main Content Adjustment */
+        .main-content {
+            margin-left: 0;
+            padding-top: 80px;
+        }
+
+        @media (min-width: 1024px) {
+            .main-content {
+                margin-left: 288px;
+                padding-top: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Header -->
+<div class="lg:hidden fixed top-0 left-0 w-full bg-white shadow-lg z-50 border-b border-gray-200">
+    <div class="flex items-center justify-between p-4">
+        <!-- Logo and Title -->
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <span class="text-white font-bold text-sm">⏰</span>
+            </div>
+            <h1 class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                บันทึกโอที
+            </h1>
+        </div>
+        
+        <!-- Mobile Controls -->
+        <div class="flex items-center space-x-3">
+            <!-- Quick Add Button -->
+            <button onclick="showQuickAdd()" class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                 </svg>
             </button>
-        </div>
-        <div id="mobile-menu" class="hidden bg-white border-t">
-            <a href="/index" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📅 บันทึกโอที</a>
-            <a href="/income-expense" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">💰 รายรับ/รายจ่าย</a>
-            <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">🎉 วันหยุด</a>
-            <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">📊 นำเข้า CSV รายรับ/รายจ่าย</a>
-            <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⏰ นำเข้า CSV โอที</a>
-            <a href="/settings" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 border-b">⚙️ ตั้งค่า</a>
-            <div class="px-4 py-3 border-b">
-                <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
-            </div>
-            <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50">🚪 ออกจากระบบ</a>
-        </div>
-    </div>
-
-    <!-- Desktop Menu -->
-    <div class="hidden lg:block fixed top-0 left-0 w-64 h-full bg-white shadow-lg">
-        <div class="p-6">
-            <h1 class="text-2xl font-bold text-gray-800 mb-8">📊 ระบบจัดการ</h1>
-            <nav class="space-y-2">
-                <a href="/index" class="block px-4 py-3 bg-blue-100 text-blue-700 font-medium rounded-lg">📅 บันทึกโอที</a>
-                <a href="/income-expense" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">💰 รายรับ/รายจ่าย</a>
-                <a href="/holidays" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">🎉 วันหยุด</a>
-                <a href="/import-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">📊 นำเข้า CSV รายรับ/รายจ่าย</a>
-                <a href="/import-ot-csv" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">⏰ นำเข้า CSV โอที</a>
-                <a href="/settings" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">⚙️ ตั้งค่า</a>
-            </nav>
-            <div class="mt-8 pt-6 border-t">
-                <div class="px-4 py-2">
-                    <span class="text-sm text-gray-500">👤 {{ session.user_email }}</span>
+            
+            <!-- Search Button -->
+            <button id="mobile-search-btn" class="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </button>
+            
+            <!-- Notifications -->
+            <button class="relative p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM4 4h7a1 1 0 011 1v7a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1z"></path>
+                </svg>
+                <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse">3</span>
+            </button>
+            
+            <!-- Hamburger Menu -->
+            <button id="mobile-menu-btn" class="p-2 text-gray-600 hover:text-gray-800 focus:outline-none transition-all">
+                <div class="w-6 h-6 flex flex-col justify-center space-y-1">
+                    <div class="hamburger-line w-6 h-0.5 bg-current transition-all duration-300"></div>
+                    <div class="hamburger-line w-6 h-0.5 bg-current transition-all duration-300"></div>
+                    <div class="hamburger-line w-6 h-0.5 bg-current transition-all duration-300"></div>
                 </div>
-                <a href="/logout" class="block px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors">🚪 ออกจากระบบ</a>
-            </div>
+            </button>
         </div>
     </div>
+    
+    <!-- Mobile Search Bar -->
+    <div id="mobile-search" class="hidden px-4 pb-4 border-t border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50">
+        <div class="relative">
+            <input type="text" placeholder="ค้นหาเมนู, รายการ, หรือข้อมูล..." 
+                   class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
+                   onkeyup="searchMenu(this.value)">
+            <svg class="absolute left-3 top-3.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+        </div>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="bg-white border-t border-gray-200 max-h-96 overflow-y-auto">
+
+        
+        <!-- Navigation Menu -->
+        <nav class="py-2">
+            <!-- Main Menu Items -->
+            <a href="/index" class="menu-item flex items-center px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 border-b border-gray-50 transition-all group">
+                <span class="text-xl mr-3 group-hover:scale-110 transition-transform">📅</span>
+                <span class="font-medium">บันทึกโอที</span>
+                <span class="ml-auto bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">5</span>
+            </a>
+            
+            <!-- Income/Expense with Submenu -->
+            <div class="border-b border-gray-50">
+                <button class="menu-item w-full flex items-center px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all group" onclick="toggleSubmenu('income-submenu', this)">
+                    <span class="text-xl mr-3 group-hover:scale-110 transition-transform">💰</span>
+                    <span class="font-medium">รายรับ/รายจ่าย</span>
+                    <svg class="ml-auto w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="income-submenu" class="submenu bg-gradient-to-r from-gray-50 to-blue-50 overflow-hidden max-h-0 transition-all duration-300">
+                    <a href="/income-expense" class="flex items-center px-12 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all">
+                        <span class="mr-2">📝</span> จัดการรายการ
+                    </a>
+                    <a href="/income-expense?category=income" class="flex items-center px-12 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all">
+                        <span class="mr-2">💹</span> รายรับ
+                    </a>
+                    <a href="/income-expense?category=expense" class="flex items-center px-12 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all">
+                        <span class="mr-2">💸</span> รายจ่าย
+                    </a>
+                    <a href="/export-all/2025" class="flex items-center px-12 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all">
+                        <span class="mr-2">📊</span> รายงานสรุป
+                    </a>
+                </div>
+            </div>
+            
+            <a href="/holidays" class="menu-item flex items-center px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 border-b border-gray-50 transition-all group">
+                <span class="text-xl mr-3 group-hover:scale-110 transition-transform">🎉</span>
+                <span class="font-medium">วันหยุด</span>
+            </a>
+            
+            <!-- Import with Submenu -->
+            <div class="border-b border-gray-50">
+                <button class="menu-item w-full flex items-center px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all group" onclick="toggleSubmenu('import-submenu', this)">
+                    <span class="text-xl mr-3 group-hover:scale-110 transition-transform">📥</span>
+                    <span class="font-medium">นำเข้าข้อมูล</span>
+                    <svg class="ml-auto w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="import-submenu" class="submenu bg-gradient-to-r from-gray-50 to-blue-50 overflow-hidden max-h-0 transition-all duration-300">
+                    <a href="/import-csv" class="flex items-center px-12 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all">
+                        <span class="mr-2">💰</span> CSV รายรับ/รายจ่าย
+                    </a>
+                    <a href="/import-ot-csv" class="flex items-center px-12 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all">
+                        <span class="mr-2">⏰</span> CSV โอที
+                    </a>
+                    <a href="/export-template" class="flex items-center px-12 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-white hover:shadow-sm transition-all">
+                        <span class="mr-2">📄</span> Template
+                    </a>
+                </div>
+            </div>
+            
+            <a href="/settings" class="menu-item flex items-center px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 border-b border-gray-50 transition-all group">
+                <span class="text-xl mr-3 group-hover:scale-110 transition-transform">⚙️</span>
+                <span class="font-medium">ตั้งค่า</span>
+            </a>
+            
+            <!-- User Profile -->
+            <div class="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold">👤</span>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-medium text-gray-800 text-sm">{{ session.get('user_email', 'ผู้ใช้') }}</p>
+                        <p class="text-xs text-gray-500 flex items-center">
+                            <span class="w-2 h-2 bg-green-400 rounded-full mr-1"></span>
+                            ออนไลน์
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <a href="/logout" class="menu-item flex items-center px-4 py-3 text-red-600 hover:bg-red-50 border-b border-gray-50 transition-all group">
+                <span class="text-xl mr-3 group-hover:scale-110 transition-transform">🚪</span>
+                <span class="font-medium">ออกจากระบบ</span>
+            </a>
+        </nav>
+    </div>
+</div>
+
+<!-- Desktop Sidebar -->
+<div id="desktop-sidebar" class="fixed top-0 left-0 w-72 h-full bg-white shadow-xl z-40">
+    <div class="flex flex-col h-full">
+        <!-- Header -->
+        <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold">⏰</span>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        ระบบจัดการ
+                    </h1>
+                    <p class="text-sm text-gray-500">Management System</p>
+                </div>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="relative">
+                <input type="text" placeholder="ค้นหา..." 
+                       class="w-full pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                       onkeyup="searchMenu(this.value)">
+                <svg class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="flex-1 overflow-y-auto custom-scrollbar">
+
+            
+            <!-- Main Navigation -->
+            <nav class="py-2">
+                <div class="px-4 mb-2">
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">📋 เมนูหลัก</h3>
+                </div>
+                
+                <a href="/index" class="menu-item flex items-center px-4 py-3 mx-2 rounded-lg text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 group transition-all">
+                    <span class="text-xl mr-3 group-hover:scale-110 transition-transform">📅</span>
+                    <span class="font-medium">บันทึกโอที</span>
+                    <span class="ml-auto bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">5</span>
+                </a>
+                
+                <!-- Income/Expense with Submenu -->
+                <div class="mx-2 mb-1">
+                    <button class="menu-item w-full flex items-center px-4 py-3 rounded-lg text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 group transition-all" onclick="toggleSubmenu('desktop-income-submenu', this)">
+                        <span class="text-xl mr-3 group-hover:scale-110 transition-transform">💰</span>
+                        <span class="font-medium">รายรับ/รายจ่าย</span>
+                        <svg class="ml-auto w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="desktop-income-submenu" class="submenu ml-4 mt-1 overflow-hidden max-h-0 transition-all duration-300">
+                        <a href="/income-expense" class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all">
+                            <span class="mr-2">📝</span> จัดการรายการ
+                        </a>
+                        <a href="/income-expense?category=income" class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all">
+                            <span class="mr-2">💹</span> รายรับ
+                        </a>
+                        <a href="/income-expense?category=expense" class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all">
+                            <span class="mr-2">💸</span> รายจ่าย
+                        </a>
+                        <a href="/export-all/2025" class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all">
+                            <span class="mr-2">📊</span> รายงานสรุป
+                        </a>
+                    </div>
+                </div>
+                
+                <a href="/holidays" class="menu-item flex items-center px-4 py-3 mx-2 rounded-lg text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 group transition-all">
+                    <span class="text-xl mr-3 group-hover:scale-110 transition-transform">🎉</span>
+                    <span class="font-medium">วันหยุด</span>
+                </a>
+                
+                <!-- Import Submenu -->
+                <div class="mx-2 mb-1">
+                    <button class="menu-item w-full flex items-center px-4 py-3 rounded-lg text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 group transition-all" onclick="toggleSubmenu('desktop-import-submenu', this)">
+                        <span class="text-xl mr-3 group-hover:scale-110 transition-transform">📥</span>
+                        <span class="font-medium">นำเข้าข้อมูล</span>
+                        <svg class="ml-auto w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="desktop-import-submenu" class="submenu ml-4 mt-1 overflow-hidden max-h-0 transition-all duration-300">
+                        <a href="/import-csv" class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all">
+                            <span class="mr-2">💰</span> CSV รายรับ/รายจ่าย
+                        </a>
+                        <a href="/import-ot-csv" class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all">
+                            <span class="mr-2">⏰</span> CSV โอที
+                        </a>
+                        <a href="/export-template" class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all">
+                            <span class="mr-2">📄</span> Template
+                        </a>
+                    </div>
+                </div>
+                
+                <a href="/settings" class="menu-item flex items-center px-4 py-3 mx-2 rounded-lg text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 group transition-all">
+                    <span class="text-xl mr-3 group-hover:scale-110 transition-transform">⚙️</span>
+                    <span class="font-medium">ตั้งค่า</span>
+                </a>
+            </nav>
+        </div>
+        
+        <!-- Footer -->
+        <div class="p-4 border-t border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
+            <div class="flex items-center space-x-3 mb-3">
+                <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold">👤</span>
+                </div>
+                <div class="flex-1">
+                    <p class="font-medium text-gray-800 text-sm">{{ session.get('user_email', 'ผู้ใช้') }}</p>
+                    <p class="text-xs text-gray-500 flex items-center">
+                        <span class="w-2 h-2 bg-green-400 rounded-full mr-1"></span>
+                        ออนไลน์
+                    </p>
+                </div>
+            </div>
+            <a href="/logout" class="flex items-center justify-center w-full px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                <span class="mr-2">🚪</span>
+                <span class="font-medium">ออกจากระบบ</span>
+            </a>
+        </div>
+    </div>
+</div>
 
     <!-- Main Content -->
-    <div class="lg:ml-64 pt-16 lg:pt-0">
-        <div class="p-6">
-            <h1 class="text-2xl sm:text-3xl font-bold mb-6 text-center sm:text-left">🧮 ระบบคำนวณโอที 🕒</h1>
+    <div class="main-content min-h-screen">
+        <div class="container">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'success' if category == 'success' else 'error' }} fade-in">
+                            <span>{{ '✅' if category == 'success' else '❌' }}</span>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Page Title -->
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-center lg:text-left">🧮 ระบบคำนวณโอที 🕒</h1>
+                <p class="text-gray-600 text-center lg:text-left mt-2">บันทึกและคำนวณเวลาทำงานโอที</p>
+            </div>
 
 
   <!-- ฟอร์มบันทึก -->
@@ -347,11 +961,396 @@
     </div>
 
     <script>
-        // Mobile Menu Toggle
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
+        let mobileMenuOpen = false;
+        let searchOpen = false;
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMenu();
+        });
+
+        function initializeMenu() {
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileSearchBtn = document.getElementById('mobile-search-btn');
+            const mobileSearch = document.getElementById('mobile-search');
+            
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+            }
+            
+            if (mobileSearchBtn && mobileSearch) {
+                mobileSearchBtn.addEventListener('click', toggleMobileSearch);
+            }
+            
+            // Close menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (mobileMenu && !mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                    closeMobileMenu();
+                }
+                
+                if (mobileSearch && !mobileSearch.contains(e.target) && !mobileSearchBtn.contains(e.target)) {
+                    closeMobileSearch();
+                }
+            });
+            
+            // Handle escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeMobileMenu();
+                    closeMobileSearch();
+                }
+            });
         }
+
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            
+            if (mobileMenuOpen) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        }
+
+        function openMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            
+            mobileMenuOpen = true;
+            mobileMenu.classList.add('show');
+            mobileMenuBtn.classList.add('hamburger-active');
+            closeMobileSearch();
+        }
+
+        function closeMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            
+            if (!mobileMenuOpen) return;
+            
+            mobileMenuOpen = false;
+            mobileMenu.classList.remove('show');
+            mobileMenuBtn.classList.remove('hamburger-active');
+        }
+
+        function toggleMobileSearch() {
+            if (searchOpen) {
+                closeMobileSearch();
+            } else {
+                openMobileSearch();
+            }
+        }
+
+        function openMobileSearch() {
+            const mobileSearch = document.getElementById('mobile-search');
+            
+            searchOpen = true;
+            mobileSearch.classList.remove('hidden');
+            
+            // Focus on search input
+            setTimeout(() => {
+                const searchInput = mobileSearch.querySelector('input');
+                if (searchInput) searchInput.focus();
+            }, 100);
+            
+            closeMobileMenu();
+        }
+
+        function closeMobileSearch() {
+            const mobileSearch = document.getElementById('mobile-search');
+            
+            if (!searchOpen) return;
+            
+            searchOpen = false;
+            mobileSearch.classList.add('hidden');
+        }
+
+        // Submenu functionality
+        function toggleSubmenu(submenuId, button) {
+            const submenu = document.getElementById(submenuId);
+            const arrow = button.querySelector('svg');
+            
+            if (!submenu || !arrow) return;
+            
+            if (submenu.classList.contains('active')) {
+                // Close submenu
+                submenu.classList.remove('active');
+                submenu.style.maxHeight = '0';
+                arrow.style.transform = 'rotate(0deg)';
+            } else {
+                // Close all other submenus first
+                document.querySelectorAll('.submenu.active').forEach(menu => {
+                    menu.classList.remove('active');
+                    menu.style.maxHeight = '0';
+                });
+                
+                document.querySelectorAll('button svg').forEach(svg => {
+                    if (svg !== arrow) {
+                        svg.style.transform = 'rotate(0deg)';
+                    }
+                });
+                
+                // Open this submenu
+                submenu.classList.add('active');
+                submenu.style.maxHeight = '500px';
+                arrow.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // Search functionality
+        function searchMenu(query) {
+            const menuItems = document.querySelectorAll('.menu-item');
+            const lowerQuery = query.toLowerCase();
+            
+            if (query === '') {
+                // Show all items
+                menuItems.forEach(item => {
+                    item.style.display = 'flex';
+                    item.classList.remove('bg-yellow-100');
+                });
+                return;
+            }
+            
+            menuItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(lowerQuery)) {
+                    item.style.display = 'flex';
+                    item.classList.add('bg-yellow-100');
+                } else {
+                    item.style.display = 'none';
+                    item.classList.remove('bg-yellow-100');
+                }
+            });
+        }
+
+        // Quick action functions
+        function addOT() {
+            showNotification('เปิดหน้าเพิ่มโอที', 'success');
+            // You can redirect to add OT page
+            // window.location.href = '/add-ot';
+        }
+
+        function viewReport() {
+            showNotification('เปิดหน้ารายงาน', 'info');
+            // window.location.href = '/reports';
+        }
+
+        function exportData() {
+            showQuickExportMenu();
+        }
+
+        function importData() {
+            showQuickImportMenu();
+        }
+
+        function showQuickAdd() {
+            const menu = document.createElement('div');
+            menu.className = 'fixed top-16 right-4 bg-white border border-gray-200 rounded-lg shadow-lg p-2 z-50 animate-fade-in';
+            menu.innerHTML = `
+                <button onclick="addOT(); closeQuickMenu(this)" class="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded flex items-center">
+                    <span class="mr-2">⏰</span> เพิ่มโอที
+                </button>
+                <button onclick="viewReport(); closeQuickMenu(this)" class="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-purple-50 rounded flex items-center">
+                    <span class="mr-2">📊</span> ดูรายงาน
+                </button>
+            `;
+            
+            document.body.appendChild(menu);
+            
+            // Close menu when clicking outside
+            setTimeout(() => {
+                document.addEventListener('click', function closeMenu(e) {
+                    if (!menu.contains(e.target)) {
+                        menu.remove();
+                        document.removeEventListener('click', closeMenu);
+                    }
+                });
+            }, 100);
+        }
+
+        function showQuickExportMenu() {
+            const menu = document.createElement('div');
+            menu.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white border border-gray-200 rounded-lg shadow-xl p-4 z-50 animate-fade-in';
+            menu.innerHTML = `
+                <h3 class="font-semibold text-gray-800 mb-3">📤 ส่งออกข้อมูล</h3>
+                <div class="space-y-2">
+                    <button onclick="exportAll(); closeQuickMenu(this)" class="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded flex items-center">
+                        <span class="mr-2">📄</span> ส่งออกทั้งหมด
+                    </button>
+                    <button onclick="exportOT(); closeQuickMenu(this)" class="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded flex items-center">
+                        <span class="mr-2">⏰</span> ส่งออกโอที
+                    </button>
+                </div>
+                <button onclick="closeQuickMenu(this)" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            `;
+            
+            document.body.appendChild(menu);
+            
+            // Close menu when clicking outside
+            setTimeout(() => {
+                document.addEventListener('click', function closeMenu(e) {
+                    if (!menu.contains(e.target)) {
+                        menu.remove();
+                        document.removeEventListener('click', closeMenu);
+                    }
+                });
+            }, 100);
+        }
+
+        function showQuickImportMenu() {
+            const menu = document.createElement('div');
+            menu.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white border border-gray-200 rounded-lg shadow-xl p-4 z-50 animate-fade-in';
+            menu.innerHTML = `
+                <h3 class="font-semibold text-gray-800 mb-3">📥 นำเข้าข้อมูล</h3>
+                <div class="space-y-2">
+                    <button onclick="importOT(); closeQuickMenu(this)" class="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded flex items-center">
+                        <span class="mr-2">⏰</span> นำเข้าโอที
+                    </button>
+                    <button onclick="importIncomeExpense(); closeQuickMenu(this)" class="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-green-50 rounded flex items-center">
+                        <span class="mr-2">💰</span> นำเข้ารายรับ/รายจ่าย
+                    </button>
+                </div>
+                <button onclick="closeQuickMenu(this)" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            `;
+            
+            document.body.appendChild(menu);
+            
+            // Close menu when clicking outside
+            setTimeout(() => {
+                document.addEventListener('click', function closeMenu(e) {
+                    if (!menu.contains(e.target)) {
+                        menu.remove();
+                        document.removeEventListener('click', closeMenu);
+                    }
+                });
+            }, 100);
+        }
+
+        function closeQuickMenu(element) {
+            const menu = element.closest('.fixed');
+            if (menu) menu.remove();
+        }
+
+        // Export functions
+        function exportAll() {
+            showNotification('กำลังส่งออกข้อมูลทั้งหมด...', 'info');
+            // window.location.href = '/export-all/2025';
+        }
+
+        function exportOT() {
+            showNotification('กำลังส่งออกข้อมูลโอที...', 'success');
+            // window.location.href = '/export-ot/2025';
+        }
+
+        // Import functions
+        function importOT() {
+            showNotification('เปิดหน้านำเข้าโอที...', 'info');
+            window.location.href = '/import-ot-csv';
+        }
+
+        function importIncomeExpense() {
+            showNotification('เปิดหน้านำเข้ารายรับ/รายจ่าย...', 'info');
+            window.location.href = '/import-csv';
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const bgColor = {
+                'success': 'bg-green-500',
+                'error': 'bg-red-500', 
+                'warning': 'bg-yellow-500',
+                'info': 'bg-blue-500'
+            }[type] || 'bg-blue-500';
+            
+            const icon = {
+                'success': '✅',
+                'error': '❌',
+                'warning': '⚠️',
+                'info': 'ℹ️'
+            }[type] || 'ℹ️';
+            
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg text-white ${bgColor} animate-slide-in flex items-center space-x-2`;
+            notification.innerHTML = `
+                <span>${icon}</span>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + K for search
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                const searchInput = document.querySelector('input[placeholder*="ค้นหา"]');
+                if (searchInput) {
+                    searchInput.focus();
+                    searchInput.select();
+                }
+            }
+            
+            // Ctrl/Cmd + N for new OT
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                e.preventDefault();
+                addOT();
+            }
+            
+            // Ctrl/Cmd + R for report  
+            if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+                e.preventDefault();
+                viewReport();
+            }
+        });
+
+        // Add custom CSS animations
+        const customStyles = document.createElement('style');
+        customStyles.textContent = `
+            @keyframes slide-in {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes fade-in {
+                from { opacity: 0; transform: scale(0.9); }
+                to { opacity: 1; transform: scale(1); }
+            }
+            
+            .animate-slide-in {
+                animation: slide-in 0.3s ease-out;
+            }
+            
+            .animate-fade-in {
+                animation: fade-in 0.2s ease-out;
+            }
+        `;
+        document.head.appendChild(customStyles);
+
+        // Responsive handling
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 1024) {
+                closeMobileMenu();
+                closeMobileSearch();
+            }
+        });
     </script>
 </body>
 </html>
